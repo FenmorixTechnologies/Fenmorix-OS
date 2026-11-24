@@ -175,6 +175,7 @@ function LicenseCard({ toast, restart, busy }) {
   };
   const done = x => { setAsk(null); setL(x); setInstalled(true); toast("License installed. Restart the service to apply it."); };
   const groups = [...new Set(l.modules.map(m => m.group))];
+  if (l.demo) return <DemoModules l={l} setL={setL} groups={groups} toast={toast} pick={pick} fileRef={fileRef} ask={ask} setAsk={setAsk} done={done} />;
   const modeText = { full: "Every module (no license file: this build doesn't require one)", licensed: "Licensed", core: "Core only" }[l.mode];
   return <section style={cardStyle} aria-label="License">
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -194,6 +195,52 @@ function LicenseCard({ toast, restart, busy }) {
       {groups.map(g => <div key={g}><div style={{ fontSize: 12, fontWeight: 800, color: INK_SOFT, textTransform: "uppercase", marginBottom: 4 }}>{g}</div>
         {l.modules.filter(m => m.group === g).map(m => <div key={m.key} aria-label={`${m.name}: ${m.on ? "on" : "off"}`} style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", color: m.on ? INK : "#98A2B3" }}>
           {m.on ? <CheckCircle2 size={14} color={SAGE} /> : <span style={{ width: 14, height: 14, borderRadius: 7, border: "1.5px solid #C8CFDA", display: "inline-block" }} />}{m.name}</div>)}</div>)}</div>
+    {ask && <CodeDialog title={ask.title} note={ask.note} run={ask.run} onCancel={() => setAsk(null)} onDone={done} />}
+  </section>;
+}
+
+// Sandbox (no license file): switch modules on and off for a demo. Saved on the server; everyone sees the change on their next page load.
+const DEMO_PRESETS = [
+  ["Everything", ms => ms.map(m => m.key)],
+  ["Standard (fire department)", ms => ms.filter(m => !m.optIn).map(m => m.key)],
+  ["Gold & coin shop", () => ["timeclock", "offwork", "sick", "messaging", "spot", "links"]],
+  ["Core only", () => []],
+];
+function DemoModules({ l, setL, groups, toast, pick, fileRef, ask, setAsk, done }) {
+  const [sel, setSel] = useState(() => new Set(l.modules.filter(m => m.on).map(m => m.key))), [busy, setBusy] = useState(false), [saved, setSaved] = useState(false);
+  const byKey = Object.fromEntries(l.modules.map(m => [m.key, m]));
+  const current = new Set(l.modules.filter(m => m.on).map(m => m.key));
+  const dirty = sel.size !== current.size || [...sel].some(k => !current.has(k));
+  // Turning one on also turns on what it needs; turning one off also turns off what needs it
+  const flip = k => setSel(old => {
+    const n = new Set(old);
+    if (n.has(k)) { n.delete(k); for (let ch = true; ch;) { ch = false; for (const m of l.modules) if (n.has(m.key) && m.needs.some(x => !n.has(x))) { n.delete(m.key); ch = true; } } }
+    else { const add = x => { n.add(x); (byKey[x]?.needs || []).forEach(y => !n.has(y) && add(y)); }; add(k); }
+    return n;
+  });
+  const save = async () => {
+    setBusy(true);
+    try { const x = await call("/demo-modules", { modules: [...sel] }); setL(x); setSel(new Set(x.modules.filter(m => m.on).map(m => m.key))); setSaved(true); toast("Demo modules saved."); }
+    catch (x) { toast(x.message); } finally { setBusy(false); }
+  };
+  return <section style={cardStyle} aria-label="Demo modules">
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div><div style={{ fontWeight: 800, color: INK }}>Demo modules</div>
+        <div style={{ fontSize: 13, color: INK_SOFT, maxWidth: 640 }}>This is a sandbox, so you choose what it shows. Pick the package a visitor would buy; everyone sees the change the next time a page loads. ({sel.size} of {l.modules.length} on)</div></div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {dirty && <button type="button" style={btn("ghost")} onClick={() => setSel(new Set(current))}>Undo</button>}
+        <button type="button" style={btn("primary")} disabled={!dirty || busy} onClick={save}>{busy ? "Saving…" : "Save"}</button>
+        {saved && !dirty && <button type="button" style={btn("outline")} onClick={() => window.location.reload()}>Reload to see it</button>}</div></div>
+    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0" }}>
+      <span style={{ fontSize: 12.5, color: INK_SOFT, alignSelf: "center" }}>Quick picks:</span>
+      {DEMO_PRESETS.map(([name, f]) => <button key={name} type="button" style={{ ...btn("outline"), fontSize: 12.5, padding: "4px 10px" }} onClick={() => setSel(new Set(f(l.modules)))}>{name}</button>)}</div>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10 }}>
+      {groups.map(g => <div key={g}><div style={{ fontSize: 12, fontWeight: 800, color: INK_SOFT, textTransform: "uppercase", marginBottom: 4 }}>{g}</div>
+        {l.modules.filter(m => m.group === g).map(m => <label key={m.key} title={m.desc} style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", color: INK, cursor: "pointer", padding: "2px 0" }}>
+          <input type="checkbox" checked={sel.has(m.key)} onChange={() => flip(m.key)} />{m.name}{m.optIn && <span style={{ fontSize: 11, color: INK_SOFT, whiteSpace: "nowrap" }}>(add-on)</span>}</label>)}</div>)}</div>
+    <div style={{ marginTop: 10, fontSize: 12.5, color: INK_SOFT }}>Core sections (Home, User Management, notices) are always on. Installing a license file replaces these switches.
+      <input ref={fileRef} type="file" accept=".lic,.txt" hidden aria-label="License file" onChange={x => { pick(x.target.files[0]); x.target.value = ""; }} />
+      {" "}<button type="button" style={{ ...btn("ghost"), fontSize: 12.5 }} onClick={() => fileRef.current?.click()}>Install a license file</button></div>
     {ask && <CodeDialog title={ask.title} note={ask.note} run={ask.run} onCancel={() => setAsk(null)} onDone={done} />}
   </section>;
 }

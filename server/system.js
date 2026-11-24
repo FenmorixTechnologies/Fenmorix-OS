@@ -281,6 +281,19 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     await audit(user, "Installed a license", `${r.payload.customer} · ${r.payload.id} · ${r.payload.modules.length} modules · expires ${r.payload.expires || "never"}`);
     return send(res, 200, { ...(await withSeats(licenseSummary())), installed: true, restart: true });
   }
+  // Sandbox only: which modules the demo shows (no license file on a sandbox; see license.js demoModules)
+  if (what === "demo-modules") {
+    const { setDemoModules, licenseSummary, licenseState } = await import("./license.js");
+    const { isSandbox } = await import("./brand.js");
+    if (!isSandbox()) throw err(404, "Demo modules are only on a sandbox.");
+    if (licenseState().license) throw err(409, "A license file is installed, so it decides the modules. Remove it to use the demo switches.");
+    const before = new Set(licenseState().modules);
+    const list = setDemoModules(b.modules);
+    const added = list.filter(k => !before.has(k)), removed = [...before].filter(k => !list.includes(k));
+    await audit(user, "Changed the demo modules", `${list.length} on${added.length ? ` · added ${added.join(", ")}` : ""}${removed.length ? ` · removed ${removed.join(", ")}` : ""}`);
+    if (list.includes("spot")) (await import("./spot.js")).startSpot();
+    return send(res, 200, { ...(await withSeats(licenseSummary())), saved: true });
+  }
   if (what === "branding") {
     await freshCode(user);
     await saveBranding(user, parts[3] || "", b);

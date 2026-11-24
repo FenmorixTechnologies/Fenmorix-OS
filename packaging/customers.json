@@ -1,5 +1,5 @@
 {
-  "_note": "One entry per customer download. modules: \"standard\" (every standard module) or a list of module keys (needs are added). sgfdContent: St. George's own forms, evaluation programs, PIAL grading, seal and art. Never shipped to customers: this folder.",
+  "_note": "One entry per customer download. modules: \"standard\" (every standard module), \"all\" (every module incl. add-ons; the sandbox switches them in System › Demo modules) or a list of module keys (needs are added). sgfdContent: St. George's own forms, evaluation programs, PIAL grading, seal and art. Never shipped to customers: this folder.",
   "sgfd": {
     "name": "sgfd-nexus", "customer": "St. George Fire Protection District", "product": "nexus",
     "modules": "standard", "sgfdContent": true, "requireLicense": false, "keepNotes": true, "sandboxScripts": false
@@ -10,6 +10,6 @@
   },
   "sandbox": {
     "name": "fenmorix-os-sandbox", "customer": "Fenmorix OS demo sandbox", "product": "fenmorix",
-    "modules": "standard", "sgfdContent": false, "requireLicense": false, "keepNotes": false, "sandboxScripts": true
+    "modules": "all", "sgfdContent": false, "requireLicense": false, "keepNotes": false, "sandboxScripts": true
   }
 }

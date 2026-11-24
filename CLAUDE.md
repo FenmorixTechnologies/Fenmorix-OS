@@ -1092,3 +1092,15 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   set: `node packaging/build-package.mjs lgc --test` -> ../.package-stage-test, zip name ends -TEST). Reason: an admin can blank PUBLIC_URL.
 - Still in every package: App.jsx's inline modules (procurement, reimbursements, help desk, gear, meetings) until App.jsx is split; code
   comments (stripped by the protection step: minify/obfuscate).
+
+## Sandbox demo modules + local trial installs (11/2026, no migration)
+- Sandbox package ships EVERY module (customers.json sandbox modules "all", add-ons included). license.js: SANDBOX on + no license file ->
+  `<SYSTEM_DIR>/sandbox/modules.json` {modules} (`demoModules`, `setDemoModules` with withNeeds; default = STANDARD_KEYS). POST
+  /api/system/demo-modules {modules} (masters, sandbox only, 409 when a license file is installed, no code needed, audited "Changed the demo
+  modules"; starts the spot poller when spot is on). index.js starts every module's seeds/jobs on a sandbox (`startOn`) so switching needs no
+  restart; pages pick it up on the next load (meta). UI: SystemAdmin.jsx `DemoModules` (replaces LicenseCard on a sandbox without a license;
+  quick picks Everything / Standard / Gold & coin shop / Core only; unchecking removes dependents). Tests: e2e59.mjs via run-demo.sh (16).
+- install-ubuntu.sh `--local`: DOMAIN=localhost, PUBLIC_URL https://localhost, self-signed cert (openssl, SAN localhost/127.0.0.1, 10 years)
+  in certs/, no email/certbot/ufw; checks systemd (WSL: writes /etc/wsl.conf [boot] systemd=true and asks for `wsl --shutdown`).
+  License Manager new-customer accepts "localhost" (suggests blank hosts so the same license works on the real machine later; INSTALL.txt
+  then has the WSL steps). Run here with stand-ins for apt/systemctl/sudo/npm/psql.

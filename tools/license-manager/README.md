@@ -27,6 +27,9 @@ It makes a folder `customers/<name>/` with:
 
 Zip that folder and send it to Avexon along with the release zip. Their installer (`install-ubuntu.sh --kit <folder>`) sets the server up for that customer. The first time the customer's admin signs in, a short setup wizard walks through the name, logo, colors and menu names, already filled in from the kit. Everything can be changed later under User Management › System › Branding.
 
+### Trying a customer's system on your own computer first
+For the web address, type **localhost**, and leave "Web addresses it works on" blank. That way the same license keeps working when the system moves to the customer's real computer. INSTALL.txt then lists the steps for Ubuntu on Windows (WSL): unzip the release, copy the kit, and run `install-ubuntu.sh --kit <folder> --local`. The system opens at https://localhost.
+
 ## Making a license
 `node nexus-license.mjs issue` asks for each setting:
 - **Customer:** the name as it should appear.

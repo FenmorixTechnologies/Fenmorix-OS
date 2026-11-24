@@ -329,14 +329,16 @@ try {
 }
 await migrate();
 { const ls = licenseState(); console.log(`License: ${ls.mode}${ls.license ? ` (${ls.license.customer}, ${ls.modules.size} modules)` : ""}${ls.error ? ` - ${ls.error}` : ""}`); }
-if (moduleOn("forms")) await seedForms();
-if (moduleOn("evals")) await (await import("./evals.js")).seedEvals().catch(e => console.warn(`[Evaluations] seeding: ${e.message}`));
+// A sandbox ships every module and switches them in System › Demo modules: start everything so turning one on needs no restart
+const startOn = k => moduleOn(k) || isSandbox();
+if (startOn("forms")) await seedForms();
+if (startOn("evals")) await (await import("./evals.js")).seedEvals().catch(e => console.warn(`[Evaluations] seeding: ${e.message}`));
 startAladtec();
-if (moduleOn("activecalls") || moduleOn("callalerts") || moduleOn("command")) startCad();
-if (moduleOn("stats") || moduleOn("board") || moduleOn("pial")) startCadStats().catch(e => console.warn(`[Comms statistics] ${e.message}`));
+if (startOn("activecalls") || startOn("callalerts") || startOn("command")) startCad();
+if (startOn("stats") || startOn("board") || startOn("pial")) startCadStats().catch(e => console.warn(`[Comms statistics] ${e.message}`));
 startDeliveries();   // next-shift delivery also carries other modules' notices
-if (moduleOn("recordings") || moduleOn("evals")) import("./transcribe.js").then(m => m.startTranscripts());
-if (moduleOn("spot")) import("./spot.js").then(m => m.startSpot());
+if (startOn("recordings") || startOn("evals")) import("./transcribe.js").then(m => m.startTranscripts());
+if (startOn("spot")) import("./spot.js").then(m => m.startSpot());
 
 let vite = null;
 if (!PROD) {

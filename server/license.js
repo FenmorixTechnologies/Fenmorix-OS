@@ -32,6 +32,23 @@ const DEV_KEYS = new Set(["dev"]);
 
 const APP_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const licenseFile = () => process.env.LICENSE_FILE || path.join(path.resolve(process.env.SYSTEM_DIR || path.join(APP_DIR, "..")), "license", "nexus.lic");
+// Sandbox demo modules: on a sandbox with no license file, a master admin picks which modules show (System › Demo modules).
+// Every module's code ships in the sandbox package; this only switches them on or off. Opt-in (retail) modules included.
+const isSandbox = () => /^(1|on|true|yes)$/i.test(String(process.env.SANDBOX || "").trim());
+export const demoModulesFile = () => path.join(path.dirname(path.dirname(licenseFile())), "sandbox", "modules.json");
+export function demoModules() {
+  if (!isSandbox()) return null;
+  try { const j = JSON.parse(fs.readFileSync(demoModulesFile(), "utf8")); return Array.isArray(j.modules) ? j.modules.filter(k => moduleByKey[k]) : null; }
+  catch { return null; }
+}
+export function setDemoModules(keys) {
+  const list = withNeeds([...new Set((Array.isArray(keys) ? keys : []).filter(k => moduleByKey[k]))]);
+  const f = demoModulesFile();
+  fs.mkdirSync(path.dirname(f), { recursive: true });
+  fs.writeFileSync(f, JSON.stringify({ modules: list, at: new Date().toISOString() }, null, 1) + "\n");
+  clearLicenseCache();
+  return list;
+}
 const b64u = s => Buffer.from(s, "base64url");
 const today = () => new Date().toISOString().slice(0, 10);
 const addDays = (d, n) => { const x = new Date(`${d}T12:00:00Z`); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
@@ -67,7 +84,9 @@ export function licenseState() {
   let state;
   let text = null;
   try { text = fs.readFileSync(licenseFile(), "utf8"); } catch { /* no file */ }
-  if (text == null) {
+  const demo = text == null ? demoModules() : null;
+  if (demo) state = { mode: "full", modules: new Set(withNeeds(demo)), demo: true };
+  else if (text == null) {
     state = REQUIRE_LICENSE ? { mode: "core", modules: new Set(), error: "No license is installed. Only the core sections work until one is added." }
       : { mode: "full", modules: new Set(STANDARD_KEYS) };
   } else {
@@ -102,10 +121,10 @@ export function seatLimit() { const p = licenseState().license; return p && Numb
 export function licenseSummary() {
   const s = licenseState(), p = s.license;
   return {
-    mode: s.mode, error: s.error || "", warning: s.warning || "", requireLicense: REQUIRE_LICENSE, file: licenseFile(),
+    mode: s.mode, demo: isSandbox() && !p, demoSaved: !!s.demo, error: s.error || "", warning: s.warning || "", requireLicense: REQUIRE_LICENSE, file: licenseFile(),
     license: p ? { id: p.id, customer: p.customer, product: p.product || "", issued: p.issued, expires: p.expires || null, seats: p.seats || 0,
       environments: p.environments || [], hosts: p.hosts || [], kid: p.kid, notes: p.notes || "" } : null,
-    modules: MODULE_KEYS.map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k) })),
+    modules: MODULE_KEYS.map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k), optIn: !!moduleByKey[k].optIn, desc: moduleByKey[k].desc || "", needs: moduleByKey[k].needs || [] })),
     core: CORE.tiles,
   };
 }

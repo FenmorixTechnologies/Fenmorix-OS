@@ -131,10 +131,13 @@ if (cmd === "new-customer") {
   const words = org.split(/\s+/).filter(w => /^[A-Za-z]/.test(w) && !/^(of|the|and|for)$/i.test(w));
   const short = (await ask({ key: "short", text: "Short name for the side bar (up to 20 letters)" }, words.map(w => w[0]).join("").toUpperCase().slice(0, 6))).slice(0, 20);
   const place = await ask({ key: "place", text: "Place (city or county, used in text)" }, words[0] || "");
-  const domain = (await ask({ key: "domain", text: "Web address (e.g. ops.acmecounty.gov)" })).toLowerCase();
-  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) die("The web address should look like ops.acmecounty.gov (no https://).");
-  const other = (await ask({ key: "other-hosts", text: "Other web addresses for test/training (comma-separated, blank = none)" })).toLowerCase();
-  const q = await licenseQuestions(ask, { customer: org, hosts: [domain, ...other.split(/[\s,]+/).filter(Boolean)].join(",") });
+  const domain = (await ask({ key: "domain", text: "Web address (e.g. ops.acmecounty.gov, or localhost to try it on this computer)" })).toLowerCase();
+  const local = domain === "localhost";
+  if (!local && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) die("The web address should look like ops.acmecounty.gov (no https://), or localhost.");
+  const other = local ? "" : (await ask({ key: "other-hosts", text: "Other web addresses for test/training (comma-separated, blank = none)" })).toLowerCase();
+  // A localhost trial: suggest "any server" so the same license still works when the system moves to its real computer
+  if (local) console.log("  (Trying it on this computer: leave the next web-address question blank so the license also works where it's installed for real.)");
+  const q = await licenseQuestions(ask, { customer: org, hosts: local ? "" : [domain, ...other.split(/[\s,]+/).filter(Boolean)].join(",") });
   const timezone = await ask({ key: "timezone", text: "Time zone" }, "America/Chicago");
   const where = await ask({ key: "location", text: "Location for weather (lat,lon, blank = skip)" });
   const ll = where ? where.split(/[\s,]+/).map(Number) : [];
@@ -161,7 +164,17 @@ if (cmd === "new-customer") {
   let logoName = "";
   if (logo) { logoName = `logo${path.extname(logo).toLowerCase().replace(".jpeg", ".jpg")}`; fs.copyFileSync(logo, path.join(dir, logoName)); }
   const cmdLine = `sudo bash /opt/nexus/app/scripts/linux/install-ubuntu.sh --kit /root/${slug} --email <certificate email>`;
-  fs.writeFileSync(path.join(dir, "INSTALL.txt"), [
+  fs.writeFileSync(path.join(dir, "INSTALL.txt"), local ? [
+    `Fenmorix OS trial install for ${org} (this computer)`, `Made ${customer.made.slice(0, 10)} · license ${payload.id} · ${modulesText(q, payload).replace(/\n\s*/g, " ")}`,
+    "", "On Windows with Ubuntu (WSL) installed, in the Ubuntu window:",
+    "1. Put the release zip and this folder in your Windows Downloads folder, then:",
+    "     sudo mkdir -p /opt/nexus && sudo unzip /mnt/c/Users/<you>/Downloads/<the release zip> -d /opt/nexus",
+    `     sudo cp -r /mnt/c/Users/<you>/Downloads/${slug} /root/${slug}`,
+    `2. sudo bash /opt/nexus/app/scripts/linux/install-ubuntu.sh --kit /root/${slug} --local`,
+    "3. Open https://localhost in your browser (accept the certificate warning once: it's your own computer).",
+    "   Make the first admin account, set up the authenticator, and the setup wizard walks through the name, logo, colors and menu names.",
+    "", "Never put private-key.pem on a server.", "",
+  ].join("\n") : [
     `Fenmorix OS install for ${org}`, `Made ${customer.made.slice(0, 10)} · license ${payload.id} · ${modulesText(q, payload).replace(/\n\s*/g, " ")}`,
     "", "For Avexon (Ubuntu 22.04 / 24.04 server):",
     `1. DNS: an A record for ${domain} pointing at the server's public IP. Allow TCP 22, 80 and 443.`,
@@ -174,8 +187,8 @@ if (cmd === "new-customer") {
     "   Sign in, set up the authenticator, and the setup wizard walks through the name, logo, colors and menu names.",
     "", "The license here only works on the web addresses it lists. Never put private-key.pem on a server.", "",
   ].join("\n"));
-  console.log(`\nCustomer kit: ${dir}\n  license.lic   ${payload.id}: ${modulesText(q, payload)}\n  branding.json name${accent || navy ? ", colors" : ""}\n  customer.json web address, time zone, location${logoName ? `\n  ${logoName}      the logo (the setup wizard makes the icons from it)` : ""}\n  INSTALL.txt   the steps for Avexon\n`);
-  console.log(`Send Avexon the whole folder (zip it), with the release zip.\n`);
+  console.log(`\nCustomer kit: ${dir}\n  license.lic   ${payload.id}: ${modulesText(q, payload)}\n  branding.json name${accent || navy ? ", colors" : ""}\n  customer.json web address, time zone, location${logoName ? `\n  ${logoName}      the logo (the setup wizard makes the icons from it)` : ""}\n  INSTALL.txt   ${local ? "how to install it on this computer" : "the steps for Avexon"}\n`);
+  console.log(local ? `To try it: see INSTALL.txt in that folder (Ubuntu on Windows, --local).\n` : `Send Avexon the whole folder (zip it), with the release zip.\n`);
   process.exit(0);
 }
 

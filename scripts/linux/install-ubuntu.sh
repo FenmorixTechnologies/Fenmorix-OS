@@ -11,6 +11,8 @@
 #      A customer kit (License Manager: node nexus-license.mjs new-customer) sets it all up for that customer instead:
 #        sudo bash .../install-ubuntu.sh --kit /root/acme-county-government --email you@example.com
 #      (its license, name, colors, logo, web address, time zone and location; a real install, not a sandbox)
+#      --local: try it on this computer (Ubuntu on Windows / WSL, or a desktop): https://localhost with a self-signed certificate,
+#        no domain, email or Let's Encrypt. First-run setup then works straight from the browser on this computer.
 #   4. Make the first admin account through an SSH tunnel (first-run setup only works from the server itself):
 #        ssh -L 8443:127.0.0.1:443 <you>@<server>     then open https://localhost:8443 (accept the name warning once)
 #
@@ -20,7 +22,7 @@ set -euo pipefail
 
 ROOT=/opt/nexus
 APP="$ROOT/app"
-DOMAIN="" EMAIL="" SANDBOX=1 ORG="" SHORT="" PLACE="" APPNAME="" TZONE="America/Chicago" LAT="30.37" LON="-91.01" KIT="" PRODUCT=""
+DOMAIN="" EMAIL="" SANDBOX=1 ORG="" SHORT="" PLACE="" APPNAME="" TZONE="America/Chicago" LAT="30.37" LON="-91.01" KIT="" PRODUCT="" LOCAL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --domain) DOMAIN="$2"; shift ;; --email) EMAIL="$2"; shift ;;
@@ -28,6 +30,7 @@ while [ $# -gt 0 ]; do
     --org) ORG="$2"; shift ;; --short) SHORT="$2"; shift ;; --place) PLACE="$2"; shift ;; --app-name) APPNAME="$2"; shift ;;
     --timezone) TZONE="$2"; shift ;; --lat) LAT="$2"; shift ;; --lon) LON="$2"; shift ;;
     --kit) KIT="$2"; shift ;;
+    --local) LOCAL=1 ;;
     *) echo "Unknown option: $1"; exit 2 ;;
   esac
   shift
@@ -46,14 +49,25 @@ if [ -n "$KIT" ]; then
   T="$(kv lat)"; [ -n "$T" ] && LAT="$T"; T="$(kv lon)"; [ -n "$T" ] && LON="$T"
   SANDBOX=0; PRODUCT=fenmorix
 fi
+if [ "$LOCAL" = 1 ]; then
+  DOMAIN=localhost
+  # Services need systemd; Ubuntu on WSL has it on by default, older setups need it switched on
+  if [ "$(ps -p 1 -o comm= 2>/dev/null)" != systemd ]; then
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+      grep -q '^systemd *= *true' /etc/wsl.conf 2>/dev/null || printf '[boot]\nsystemd=true\n' >> /etc/wsl.conf
+      die "Ubuntu needs systemd switched on (done now). In Windows PowerShell run:  wsl --shutdown   then open Ubuntu again and run this same command."
+    fi
+    die "This computer isn't running systemd, which the install needs."
+  fi
+fi
 [ -n "$DOMAIN" ] || die "Give the web address: --domain sandbox.example.com"
-[ -n "$EMAIL" ] || die "Give an email for the free certificate (renewal notices): --email you@example.com"
+[ "$LOCAL" = 1 ] || [ -n "$EMAIL" ] || die "Give an email for the free certificate (renewal notices): --email you@example.com"
 [[ "$DOMAIN" =~ ^[A-Za-z0-9.-]+$ ]] || die "That domain doesn't look right: $DOMAIN"
 
-say "Packages (Node 22, PostgreSQL, certbot)"
+say "Packages (Node 22, PostgreSQL$([ "$LOCAL" = 1 ] || echo ", certbot"))"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
-apt-get install -y -q ca-certificates curl gnupg unzip rsync postgresql certbot
+apt-get install -y -q ca-certificates curl gnupg unzip rsync postgresql openssl $([ "$LOCAL" = 1 ] || echo certbot)
 if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 20 ]; then
   install -d -m 0755 /etc/apt/keyrings
   curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor --yes -o /etc/apt/keyrings/nodesource.gpg
@@ -75,6 +89,7 @@ chown -R nexus:nexus "$ROOT"
 chmod 750 "$ROOT/certs" "$APP/secrets" "$ROOT/backups"
 
 say "Database"
+systemctl enable --now postgresql >/dev/null 2>&1 || true
 if [ ! -f "$APP/.env" ]; then
   DBPASS="$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 28)"
   sudo -u postgres psql -qtc "SELECT 1 FROM pg_roles WHERE rolname = 'nexus_app'" | grep -q 1 \
@@ -94,6 +109,8 @@ if [ ! -f "$APP/.env" ]; then
     [ -n "$PLACE" ] && echo "ORG_PLACE=$(q "$PLACE")"
     [ -n "$APPNAME" ] && echo "APP_NAME=$(q "$APPNAME")"
     [ -n "$PRODUCT" ] && echo "PRODUCT=$PRODUCT"
+    # A trial on this computer: made-up spot prices (clearly labeled) until a real price feed's token is set
+    [ "$LOCAL" = 1 ] && echo "SPOT_PROVIDER=demo"
     if [ "$SANDBOX" = 1 ]; then
       echo "SANDBOX=on"
       echo "CAD_STATS_TEST_FILE=$ROOT/data/demo-calls.json"; echo "CAD_STATS_UNITS_TEST_FILE=$ROOT/data/demo-units.json"
@@ -119,6 +136,17 @@ if [ -n "$KIT" ]; then
   echo "License $(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("license",""))' "$KIT/customer.json") installed for $ORG."
 fi
 
+if [ "$LOCAL" = 1 ]; then
+say "Certificate (self-signed, for this computer)"
+if [ ! -f "$ROOT/certs/fullchain.pem" ]; then
+  openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=localhost" \
+    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" -keyout "$ROOT/certs/privkey.pem" -out "$ROOT/certs/fullchain.pem" 2>/dev/null
+  chown nexus:nexus "$ROOT/certs/"*.pem; chmod 640 "$ROOT/certs/"*.pem
+  echo "Made a certificate for localhost (good for 10 years). The browser warns about it once; that's expected here."
+else
+  echo "Keeping the certificate in $ROOT/certs."
+fi
+else
 say "Certificate (Let's Encrypt)"
 mkdir -p /etc/letsencrypt/renewal-hooks/deploy
 cat > /etc/letsencrypt/renewal-hooks/deploy/nexus-copy.sh <<HOOK
@@ -140,6 +168,7 @@ fi
 say "Firewall"
 if command -v ufw >/dev/null && ufw status | grep -q "Status: active"; then ufw allow 22/tcp; ufw allow 80/tcp; ufw allow 443/tcp; fi
 echo "Also allow TCP 22, 80 and 443 in the cloud provider's firewall / security group."
+fi
 
 say "Building the app (a few minutes the first time)"
 cd "$APP"
@@ -173,6 +202,10 @@ fi
 say "Done"
 NAME="Nexus"; [ "$PRODUCT" = fenmorix ] || [ "$SANDBOX" = 1 ] && NAME="Fenmorix OS"
 echo "$NAME is running at https://$DOMAIN"
-echo "Make the first admin through an SSH tunnel:  ssh -L 8443:127.0.0.1:443 <you>@<this server>  then open https://localhost:8443"
+if [ "$LOCAL" = 1 ]; then
+  echo "Open https://localhost in your browser on this computer (accept the certificate warning once) and make the first admin account."
+else
+  echo "Make the first admin through an SSH tunnel:  ssh -L 8443:127.0.0.1:443 <you>@<this server>  then open https://localhost:8443"
+fi
 [ -n "$KIT" ] && echo "Sign in, set up the authenticator, and the setup wizard walks through the name, logo, colors and menu names."
 echo "After that, updates install from User Management > System."

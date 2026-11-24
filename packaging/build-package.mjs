@@ -66,7 +66,7 @@ const rm = p => fs.rmSync(p, { recursive: true, force: true });
 
 function build(id) {
   const c = customers[id];
-  const on = new Set(c.modules === "standard" ? STANDARD_KEYS : withNeeds(c.modules));
+  const on = new Set(c.modules === "standard" ? STANDARD_KEYS : c.modules === "all" ? MODULES.map(m => m.key) : withNeeds(c.modules));
   const off = MODULES.map(m => m.key).filter(k => !on.has(k));
   const version = JSON.parse(fs.readFileSync(path.join(SRC, "VERSION.json"), "utf8"));
   const root = path.join(STAGE, id), app = path.join(root, "app");
