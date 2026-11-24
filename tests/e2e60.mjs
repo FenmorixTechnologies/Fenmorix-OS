@@ -85,6 +85,12 @@ check("card editor: Location, no call sign", /Location/.test(body) && !/call sig
 await home(); await nav("Time Tracker");
 body = await page.locator("main").innerText();
 check("Time Tracker: twice-a-month pay period, no fire or Comms shifts", /1st–15th and 16th–end/.test(body) && /paid 5 days after/.test(body) && !/Fire on duty|Comms [A-D]/.test(body), body.slice(0, 400));
+{ // column names follow the period's real days (it was fixed Thu..Wed from SGFD's period)
+  const heads = await page.evaluate(() => [...document.querySelectorAll("main div")].filter(d => /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/.test(d.textContent.trim()) && d.children.length === 0).slice(0, 7).map(d => d.textContent.trim()));
+  const n = new Date(); const first = n.getDate() <= 15 ? 1 : 16;
+  const want = new Date(n.getFullYear(), n.getMonth(), first, 12).toLocaleDateString("en-US", { weekday: "short" });
+  check("Time Tracker: calendar columns start on the period's first weekday", heads[0] === want && new Set(heads).size === 7, heads.join(","));
+}
 const opts = await page.getByLabel("My schedule").locator("option").allInnerTexts().catch(() => []);
 check("schedules offered: just not set / weekdays", opts.length === 2 && opts.some(x => /Weekdays/.test(x)), opts.join(", "));
 

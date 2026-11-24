@@ -345,9 +345,9 @@ export default function TimeTrackerModule({ onBack }) {
           </div>
         </div>
 
-        {/* Two weeks, Thursday through Wednesday */}
+        {/* The period's days, seven to a row; column names come from the period's own first week (any pay schedule) */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 6 }}>
-          {["Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"].map(d => (
+          {days.slice(0, 7).map(day => pretty(day, { weekday: "short" })).map(d => (
             <div key={d} style={{ fontSize: 11.5, fontWeight: 700, color: INK_SOFT, textTransform: "uppercase", letterSpacing: 0.5, padding: "0 4px" }}>{d}</div>
           ))}
           {days.map(d => {
