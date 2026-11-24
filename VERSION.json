@@ -1,6 +1,11 @@
 {
-  "version": "2026.11.24.11",
+  "version": "2026.11.24.12",
   "notes": [
+    "Work Schedule: someone can step out and come back (e.g. a doctor's appointment 10\u201312): 'Coming back' with a time; shows 'Stepped out' until then.",
+    "Fix: messages no longer buzz phones and pop up twice.",
+    "Fix: a chat sent to someone on Busy / Do not disturb lands in their Messages inbox again.",
+    "Push notifications: a clearer explanation when the browser can't reach its push service (and Brave's setting), with an automatic retry.",
+    "Database updates 055 (schedule) and 056 (messages).",
     "Fix: Time Tracker's calendar shows the right weekday names for any pay period (they were fixed Thursday to Wednesday).",
     "Behind Cloudflare (TRUST_PROXY=cloudflare): sign-in limits, signed-in devices and the audit log use each visitor's real address; first-time setup can never be opened through a tunnel or proxy.",
     "Organization settings (User Management \u203a Organization): business or fire/EMS department, the words for where people work and radio call signs, divisions (add, rename, remove), pay periods (weekly, every two weeks, twice a month, monthly), payday, workday hours, and which shift rotations are offered.",

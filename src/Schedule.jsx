@@ -1,12 +1,12 @@
 // Work Schedule (Time Clock module): who works which day and which hours, planned days or weeks ahead. Everyone sees it; people
 // with Work schedule "edit" (User Management › Permissions) set it for their divisions: one day at a time, "Fill the week" for
-// several people at once, "Copy last week", and "Leaving early" on today's list. Days off from Off Work show on the grid.
+// several people at once, "Copy last week", and "Leaving early" / "Stepping out" (back at a time) on today's list. Days off from Off Work show on the grid.
 // Server: server/schedule.js. Your Day card: YourDay.jsx ScheduleWidget. TV view: Display.jsx "schedule".
 import React, { useEffect, useMemo, useState } from "react";
 import { CalendarClock, CalendarDays, ChevronLeft, ChevronRight, Copy, Plus, X, Clock } from "lucide-react";
 import AppShell from "./AppShell.jsx";
 import { cardStyle, inputStyle, btn } from "./App.jsx";
-import { fmtTime, fmtRange, STATUS, dayLine } from "./scheduleShared.js";
+import { fmtTime, fmtRange, STATUS, STATUS_ORDER, dayLine } from "./scheduleShared.js";
 
 const INK = "#13233F", INK_SOFT = "#4B5565", LINE = "#DDE2EA", PAPER = "#F3F5F8", BRICK = "#B42318", SAGE = "#2E7D4F", AMBER = "#B26A00";
 async function call(path, body) {
@@ -55,7 +55,8 @@ export default function ScheduleModule({ onBack }) {
   let body;
   if (error) body = <div style={{ ...cardStyle, color: BRICK }}>{error}</div>;
   else if (!d) body = <div style={{ color: INK_SOFT }}>Loading…</div>;
-  else if (view === "today") body = <TodayList t={today} canEditDiv={canEditDiv} onEarly={(e, at) => save({ entries: [{ userId: e.userId, day: today.today, start: e.start, end: e.end, earlyAt: at, note: e.note }] }, at ? `${e.name} is leaving early at ${fmtTime(at)}.` : "Leaving early taken off.")} />;
+  else if (view === "today") body = <TodayList t={today} canEditDiv={canEditDiv} onEarly={(e, at, back) => save({ entries: [{ userId: e.userId, day: today.today, start: e.start, end: e.end, earlyAt: at, backAt: at ? back || "" : "", note: e.note }] },
+    !at ? "Time away taken off." : back ? `${e.name} is out ${fmtRange(at, back)}.` : `${e.name} is leaving early at ${fmtTime(at)}.`)} />;
   else body = <>
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
       <button aria-label="Previous week" style={btn("outline")} onClick={() => setWeek(addDays(week, -7))}><ChevronLeft size={15} /></button>
@@ -92,7 +93,7 @@ export default function ScheduleModule({ onBack }) {
               <button type="button" disabled={!edit} aria-label={`${p.name}, ${pretty(x)}${e ? `: ${dayLine(e)}` : ": not scheduled"}`} onClick={() => setCell({ person: p, day: x, e })}
                 style={{ width: "100%", minHeight: 40, border: e ? `1px solid ${SAGE}55` : `1px dashed ${LINE}`, background: e ? "#EEF7F1" : "transparent", borderRadius: 6, cursor: edit ? "pointer" : "default",
                   fontFamily: "inherit", fontSize: 12, color: INK, padding: "3px 4px", textAlign: "center" }}>
-                {e ? <><b>{fmtTime(e.start)}</b>–<b>{fmtTime(e.end)}</b>{e.earlyAt && <div style={{ color: AMBER, fontWeight: 700 }}>leaves {fmtTime(e.earlyAt)}</div>}{e.note && <div style={{ color: INK_SOFT, fontSize: 11 }}>{e.note}</div>}</>
+                {e ? <><b>{fmtTime(e.start)}</b>–<b>{fmtTime(e.end)}</b>{e.earlyAt && <div style={{ color: AMBER, fontWeight: 700 }}>{e.backAt ? `out ${fmtTime(e.earlyAt)}–${fmtTime(e.backAt)}` : `leaves ${fmtTime(e.earlyAt)}`}</div>}{e.note && <div style={{ color: INK_SOFT, fontSize: 11 }}>{e.note}</div>}</>
                   : <span style={{ color: "#A0A8B5" }}>{edit ? "+" : "–"}</span>}
                 {o && <div style={{ color: BRICK, fontWeight: 700, fontSize: 11 }}>{o.label}</div>}
               </button></td>;
@@ -127,7 +128,7 @@ function Dialog({ title, onClose, children }) {
 // One person, one day
 function CellEditor({ cell, d, onClose, onSave }) {
   const e = cell.e;
-  const [f, setF] = useState({ start: e?.start || d.dayStart, end: e?.end || plusHours(d.dayStart, d.dayHours), early: !!e?.earlyAt, earlyAt: e?.earlyAt || "", note: e?.note || "" });
+  const [f, setF] = useState({ start: e?.start || d.dayStart, end: e?.end || plusHours(d.dayStart, d.dayHours), early: !!e?.earlyAt, earlyAt: e?.earlyAt || "", back: !!e?.backAt, backAt: e?.backAt || "", note: e?.note || "" });
   const set = (k, v) => setF(x => ({ ...x, [k]: v }));
   const base = { userId: cell.person.id, day: cell.day };
   return <Dialog title={`${cell.person.name} · ${pretty(cell.day, { weekday: "long", month: "short", day: "numeric" })}`} onClose={onClose}>
@@ -135,11 +136,15 @@ function CellEditor({ cell, d, onClose, onSave }) {
       <label><span style={label}>Starts</span><input aria-label="Starts" type="time" style={{ ...inputStyle, width: 140 }} value={f.start} onChange={x => set("start", x.target.value)} /></label>
       <label><span style={label}>Ends</span><input aria-label="Ends" type="time" style={{ ...inputStyle, width: 140 }} value={f.end} onChange={x => set("end", x.target.value)} /></label>
     </div>
-    <label style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 10, fontSize: 13.5 }}><input type="checkbox" checked={f.early} onChange={x => set("early", x.target.checked)} /> Leaving early</label>
-    {f.early && <label><span style={label}>Leaving at</span><input aria-label="Leaving at" type="time" style={{ ...inputStyle, width: 140 }} value={f.earlyAt} onChange={x => set("earlyAt", x.target.value)} /></label>}
+    <label style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 10, fontSize: 13.5 }}><input type="checkbox" checked={f.early} onChange={x => set("early", x.target.checked)} /> Away part of the day (leaving early, or stepping out)</label>
+    {f.early && <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+      <label><span style={label}>Leaving at</span><input aria-label="Leaving at" type="time" style={{ ...inputStyle, width: 140 }} value={f.earlyAt} onChange={x => set("earlyAt", x.target.value)} /></label>
+      <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13.5, paddingBottom: 8 }}><input type="checkbox" checked={f.back} onChange={x => set("back", x.target.checked)} /> Coming back</label>
+      {f.back && <label><span style={label}>Back at</span><input aria-label="Back at" type="time" style={{ ...inputStyle, width: 140 }} value={f.backAt} onChange={x => set("backAt", x.target.value)} /></label>}
+    </div>}
     <label style={{ display: "block", marginTop: 10 }}><span style={label}>Note (everyone sees it)</span><input aria-label="Note" style={inputStyle} value={f.note} placeholder="e.g. opening, front counter" onChange={x => set("note", x.target.value)} /></label>
     <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
-      <button style={btn("primary")} onClick={() => onSave({ entries: [{ ...base, start: f.start, end: f.end, earlyAt: f.early ? f.earlyAt : "", note: f.note }] }, "Saved.")}>Save</button>
+      <button style={btn("primary")} onClick={() => onSave({ entries: [{ ...base, start: f.start, end: f.end, earlyAt: f.early ? f.earlyAt : "", backAt: f.early && f.back ? f.backAt : "", note: f.note }] }, "Saved.")}>Save</button>
       {e && <button style={{ ...btn("outline"), color: BRICK }} onClick={() => onSave({ remove: [base] }, "Taken off the schedule.")}>Not working this day</button>}
       <button style={btn("ghost")} onClick={onClose}>Cancel</button>
     </div>
@@ -167,24 +172,26 @@ function FillWeek({ d, week, people, onClose, onSave }) {
   </Dialog>;
 }
 
-// Today, by where everyone is; editors can mark someone as leaving early
+// Today, by where everyone is; editors can mark someone as leaving early, or stepping out and coming back
 function TodayList({ t, canEditDiv, onEarly }) {
   const [early, setEarly] = useState(null);
   if (!t) return <div style={{ color: INK_SOFT }}>Loading…</div>;
   if (!t.list.length) return <div style={{ ...cardStyle, color: INK_SOFT }}>No one is on today's schedule.</div>;
-  const groups = ["working", "later", "left_early", "done", "out"].map(k => [k, t.list.filter(e => e.status === k)]).filter(([, l]) => l.length);
+  const groups = STATUS_ORDER.map(k => [k, t.list.filter(e => e.status === k)]).filter(([, l]) => l.length);
   return <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
     {groups.map(([k, l]) => <div key={k} style={{ ...cardStyle, margin: 0, borderTop: `4px solid ${STATUS[k].color}` }}>
       <div style={{ fontWeight: 800, color: STATUS[k].color, marginBottom: 6 }}>{STATUS[k].label} · {l.length}</div>
       {l.map(e => <div key={e.userId} style={{ padding: "6px 0", borderTop: `1px solid ${LINE}` }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "baseline" }}><b style={{ color: INK }}>{e.name}</b>
           {canEditDiv(e.division) && k !== "out" && k !== "done" && k !== "left_early" && <button style={{ ...btn("ghost"), fontSize: 12, padding: "2px 6px" }}
-            onClick={() => setEarly(early?.userId === e.userId ? null : { userId: e.userId, at: e.earlyAt || "" })}>{e.earlyAt ? "Change leaving early" : "Leaving early"}</button>}</div>
+            onClick={() => setEarly(early?.userId === e.userId ? null : { userId: e.userId, at: e.earlyAt || "", back: e.backAt || "" })}>{e.earlyAt ? "Change time away" : "Leaving / stepping out"}</button>}</div>
         <div style={{ fontSize: 12.5, color: INK_SOFT }}>{k === "out" ? (e.off?.label || "Out") : dayLine(e)}{e.note ? ` · ${e.note}` : ""}</div>
         {early?.userId === e.userId && <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap", alignItems: "center" }}>
-          <input aria-label={`${e.name} leaving at`} type="time" style={{ ...inputStyle, width: 130 }} value={early.at} onChange={x => setEarly({ ...early, at: x.target.value })} />
-          <button style={btn("primary")} disabled={!early.at} onClick={() => { onEarly(e, early.at); setEarly(null); }}>Save</button>
-          {e.earlyAt && <button style={btn("ghost")} onClick={() => { onEarly(e, ""); setEarly(null); }}>Not leaving early</button>}
+          <label style={{ fontSize: 12.5 }}>Leaving <input aria-label={`${e.name} leaving at`} type="time" style={{ ...inputStyle, width: 120 }} value={early.at} onChange={x => setEarly({ ...early, at: x.target.value })} /></label>
+          <label style={{ fontSize: 12.5 }}>Back <input aria-label={`${e.name} back at`} type="time" style={{ ...inputStyle, width: 120 }} value={early.back} onChange={x => setEarly({ ...early, back: x.target.value })} /></label>
+          <button style={btn("primary")} disabled={!early.at} onClick={() => { onEarly(e, early.at, early.back); setEarly(null); }}>Save</button>
+          {e.earlyAt && <button style={btn("ghost")} onClick={() => { onEarly(e, ""); setEarly(null); }}>Not away</button>}
+          <div style={{ width: "100%", fontSize: 11.5, color: INK_SOFT }}>Leave "Back" empty if they're gone for the rest of the day.</div>
         </div>}
       </div>)}
     </div>)}

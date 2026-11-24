@@ -42,6 +42,23 @@ export async function currentSubscription() {
   try { return await reg.pushManager.getSubscription(); } catch (e) { return null; }
 }
 
+// "Registration failed - push service error" = the browser couldn't reach its own push service (Google's for Chrome/Edge/Brave,
+// Mozilla's for Firefox). It's often a one-time hiccup or a leftover registration, so clear it and try once more; if it still
+// fails, say what usually causes it.
+const isBrave = async () => { try { return !!(navigator.brave && await navigator.brave.isBrave()); } catch (e) { return false; } };
+async function subscribeWithRetry(reg, key) {
+  const once = () => reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+  try { return await once(); } catch (first) {
+    try { const old = await reg.pushManager.getSubscription(); if (old) await old.unsubscribe(); } catch (e) { /* none */ }
+    await new Promise(r => setTimeout(r, 1500));
+    try { return await once(); } catch (e) {
+      if (!/push service|Registration failed|AbortError/i.test(`${e.name} ${e.message}`)) throw e;
+      if (await isBrave()) throw new Error("Brave turns push off by default. Open brave://settings/privacy, turn on \"Use Google services for push messaging\", restart Brave, and try again.");
+      throw new Error("This browser couldn't reach its push service (" + (e.message || "push service error") + "). Try again in a minute; if it keeps failing, the network may be blocking it (some work firewalls and VPNs do), or try Chrome, Edge or Firefox. On a phone, try with Wi-Fi off.");
+    }
+  }
+}
+
 export async function enablePush(importantOnly = false) {
   const why = pushBlocker();
   if (why === "apple-install") throw new Error("On iPhone and iPad, add " + PN + " to the Home Screen first (Share button, then Add to Home Screen), open it from there, and turn this on again.");
@@ -60,7 +77,7 @@ export async function enablePush(importantOnly = false) {
     const have = new Uint8Array(sub.options.applicationServerKey), want = b64ToBytes(key);
     if (have.length !== want.length || have.some((v, i) => v !== want[i])) { await sub.unsubscribe(); sub = null; }
   }
-  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(key) });
+  if (!sub) sub = await subscribeWithRetry(reg, b64ToBytes(key));
   const r = await post("subscribe", { subscription: sub.toJSON(), importantOnly });
   remember(true);
   return { endpoint: sub.endpoint, devices: r.devices };

@@ -10,7 +10,7 @@ import { skyIcon } from "./Weather.jsx";
 import { Board } from "./CommandBoard.jsx";
 import { SpotTv } from "./Spot.jsx";
 import { Coins, CalendarClock } from "lucide-react";
-import { STATUS, dayLine } from "./scheduleShared.js";
+import { STATUS, STATUS_ORDER, dayLine } from "./scheduleShared.js";
 
 const INK = "#13233F", INK_SOFT = "#4B5565", LINE = "#DDE2EA", BRICK = "#C8102E", AMBER = "#B26A00", SAGE = "#2E7D4F", PAPER = "#F3F5F8";
 const ICONS = { schedule: CalendarClock, duty: Users, weather: CloudSun, oncall: Phone, classes: GraduationCap, calls: Radio, spot: Coins };
@@ -218,7 +218,7 @@ function ViewBody({ view, now }) {
   if (view === "schedule") {
     const list = d.list || [];
     if (!list.length) return <div style={{ ...big, color: INK_SOFT }}>No one is on today's schedule.</div>;
-    const groups = ["working", "later", "left_early", "done", "out"].map(k => [k, list.filter(e => e.status === k)]).filter(([, l]) => l.length);
+    const groups = STATUS_ORDER.map(k => [k, list.filter(e => e.status === k)]).filter(([, l]) => l.length);
     return (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: 16 }}>
         {groups.map(([k, l]) => (

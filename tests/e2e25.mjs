@@ -159,7 +159,7 @@ check("delete from the open conversation", !(await F.api("/api/messages?box=inbo
 // ---- Next-shift delivery gets a live notice when it arrives ---------------------------------------
 await C.page.evaluate(() => { window.__notes = []; });
 await A.post("/api/messages", { users: [cal], subject: "Shift brief", body: "Read before roll call" });
-psql(`UPDATE message_recipients SET deliver_at = now() + interval '3 seconds' WHERE user_id = '${cal}' AND thread_id = (SELECT id FROM message_threads WHERE subject = 'Shift brief')`);
+psql(`UPDATE message_recipients SET deliver_at = now() + interval '3 seconds', held = true WHERE user_id = '${cal}' AND thread_id = (SELECT id FROM message_threads WHERE subject = 'Shift brief')`);
 await C.page.waitForTimeout(500);
 const early = (await C.api("/api/messages/summary")).body.unread;
 await C.page.waitForTimeout(24_000);

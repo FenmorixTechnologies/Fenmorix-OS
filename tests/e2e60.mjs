@@ -127,6 +127,15 @@ r = await api("/api/schedule/save", { entries: [{ userId: pat, day: today, start
 const t = (await api("/api/schedule/today")).body;
 const patToday = t.list.find(e => e.userId === pat);
 check("today: leaving early shows", patToday && patToday.earlyAt === "00:01" && patToday.status === "left_early" && patToday.note === "dentist", JSON.stringify(t).slice(0, 300));
+// Stepping out and coming back (a doctor's appointment): away during the gap, working again after
+r = await api("/api/schedule/save", { entries: [{ userId: pat, day: today, start: "00:00", end: "23:59", earlyAt: "00:01", backAt: "23:58", note: "dr appt" },
+  { userId: sam, day: today, start: "00:00", end: "23:59", earlyAt: "00:01", backAt: "00:02" }] });
+const t2 = (await api("/api/schedule/today")).body;
+const pat2 = t2.list.find(e => e.userId === pat), sam2 = t2.list.find(e => e.userId === sam);
+check("stepping out: away until back, then working again", r.status === 200 && pat2?.status === "away" && pat2.backAt === "23:58" && sam2?.status === "working" && sam2.backAt === "00:02",
+  JSON.stringify([pat2, sam2]).slice(0, 300));
+check("back time has to fall inside the workday", (await api("/api/schedule/save", { entries: [{ userId: pat, day: today, start: "09:00", end: "17:00", earlyAt: "10:00", backAt: "18:00" }] })).status === 400
+  && (await api("/api/schedule/save", { entries: [{ userId: pat, day: today, start: "09:00", end: "17:00", backAt: "12:00" }] })).status === 400);
 r = await api("/api/schedule/copy", { from: wk, to: addDays(wk, 7) });
 check("copy the week to next week", r.status === 200 && r.body.copied >= 10 && Number(psql(`SELECT count(*) FROM work_schedule WHERE day >= '${addDays(wk, 7)}'`)) >= 10, JSON.stringify(r.body));
 check("bad times refused", (await api("/api/schedule/save", { entries: [{ userId: pat, day: today, start: "9am", end: "5pm" }] })).status === 400);
@@ -146,6 +155,13 @@ await cellBtn.click(); await page.waitForTimeout(400);
 await page.getByLabel("Starts").fill("10:00"); await page.getByLabel("Ends").fill("14:00");
 await page.getByRole("dialog").getByRole("button", { name: "Save" }).click(); await page.waitForTimeout(1200);
 check("set a day by clicking it", psql(`SELECT to_char(start_time, 'HH24:MI') || '-' || to_char(end_time, 'HH24:MI') FROM work_schedule WHERE user_id = '${sam}' AND day = '${addDays(wk, 5)}'`) === "10:00-14:00");
+await page.getByRole("button", { name: `Sam Counter, ${new Date(`${addDays(wk, 5)}T12:00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}: 10 am – 2 pm` }).click();
+await page.waitForTimeout(400);
+await page.getByRole("dialog").getByLabel(/Away part of the day/).check(); await page.getByLabel("Leaving at").fill("11:00");
+await page.getByRole("dialog").getByLabel("Coming back").check(); await page.getByLabel("Back at").fill("12:30");
+await page.getByRole("dialog").getByRole("button", { name: "Save" }).click(); await page.waitForTimeout(1200);
+check("editor: away 11:00 and back 12:30", psql(`SELECT to_char(early_at, 'HH24:MI') || '-' || to_char(back_at, 'HH24:MI') FROM work_schedule WHERE user_id = '${sam}' AND day = '${addDays(wk, 5)}'`) === "11:00-12:30");
+check("the week grid shows the time away", /out 11 am–12:30 pm/.test(await page.locator("main").innerText()));
 await page.screenshot({ path: "shot-schedule-week.png" });
 await nav("Today");
 check("Today page groups people", /Left early|Working now|Later today|Done for the day/.test(await page.locator("main").innerText()));

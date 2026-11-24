@@ -264,8 +264,8 @@ export async function send(user, b) {
     for (const [uid, from] of via) {
       const at = timing === "next_shift" ? nextShiftStart(byId.get(uid)?.pattern || "", now) : now;
       // toSelf: the sender's own row becomes an unread delivery
-      await c.query(`INSERT INTO message_recipients (thread_id, user_id, deliver_at, via) VALUES ($1, $2, $3, $4)
-        ON CONFLICT (thread_id, user_id) DO UPDATE SET read_at = NULL, seen_post = NULL, via = EXCLUDED.via`, [id, uid, at.toISOString(), from]);
+      await c.query(`INSERT INTO message_recipients (thread_id, user_id, deliver_at, via, held) VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (thread_id, user_id) DO UPDATE SET read_at = NULL, seen_post = NULL, via = EXCLUDED.via`, [id, uid, at.toISOString(), from, at > now]);
     }
     if (groupIds.length || everyone) {
       const { ROLE_LABEL } = await import("./collections.js");
@@ -321,7 +321,7 @@ async function redirectChat(user, otherId, body) {
     await pool.query("UPDATE message_recipients SET archived = false WHERE thread_id = $1", [existing]);
     await reply(user, existing, { body });
   } else {
-    messageId = (await send(user, { users: [otherId], subject, body })).id;
+    messageId = (await send(user, { users: [otherId], subject, body, kind: "message" })).id;
   }
   return { redirected: true, messageId, to: other?.full_name || "", status: s.status, label: s.label, awayMessage: s.message, until: s.until };
 }
@@ -361,7 +361,10 @@ export function startDeliveries() {
     const now = new Date();
     try {
       const due = (await pool.query(
-        `SELECT thread_id, user_id FROM message_recipients WHERE deliver_at > $1 AND deliver_at <= $2 AND read_at IS NULL`,
+        // Only rows held for later (next shift): ones sent "now" were already announced by send(), and announcing them
+        // again buzzed phones and popped up a second time
+        `SELECT r.thread_id, r.user_id FROM message_recipients r 
+          WHERE r.deliver_at > $1 AND r.deliver_at <= $2 AND r.read_at IS NULL AND r.held`,
         [lastDelivery.toISOString(), now.toISOString()])).rows;
       lastDelivery = now;
       const byThread = new Map();

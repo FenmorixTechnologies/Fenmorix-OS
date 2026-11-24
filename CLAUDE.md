@@ -1130,6 +1130,12 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   `offFor`; TV = only "everyone" entries, reasons hidden), POST save/copy. UI src/Schedule.jsx (week grid, Fill the week, Copy last week, Today +
   Leaving early), YourDay ScheduleWidget (id schedule), Display view "schedule"; helpers src/scheduleShared.js. Tests: e2e60.mjs via run-biz.sh (37).
 - Quick Links: "Copy password and open the site" + a note that websites can't be signed into from another site.
+- Work schedule stepping out (migration 055): `work_schedule.back_at`; earlyAt alone = leaving early, earlyAt + backAt = out for that stretch
+  (status `away` "Stepped out" between them, working again after; must fall inside the workday). scheduleShared `STATUS_ORDER`, `awayText`.
+- Messages fixes (11/2026, migration 056): `message_recipients.held` = row held for a later delivery (next shift); `startDeliveries()` only
+  announces held rows (it was announcing every unread "now" message a second time = double push/pop-up). A chat diverted while someone isn't
+  Available is sent with kind "message" (since 052 it had become a notice). pushClient `subscribeWithRetry`: "Registration failed - push service
+  error" = browser can't reach its push service; clears and retries once, then explains (Brave: brave://settings/privacy push messaging).
 - Behind Cloudflare (11/2026, Michael registered fenmorix.com on Cloudflare Pro; LGC to be reachable at lgc.fenmorix.com): server/clientip.js
   `clientIp` (TRUST_PROXY=cloudflare: CF-Connecting-IP only when the peer is loopback (cloudflared) or a Cloudflare range, net.BlockList) and
   `isLocalRequest` (loopback AND no cf-connecting-ip/cf-ray/x-forwarded-for/x-real-ip, so first-run never opens through a tunnel). auth.js,
