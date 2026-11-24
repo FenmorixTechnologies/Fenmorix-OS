@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.24.9",
+  "version": "2026.11.24.10",
   "notes": [
+    "Behind Cloudflare (TRUST_PROXY=cloudflare): sign-in limits, signed-in devices and the audit log use each visitor's real address; first-time setup can never be opened through a tunnel or proxy.",
     "Organization settings (User Management \u203a Organization): business or fire/EMS department, the words for where people work and radio call signs, divisions (add, rename, remove), pay periods (weekly, every two weeks, twice a month, monthly), payday, workday hours, and which shift rotations are offered.",
     "Work Schedule (with Time Clock): plan who works which days and hours ahead of time, fill a week for several people, copy last week, mark someone leaving early; 'Working today' on the home page and as a TV display view.",
     "Sick Leave: leave types can be renamed, turned off (e.g. FMLA) or added.",
