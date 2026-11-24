@@ -4,6 +4,7 @@
 // each person may see).
 import AppShell from "./AppShell.jsx";
 import { BRAND } from "./brand.js";
+import { moduleOn } from "./licensing.js";
 import { Folder, User, ShieldCheck, CalendarDays, Printer, Receipt, Crosshair } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { wrapStyle, cardStyle, inputStyle, btn, sectionTitle, StyleBlock, MainMenuButton, loadShared, saveStrict, ROLE_LABEL, Stamp, money, reqAmount, fmtDate, reimbTotal, printReimbursement, ReqQuickView } from "./App.jsx";
@@ -274,7 +275,7 @@ export default function PersonnelFileModule({ onBack, onOpenModule }) {
   const [certs, setCerts] = useState([]);
   const [canBrowse, setCanBrowse] = useState(false);
   const [personId, setPersonId] = useState(null);
-  const [tab, setTab] = useState("forms");
+  const [tab, setTab] = useState(moduleOn("forms") ? "forms" : "profile");
   const [view, setView] = useState(null);   // { kind: case|submission|task, id }
   const [taskFill, setTaskFill] = useState(null);
   const [search, setSearch] = useState("");
@@ -283,7 +284,7 @@ export default function PersonnelFileModule({ onBack, onOpenModule }) {
     (async () => {
       const [r, c, defs] = await Promise.all([
         loadShared("roster", []), loadShared("certifications", []),
-        formsApi("/definitions").catch(() => ({ definitions: [], myAccess: [] })),
+        moduleOn("forms") ? formsApi("/definitions").catch(() => ({ definitions: [], myAccess: [] })) : { definitions: [], myAccess: [] },
       ]);
       let id = null;
       try { const x = await window.storage.get("current-identity", false); id = x ? x.value : null; } catch (e) {}
@@ -311,14 +312,15 @@ export default function PersonnelFileModule({ onBack, onOpenModule }) {
   else if (view?.kind === "submission") detail = <SubmissionView id={view.id} me={me} roster={roster} onBack={() => setView(view.back || null)} onOpenCase={id => setView({ kind: "case", id })} />;
   else if (view?.kind === "task" && taskFill) detail = <FormFill def={taskFill.definition} me={me} roster={roster} context={taskFill.context} taskId={view.id} onCancel={() => setView(null)} onDone={r => setView(r.canViewCase ? { kind: "case", id: r.caseId } : { kind: "submission", id: r.id })} />;
 
+  // Tabs only for the modules this installation has
   const shellNav = [
-    { key: "forms", label: "Forms & cases", icon: Folder },
+    moduleOn("forms") && { key: "forms", label: "Forms & cases", icon: Folder },
     { key: "profile", label: "Profile", icon: User },
-    { key: "certs", label: `Certifications (${myCerts.length})`, icon: ShieldCheck },
-    { key: "leave", label: "Leave picks", icon: CalendarDays },
-    { key: "purchases", label: "Requisitions & reimbursements", icon: Receipt },
-    { key: "command", label: "Command boards", icon: Crosshair },
-  ];
+    moduleOn("gear") && { key: "certs", label: `Certifications (${myCerts.length})`, icon: ShieldCheck },
+    moduleOn("leave") && { key: "leave", label: "Leave picks", icon: CalendarDays },
+    (moduleOn("procurement") || moduleOn("reimbursements")) && { key: "purchases", label: "Requisitions & reimbursements", icon: Receipt },
+    moduleOn("command") && { key: "command", label: "Command boards", icon: Crosshair },
+  ].filter(Boolean);
   const shellGo = k => { setTab(k); setView(null); };
 
   return (

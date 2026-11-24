@@ -15,6 +15,7 @@ import AccountsPanel, { SignDivisionsPicker } from "./AccountsPanel.jsx";
 import { useListView, ListControls, Pager } from "./ListControls.jsx";
 import { formsApi } from "./Forms.jsx";
 import { PN } from "./brand.js";
+import { moduleOn } from "./licensing.js";
 
 const PERMISSIONS = [
   ["timeView", "View time punches", "See (not change) other people's Time Tracker hours — for supervisors."],
@@ -231,6 +232,7 @@ export default function UserManagementModule({ onBack }) {
   const [forms, setForms] = useState([]);
   const [formAccess, setFormAccess] = useState([]);
   useEffect(() => {
+    if (!moduleOn("forms")) return;   // no Forms module here: no form access to show
     formsApi("/definitions").then(r => setForms(r.definitions.filter(d => d.active).sort((a, b) => a.title.localeCompare(b.title))), () => {});
     formsApi("/access").then(r => setFormAccess(r.access), () => {});
   }, []);

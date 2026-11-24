@@ -51,7 +51,8 @@ function standIn(file, code, why) {
     if (/^handle[A-Z]/.test(n)) lines.push(`export async function ${n}() { throw Object.assign(new Error("That isn't part of this installation."), { status: 404 }); }`);
     else if (/^[A-Z][A-Z0-9_]+$/.test(n)) lines.push(`export const ${n} = [];`);
     else if (/^[A-Z]/.test(n)) lines.push(server ? `export const ${n} = [];` : `export const ${n} = () => null;`);
-    else lines.push(server ? `export async function ${n}() { return null; }` : `export function ${n}() { return null; }`);
+    // Client helpers are mostly API calls (.then / await): a rejected promise lands in the caller's error path instead of crashing the page
+    else lines.push(server ? `export async function ${n}() { return null; }` : `export function ${n}() { return Promise.reject(Object.assign(new Error("That isn't part of this installation."), { status: 404 })); }`);
   }
   if (def) lines.push(server ? "export default async function () { return null; }" : "export default function NotIncluded() { return null; }");
   return head + lines.join("\n") + "\n";

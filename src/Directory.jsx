@@ -448,7 +448,14 @@ export default function DirectoryModule({ onBack, initialView }) {
   else if (view === "verify") title = "Directory check";
   else if (view === "aladtec") title = "Aladtec setup";
 
-  const shellNav = [
+  // St. George's Nexus and the fire-department sandbox keep the full fire-service directory; other installs get the simple one
+  // (My card, Everyone, Outside contacts). Michael, 11/2026.
+  const fireDirectory = BRAND.product === "nexus" || BRAND.sandbox;
+  const shellNav = !fireDirectory ? [
+    { key: "mine", label: "My card", icon: User, badge: needsConfirm ? 1 : 0 },
+    { key: "all", label: "Everyone", icon: Users },
+    { key: "outside", label: "Outside contacts", icon: BookOpen },
+  ] : [
     { key: "mine", label: "My card", icon: User, badge: needsConfirm ? 1 : 0 },
     ...(favPeople.length + favPlaces.length ? [{ key: "favorites", label: "Favorites", icon: Star }] : []),
     { key: "all", label: "Everyone", icon: Users, group: "People" },

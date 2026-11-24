@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.24.6",
+  "version": "2026.11.24.7",
   "notes": [
+    "Fix: User Management and Personnel File no longer go blank on installs without the Forms module; Personnel File only shows tabs for the modules installed.",
     "Sandbox: System \u203a Demo modules switches any module on or off (add-ons included) for a demo; the sandbox download now carries every module.",
     "Linux installer: --local tries a customer's system on one computer (Ubuntu on Windows): https://localhost with its own certificate, no web address needed.",
     "Retail modules (only when a license names them; never on St. George's install): Live Spot Prices (ticker on every page, today/week/month charts, Your Day card, showroom TV view) and Quick Links (team websites; shared logins encrypted and shown only to chosen people, every view logged; personal logins only their owner can see).",
