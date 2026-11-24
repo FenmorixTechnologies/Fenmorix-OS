@@ -1,0 +1,7 @@
+[Unit]
+Description=Nexus updater (install / restart / rollback / backup)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/nexus/tools/updater/apply-update.sh
+TimeoutStartSec=1800

@@ -1,0 +1,1355 @@
+Emp ID,Member Name,Training Date,Hrs,Training Type,Course Title,Location,Delivery Method
+SG1003,Mark Comeaux,2026-01-02,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-01-02,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-01-02,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-02,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-01-02,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-01-02,2,EMS CE,Airway,HQ,In-House
+SG1027,Robert Comeaux A,2026-01-02,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-01-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-02,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-01-05,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-05,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-05,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-01-05,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-05,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-01-05,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-01-05,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-01-05,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-05,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-01-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-05,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-05,2,EMS CE,Airway,HQ,In-House
+SG1003,Mark Comeaux,2026-01-08,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-01-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-08,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-01-08,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-01-08,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-01-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-01-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1030,Linda Hebert D,2026-01-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-01-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-08,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-08,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-01-11,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-01-11,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-01-11,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-11,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1021,James Thibodeaux U,2026-01-11,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-01-11,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-01-11,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-11,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-01-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-11,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-11,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1003,Mark Comeaux,2026-01-14,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-01-14,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-14,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-01-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-01-14,2,Online CE,Target Solutions module,Online,Online
+SG1030,Linda Hebert D,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-01-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-14,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-01-17,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-01-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-17,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-01-17,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1018,Laura Hebert R,2026-01-17,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-01-17,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-01-17,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1027,Robert Comeaux A,2026-01-17,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-17,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-01-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-17,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-01-17,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-20,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-01-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-01-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-20,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-20,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1003,Mark Comeaux,2026-01-23,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-23,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-01-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-23,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-01-23,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-23,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-01-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-01-23,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-01-23,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-01-23,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-01-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-01-23,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-01-26,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-26,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-01-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-01-26,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-01-26,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-01-26,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-01-26,2,EMS CE,Airway,HQ,In-House
+SG1027,Robert Comeaux A,2026-01-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-01-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-01-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-26,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-26,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-01-29,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-01-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-01-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-01-29,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-01-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-01-29,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-01-29,2,EMS CE,Airway,HQ,In-House
+SG1024,Mary Richard X,2026-01-29,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-01-29,2,Online CE,Target Solutions module,Online,Online
+SG1030,Linda Hebert D,2026-01-29,2,EMS CE,Airway,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-01-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-01-29,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-01-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-02-01,2,EMS CE,Airway,HQ,In-House
+SG1006,Donna Hebert,2026-02-01,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1009,Steven Thibodeaux,2026-02-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-02-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-01,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-01,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1030,Linda Hebert D,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-02-01,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-01,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-02-04,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-02-04,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-02-04,2,EMS CE,Airway,HQ,In-House
+SG1012,Carol Richard,2026-02-04,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-02-04,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-04,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-02-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-04,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-02-04,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-04,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-02-04,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-02-04,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-04,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1003,Mark Comeaux,2026-02-07,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-02-07,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-02-07,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-02-07,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-02-07,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-02-07,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-02-07,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-07,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1027,Robert Comeaux A,2026-02-07,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-07,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-02-07,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-02-07,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-07,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-02-10,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-02-10,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-02-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-02-10,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-02-10,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-10,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-02-10,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-02-10,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-02-10,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-10,2,EMS CE,Airway,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-02-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-10,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-10,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-02-13,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-02-13,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-02-13,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-02-13,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-13,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-02-13,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-13,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-02-13,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-02-16,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-02-16,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-02-16,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-02-16,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-02-16,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-16,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-02-16,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-16,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-16,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-16,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-02-16,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-16,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-02-16,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-02-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-19,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-02-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-02-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-19,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-19,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-02-22,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-02-22,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-02-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-02-22,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-02-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-02-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-02-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-22,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-02-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-02-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-22,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-22,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-02-25,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-02-25,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-02-25,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1018,Laura Hebert R,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-02-25,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-02-25,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-02-25,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-02-25,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-25,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-02-28,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-02-28,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-02-28,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-02-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-02-28,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-02-28,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-02-28,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-02-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1027,Robert Comeaux A,2026-02-28,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-02-28,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-02-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1036,Sarah Richard J,2026-02-28,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-02-28,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-03,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-03,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-03,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1018,Laura Hebert R,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-03,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-03-03,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1027,Robert Comeaux A,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-03,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-03,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-06,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-03-06,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-06,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-06,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-03-06,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-03-06,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-03-06,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-03-06,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-03-06,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-06,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-06,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-03-06,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-03-06,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-09,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-09,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-03-09,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1027,Robert Comeaux A,2026-03-09,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-09,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-03-09,2,EMS CE,Airway,HQ,In-House
+SG1036,Sarah Richard J,2026-03-09,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-09,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-03-12,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-03-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-03-12,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-12,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-12,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-03-12,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-03-12,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-03-12,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-03-12,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-03-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-03-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-03-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-15,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-15,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-15,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-15,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-15,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1036,Sarah Richard J,2026-03-15,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-15,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-18,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-03-18,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-18,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-03-18,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-18,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-03-18,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-18,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-21,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-03-21,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-03-21,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-03-21,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-21,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-03-21,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1021,James Thibodeaux U,2026-03-21,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-03-21,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-03-21,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-03-21,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-21,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-03-21,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-21,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-03-24,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1006,Donna Hebert,2026-03-24,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-03-24,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-03-24,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-24,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-03-24,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-24,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1024,Mary Richard X,2026-03-24,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-03-24,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-24,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-03-24,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-03-24,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-24,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-27,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-27,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-27,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1018,Laura Hebert R,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-27,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-03-27,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-27,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-27,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-03-30,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-03-30,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-03-30,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1018,Laura Hebert R,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-03-30,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-03-30,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1027,Robert Comeaux A,2026-03-30,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-03-30,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-30,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-02,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-04-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1024,Mary Richard X,2026-04-02,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-02,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-04-02,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-04-02,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-05,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-04-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-05,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-04-05,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1018,Laura Hebert R,2026-04-05,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-05,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-04-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-04-05,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-08,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-04-08,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-04-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-08,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-08,2,EMS CE,Airway,HQ,In-House
+SG1018,Laura Hebert R,2026-04-08,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-04-08,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-08,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-04-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-04-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-08,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-04-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1003,Mark Comeaux,2026-04-11,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-11,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-04-11,2,EMS CE,Airway,HQ,In-House
+SG1012,Carol Richard,2026-04-11,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-04-11,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-04-11,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-04-11,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-04-11,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-11,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-04-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-04-11,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-14,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-14,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-04-14,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1012,Carol Richard,2026-04-14,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-14,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-14,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-14,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-04-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-14,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-04-14,2,EMS CE,Airway,HQ,In-House
+SG1036,Sarah Richard J,2026-04-14,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-04-14,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1003,Mark Comeaux,2026-04-17,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-04-17,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-04-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-17,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-04-17,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-17,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-04-17,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-04-17,2,EMS CE,Airway,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-04-17,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-04-17,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-04-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-20,2,EMS CE,Airway,HQ,In-House
+SG1009,Steven Thibodeaux,2026-04-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-20,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-20,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-04-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-04-20,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-23,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-23,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-04-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-23,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-04-23,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-04-23,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-04-23,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-23,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-04-23,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-04-23,2,EMS CE,Airway,HQ,In-House
+SG1039,David Comeaux M,2026-04-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-04-26,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-04-26,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-04-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-04-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-04-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-04-26,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-04-26,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-04-26,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-04-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-26,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-04-29,2,EMS CE,Airway,HQ,In-House
+SG1006,Donna Hebert,2026-04-29,2,EMS CE,Airway,HQ,In-House
+SG1009,Steven Thibodeaux,2026-04-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-04-29,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-04-29,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-04-29,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-04-29,2,EMS CE,Airway,HQ,In-House
+SG1024,Mary Richard X,2026-04-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-04-29,2,Online CE,Target Solutions module,Online,Online
+SG1030,Linda Hebert D,2026-04-29,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-04-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-04-29,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-04-29,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-02,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-05-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-02,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-05-02,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-02,2,EMS CE,Airway,HQ,In-House
+SG1024,Mary Richard X,2026-05-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-05-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-05-02,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-02,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-05-02,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-05,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1018,Laura Hebert R,2026-05-05,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-05-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-05,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-05,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-05-05,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-05-05,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-08,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-05-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-08,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-08,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-08,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-11,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-11,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-05-11,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1018,Laura Hebert R,2026-05-11,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-11,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-11,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-05-11,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-05-11,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-05-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-05-14,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-14,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-05-14,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-05-14,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-05-14,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-05-14,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-14,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-14,2,EMS CE,Airway,HQ,In-House
+SG1039,David Comeaux M,2026-05-14,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1003,Mark Comeaux,2026-05-17,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-05-17,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-05-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-17,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-05-17,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-05-17,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-17,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-17,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-05-17,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-05-17,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-17,2,EMS CE,Airway,HQ,In-House
+SG1003,Mark Comeaux,2026-05-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-05-20,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-05-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-20,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-20,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-05-20,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-05-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-05-20,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-20,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-20,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-05-20,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-20,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-05-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-23,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-23,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-05-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-05-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-05-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-26,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1030,Linda Hebert D,2026-05-26,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-05-26,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1036,Sarah Richard J,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-26,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-05-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-05-29,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-05-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-05-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-05-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-05-29,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-05-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-05-29,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-01,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-06-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-01,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1015,Kevin Comeaux O,2026-06-01,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-01,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-01,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-04,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-06-04,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-06-04,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-06-04,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-07,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-06-07,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-06-07,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-07,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-06-07,2,EMS CE,Airway,HQ,In-House
+SG1027,Robert Comeaux A,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-07,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-06-07,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-06-07,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-10,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-10,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-06-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-10,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-06-10,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-10,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1021,James Thibodeaux U,2026-06-10,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-06-10,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-10,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-06-10,2,EMS CE,Airway,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-06-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-06-10,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-10,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-13,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-13,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-13,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1012,Carol Richard,2026-06-13,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-06-13,2,EMS CE,Airway,HQ,In-House
+SG1018,Laura Hebert R,2026-06-13,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-06-13,2,EMS CE,Airway,HQ,In-House
+SG1024,Mary Richard X,2026-06-13,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-06-13,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-06-13,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-13,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-06-13,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-13,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1003,Mark Comeaux,2026-06-16,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1006,Donna Hebert,2026-06-16,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-06-16,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1012,Carol Richard,2026-06-16,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-06-16,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-16,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-16,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-06-16,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-16,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-06-16,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-06-16,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-06-16,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-16,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-19,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-19,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-19,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-06-19,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-06-19,2,EMS CE,Airway,HQ,In-House
+SG1039,David Comeaux M,2026-06-19,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-06-22,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-06-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-06-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-06-22,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-06-22,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1030,Linda Hebert D,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-22,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-25,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-25,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-06-25,2,EMS CE,Airway,HQ,In-House
+SG1018,Laura Hebert R,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-06-25,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-06-25,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-06-25,2,EMS CE,Airway,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-06-25,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-06-25,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-06-28,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-06-28,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-06-28,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-06-28,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-06-28,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1018,Laura Hebert R,2026-06-28,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1021,James Thibodeaux U,2026-06-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-06-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1027,Robert Comeaux A,2026-06-28,2,EMS CE,Airway,HQ,In-House
+SG1030,Linda Hebert D,2026-06-28,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-06-28,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-06-28,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-06-28,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-01,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-01,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-07-01,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-07-01,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-07-01,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-01,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-07-01,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-07-01,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-07-01,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-01,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-01,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-01,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-01,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-04,2,EMS CE,Airway,HQ,In-House
+SG1006,Donna Hebert,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-07-04,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-04,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-07-04,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-04,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-04,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-07,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-07-07,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-07,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-07,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-07-07,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-07,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-07-07,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-10,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-07-10,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-07-10,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1015,Kevin Comeaux O,2026-07-10,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-07-10,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-10,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-10,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-07-10,2,EMS CE,Airway,HQ,In-House
+SG1030,Linda Hebert D,2026-07-10,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-10,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-07-10,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-10,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-07-13,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-07-13,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-13,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-07-13,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-13,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-07-13,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1021,James Thibodeaux U,2026-07-13,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-13,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-07-13,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-13,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-13,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-07-13,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-07-13,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-16,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-07-16,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-16,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-07-16,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-16,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-07-16,2,EMS CE,Airway,HQ,In-House
+SG1036,Sarah Richard J,2026-07-16,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1039,David Comeaux M,2026-07-16,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-19,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-07-19,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-07-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-19,2,EMS CE,Airway,HQ,In-House
+SG1027,Robert Comeaux A,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-19,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-19,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-19,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-07-22,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-22,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-22,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-07-22,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-22,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1024,Mary Richard X,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-22,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-22,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-07-22,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-25,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1009,Steven Thibodeaux,2026-07-25,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-25,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-07-25,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1027,Robert Comeaux A,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-25,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-07-25,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-25,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-07-28,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1012,Carol Richard,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-07-28,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-28,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-28,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-07-28,2,EMS CE,Airway,HQ,In-House
+SG1030,Linda Hebert D,2026-07-28,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-07-28,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-28,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-07-31,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-07-31,2,EMS CE,Airway,HQ,In-House
+SG1009,Steven Thibodeaux,2026-07-31,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-07-31,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-07-31,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-07-31,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-07-31,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-07-31,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1027,Robert Comeaux A,2026-07-31,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-07-31,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-07-31,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-07-31,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-07-31,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-08-03,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-08-03,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-03,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-03,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-08-03,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-03,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-03,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-08-06,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-08-06,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-06,2,EMS CE,Airway,HQ,In-House
+SG1024,Mary Richard X,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-06,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1030,Linda Hebert D,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-06,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-06,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-09,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-08-09,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-08-09,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1012,Carol Richard,2026-08-09,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-08-09,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-09,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-09,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-08-09,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-08-09,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-08-09,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-09,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-09,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-08-09,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1003,Mark Comeaux,2026-08-12,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1006,Donna Hebert,2026-08-12,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-08-12,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-08-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-08-12,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1018,Laura Hebert R,2026-08-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-08-12,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-08-12,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-12,2,EMS CE,Airway,HQ,In-House
+SG1030,Linda Hebert D,2026-08-12,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-12,2,Online CE,Target Solutions module,Online,Online
+SG1036,Sarah Richard J,2026-08-12,2,EMS CE,Airway,HQ,In-House
+SG1039,David Comeaux M,2026-08-12,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-15,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1006,Donna Hebert,2026-08-15,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-08-15,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-08-15,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-08-15,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-15,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-08-15,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-08-15,2,EMS CE,Airway,HQ,In-House
+SG1027,Robert Comeaux A,2026-08-15,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-15,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-15,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-15,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-15,2,Officer Development,Fireground leadership,HQ,In-House
+SG1003,Mark Comeaux,2026-08-18,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-08-18,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-08-18,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-08-18,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-08-18,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1018,Laura Hebert R,2026-08-18,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-18,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-08-18,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-18,2,Online CE,Target Solutions module,Online,Online
+SG1030,Linda Hebert D,2026-08-18,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-08-18,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-18,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-08-18,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-21,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-08-21,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-08-21,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-21,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-08-21,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1027,Robert Comeaux A,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-21,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-08-21,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-21,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-24,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1006,Donna Hebert,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-08-24,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-08-24,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-08-24,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-08-24,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-24,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-24,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-24,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-08-27,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-08-27,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-08-27,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1018,Laura Hebert R,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-08-27,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-27,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-08-27,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-27,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-08-30,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-08-30,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1012,Carol Richard,2026-08-30,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-08-30,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-08-30,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-08-30,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-08-30,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-02,2,Online CE,Target Solutions module,Online,Online
+SG1006,Donna Hebert,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-09-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-02,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-09-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-09-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-09-02,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-05,2,EMS CE,Airway,HQ,In-House
+SG1006,Donna Hebert,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-05,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-09-05,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-09-05,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-08,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1012,Carol Richard,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1036,Sarah Richard J,2026-09-08,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-09-08,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-09-11,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-11,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1012,Carol Richard,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-09-11,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-09-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1030,Linda Hebert D,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-11,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-09-11,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-09-14,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-09-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1012,Carol Richard,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-14,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-09-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-14,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1036,Sarah Richard J,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-09-14,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-09-17,2,EMS CE,Airway,HQ,In-House
+SG1015,Kevin Comeaux O,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-09-17,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-09-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-09-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-20,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-09-20,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-09-20,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-09-23,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-09-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-23,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-09-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-09-23,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1036,Sarah Richard J,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-09-23,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-26,2,EMS CE,Airway,HQ,In-House
+SG1006,Donna Hebert,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-09-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1012,Carol Richard,2026-09-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-09-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-26,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1024,Mary Richard X,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-09-26,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1039,David Comeaux M,2026-09-26,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-09-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-09-29,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1009,Steven Thibodeaux,2026-09-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-09-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-09-29,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-09-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-09-29,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-09-29,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-10-02,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-10-02,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-10-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1012,Carol Richard,2026-10-02,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-10-02,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-10-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-10-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-10-02,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-02,2,Officer Development,Fireground leadership,HQ,In-House
+SG1033,Michael Thibodeaux G,2026-10-02,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-02,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1039,David Comeaux M,2026-10-02,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-05,2,Officer Development,Fireground leadership,HQ,In-House
+SG1006,Donna Hebert,2026-10-05,2,Online CE,Target Solutions module,Online,Online
+SG1009,Steven Thibodeaux,2026-10-05,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-05,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-10-05,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1018,Laura Hebert R,2026-10-05,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1021,James Thibodeaux U,2026-10-05,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1024,Mary Richard X,2026-10-05,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1027,Robert Comeaux A,2026-10-05,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-05,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-05,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-10-05,2,Officer Development,Fireground leadership,HQ,In-House
+SG1039,David Comeaux M,2026-10-05,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-08,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-10-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-10-08,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-10-08,2,Online CE,Target Solutions module,Online,Online
+SG1015,Kevin Comeaux O,2026-10-08,2,Online CE,Target Solutions module,Online,Online
+SG1018,Laura Hebert R,2026-10-08,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-10-08,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-10-08,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-10-08,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-08,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-08,2,Officer Development,Fireground leadership,HQ,In-House
+SG1036,Sarah Richard J,2026-10-08,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1039,David Comeaux M,2026-10-08,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-11,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-10-11,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-10-11,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1012,Carol Richard,2026-10-11,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1015,Kevin Comeaux O,2026-10-11,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-11,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1021,James Thibodeaux U,2026-10-11,2,Online CE,Target Solutions module,Online,Online
+SG1024,Mary Richard X,2026-10-11,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-10-11,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-11,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-11,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-11,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1039,David Comeaux M,2026-10-11,2,EMS CE,Airway,HQ,In-House
+SG1003,Mark Comeaux,2026-10-14,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-10-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-14,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-10-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-10-14,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1030,Linda Hebert D,2026-10-14,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-14,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-10-14,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-17,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-10-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1021,James Thibodeaux U,2026-10-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-10-17,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-17,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-17,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-10-17,2,Online CE,Target Solutions module,Online,Online
+SG1003,Mark Comeaux,2026-10-20,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1006,Donna Hebert,2026-10-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-10-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-20,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-10-20,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-20,2,EMS CE,Airway,HQ,In-House
+SG1021,James Thibodeaux U,2026-10-20,2,Officer Development,Fireground leadership,HQ,In-House
+SG1024,Mary Richard X,2026-10-20,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-10-20,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-20,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1033,Michael Thibodeaux G,2026-10-20,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-20,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1039,David Comeaux M,2026-10-20,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-23,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1006,Donna Hebert,2026-10-23,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1009,Steven Thibodeaux,2026-10-23,2,Online CE,Target Solutions module,Online,Online
+SG1012,Carol Richard,2026-10-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1015,Kevin Comeaux O,2026-10-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-10-23,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-10-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-10-23,2,Officer Development,Fireground leadership,HQ,In-House
+SG1027,Robert Comeaux A,2026-10-23,5,Company Drill,Hose operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-23,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-23,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-23,2,Online CE,Target Solutions module,Online,Online
+SG1039,David Comeaux M,2026-10-23,2:30,Company Drill,Ventilation,Training Ground,In-House
+SG1003,Mark Comeaux,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-10-26,2,Officer Development,Fireground leadership,HQ,In-House
+SG1009,Steven Thibodeaux,2026-10-26,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1015,Kevin Comeaux O,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1018,Laura Hebert R,2026-10-26,2,Online CE,Target Solutions module,Online,Online
+SG1021,James Thibodeaux U,2026-10-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1024,Mary Richard X,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1027,Robert Comeaux A,2026-10-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-26,2,Online CE,Target Solutions module,Online,Online
+SG1033,Michael Thibodeaux G,2026-10-26,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1036,Sarah Richard J,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-10-26,5,Company Drill,Hose operations,Station,In-House
+SG1003,Mark Comeaux,2026-10-29,5,Company Drill,Hose operations,Station,In-House
+SG1006,Donna Hebert,2026-10-29,5,Company Drill,Hose operations,Station,In-House
+SG1009,Steven Thibodeaux,2026-10-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1012,Carol Richard,2026-10-29,8,LSU FETI,Structural fire tactics,LSU,Outside
+SG1015,Kevin Comeaux O,2026-10-29,2,Officer Development,Fireground leadership,HQ,In-House
+SG1018,Laura Hebert R,2026-10-29,5,Company Drill,Hose operations,Station,In-House
+SG1021,James Thibodeaux U,2026-10-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1024,Mary Richard X,2026-10-29,2,Online CE,Target Solutions module,Online,Online
+SG1027,Robert Comeaux A,2026-10-29,2,Driver/Operator Pump Ops,Pump operations,Station,In-House
+SG1030,Linda Hebert D,2026-10-29,5,Company Drill,Hose operations,Station,In-House
+SG1033,Michael Thibodeaux G,2026-10-29,5,Company Drill,Hose operations,Training Ground - Burn Building,In-House
+SG1036,Sarah Richard J,2026-10-29,1.5,HazMat Ops Refresher,Product ID,HQ,In-House
+SG1039,David Comeaux M,2026-10-29,5,Company Drill,Hose operations,Station,In-House
+SG1039,David Comeaux M,2026-03-01,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-03,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-05,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-07,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-09,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-11,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-13,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-15,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-17,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-03-19,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-01,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-03,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-05,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-07,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-09,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-11,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-13,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-15,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-17,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-04-19,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-01,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-03,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-05,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-07,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-09,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-11,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-13,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-15,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-17,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-05-19,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-01,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-03,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-05,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-07,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-09,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-11,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-13,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-15,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-17,6,Recruit Academy,FF I,Training Ground,In-House
+SG1039,David Comeaux M,2026-06-19,6,Recruit Academy,FF I,Training Ground,In-House
+SG9999,Visiting Person,2026-04-04,3,Company Drill,Joint drill,Station,In-House

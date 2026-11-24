@@ -1,0 +1,63 @@
+[
+ {
+  "incident_id": "c1",
+  "incident_number": "2026-1001",
+  "call_type": "STRUCTURE FIRE",
+  "priority": 1,
+  "address": "100 Sample St",
+  "city": "Sampleville",
+  "agency": "St George FD",
+  "units": "EG613:On scene, LD618:Enroute",
+  "received_at": "2026-11-24T06:34:29"
+ },
+ {
+  "incident_id": "c2",
+  "incident_number": "2026-1002",
+  "call_type": "BRUSH FIRE",
+  "priority": 3,
+  "address": "200 Example Rd",
+  "agency": "St George FD",
+  "units": "EG633",
+  "received_at": "2026-11-24T06:34:29"
+ },
+ {
+  "incident_id": "c3",
+  "incident_number": "2026-1003",
+  "call_type": "MEDICAL",
+  "priority": 1,
+  "address": "300 Test Ave",
+  "agency": "Zachary FD",
+  "units": "MD687",
+  "received_at": "2026-11-24T06:34:59"
+ },
+ {
+  "incident_id": "old",
+  "incident_number": "2026-0900",
+  "call_type": "STRUCTURE FIRE",
+  "priority": 1,
+  "address": "9 Old Rd",
+  "agency": "St George FD",
+  "units": "EG613",
+  "received_at": "2026-11-24T03:35:29"
+ },
+ {
+  "incident_id": "c4",
+  "incident_number": "2026-1004",
+  "call_type": "MVA",
+  "priority": 2,
+  "address": "400 Road",
+  "agency": "St George FD",
+  "units": "LD611",
+  "received_at": "2026-11-24T06:35:15"
+ },
+ {
+  "incident_id": "c5",
+  "incident_number": "2026-1005",
+  "call_type": "VEHICLE FIRE",
+  "priority": 2,
+  "address": "500 Lane",
+  "agency": "Zachary FD",
+  "units": "",
+  "received_at": "2026-11-24T06:35:35"
+ }
+]

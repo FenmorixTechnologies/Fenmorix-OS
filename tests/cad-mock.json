@@ -1,0 +1,66 @@
+[
+ {
+  "INCIDENT_ID": 501,
+  "incident_number": "2026-004512",
+  "call_type": "STRUCTURE FIRE",
+  "priority": 1,
+  "address": "14100 AIRLINE HWY",
+  "city": "Baton Rouge",
+  "cross_streets": "Pecue Ln / Siegen Ln",
+  "latitude": 30.37,
+  "longitude": -91.03,
+  "status": "ON SCENE",
+  "units": "E61, L61, BC1",
+  "received_at": "2026-11-20T09:22:34",
+  "closed_at": null
+ },
+ {
+  "incident_id": 502,
+  "incident_number": "2026-004513",
+  "call_type": "MEDICAL",
+  "priority": "2",
+  "address": "5000 Jones Creek Rd",
+  "units": "MD687:Patient contact, EG613:On scene, LD618:Enroute",
+  "received_at": "2026-11-20T09:32:34",
+  "latitude": 30383119,
+  "longitude": 91021720,
+  "agency": "St George FD"
+ },
+ {
+  "incident_id": 499,
+  "call_type": "ALARM",
+  "address": "Closed call",
+  "closed_at": "2026-10-29T09:00:00"
+ },
+ {
+  "incident_id": 503,
+  "call_type": "Call",
+  "units": "",
+  "received_at": "2026-11-20T09:52:34"
+ },
+ {
+  "incident_id": 504,
+  "call_type": "Call",
+  "address": "14600 SCENIC",
+  "units": "",
+  "old_pending": true,
+  "time_received": "2026-11-20T05:22:34"
+ },
+ {
+  "incident_id": 505,
+  "call_type": "STRUCTURE FIRE",
+  "address": "1 LONG INCIDENT RD",
+  "units": "EG613:On scene",
+  "long_running": true,
+  "time_received": "2026-11-19T04:22:34"
+ },
+ {
+  "incident_id": 506,
+  "incident_number": "2026-004514",
+  "call_type": "MEDICAL",
+  "address": "5000 JONES CREEK RD.",
+  "units": "EG653:Enroute",
+  "twin": true,
+  "time_received": "2026-11-20T09:34:34"
+ }
+]

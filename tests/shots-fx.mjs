@@ -1,0 +1,14 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+const B = "http://localhost:3077", PW = "Correct horse battery";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome" });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+const p = await ctx.newPage();
+await p.goto(B); await p.waitForTimeout(3500); await p.screenshot({ path: "fx-signin.png" });
+await p.getByLabel(/^Email/).fill("sandy@sandbox.example"); await p.getByLabel(/^Password/).fill(PW);
+await p.getByRole("button", { name: "Sign in" }).click(); await p.waitForTimeout(3000);
+await p.screenshot({ path: "fx-home.png" });
+await p.locator("nav button", { hasText: "Requisitions" }).first().click(); await p.waitForTimeout(1500);
+await p.screenshot({ path: "fx-procurement.png" });
+const m = await browser.newContext({ viewport: { width: 390, height: 844 } }); const q = await m.newPage();
+await q.goto(B); await q.waitForTimeout(3000); await q.screenshot({ path: "fx-phone-signin.png" });
+await browser.close();

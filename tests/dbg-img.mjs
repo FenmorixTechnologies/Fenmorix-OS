@@ -1,0 +1,16 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome" });
+const p = await (await b.newContext()).newPage();
+p.on("console", m => console.log("console", m.type(), m.text()));
+p.on("requestfailed", r => console.log("failed", r.url(), r.failure()?.errorText));
+p.on("response", r => { if (/images/.test(r.url())) console.log("resp", r.status(), r.url(), r.headers()["content-type"]); });
+await p.goto("http://localhost:3077"); await p.waitForTimeout(800);
+await p.getByLabel(/^Email/).fill("mike@sgfd.org"); await p.getByLabel(/^Password/).fill("Correct horse battery");
+await p.getByRole("button", { name: "Sign in" }).click(); await p.waitForTimeout(1500);
+await p.getByRole("button", { name: "Evaluations", exact: true }).first().click(); await p.waitForTimeout(800);
+await p.getByRole("button", { name: "Scenarios", exact: true }).first().click(); await p.waitForTimeout(800);
+await p.getByRole("button", { name: /Edit Size-Up/ }).click(); await p.waitForTimeout(2000);
+console.log(await p.locator('svg[aria-label="Scene map"] image').evaluate(e => e.outerHTML + " " + JSON.stringify(e.getBBox())));
+console.log(await p.evaluate(async () => { const src = document.querySelector('svg[aria-label="Scene map"] image').getAttribute("href"); const r = await fetch(src); const buf = new Uint8Array(await r.arrayBuffer()); const im = new Image(); im.src = src; await new Promise(res => { im.onload = res; im.onerror = res; }); return buf.length + " " + buf[0] + "," + buf[1] + " nat " + im.naturalWidth; }));
+await p.locator('svg[aria-label="Scene map"]').screenshot({ path: "/tmp/claude-0/-home-claude/936fcc05-20e3-5129-8bb4-925077c41c5a/scratchpad/dbg-map.png" });
+await b.close();

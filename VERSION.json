@@ -1,0 +1,15 @@
+{
+  "version": "2026.11.24.5",
+  "notes": [
+    "Retail modules (only when a license names them; never on St. George's install): Live Spot Prices (ticker on every page, today/week/month charts, Your Day card, showroom TV view) and Quick Links (team websites; shared logins encrypted and shown only to chosen people, every view logged; personal logins only their owner can see).",
+    "Database update 053 (spot price history, Quick Links).",
+    "Business installs don't show the Fire / Comms shift chips.",
+    "New customer setup: a customer kit from the License Manager installs a server already named, licensed and branded (Linux installer --kit), and the customer's first admin gets a short setup wizard (name, logo, colors, menu names).",
+    "Branding page (User Management \u203a System, Fenmorix OS installs only): organization name, logo (the app icon, browser tab icon and watermark are made from it), colors with a live preview, and menu names. Saved outside the app folder so updates keep it.",
+    "Wording: page text and messages use the product's own name (St. George still reads Nexus).",
+    "Fenmorix Technologies' license signing key is built in, so signed customer licenses work on real servers.",
+    "Fix: installs in a folder whose name has a space.",
+    "Backups also keep the branding and license folders.",
+    "St. George (SGFD Nexus): no visible changes."
+  ]
+}

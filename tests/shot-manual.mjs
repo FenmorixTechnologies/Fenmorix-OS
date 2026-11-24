@@ -1,0 +1,13 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome" });
+const page = await (await browser.newContext({ viewport: { width: 1400, height: 900 } })).newPage();
+await page.goto("http://localhost:3077"); await page.waitForTimeout(800);
+await page.getByLabel(/^Email/).fill("sue@sgfd.org"); await page.getByLabel(/^Password/).fill("Correct horse battery");
+await page.getByRole("button", { name: "Sign in" }).click(); await page.waitForTimeout(2000);
+await page.getByText("Leave Picks", { exact: true }).first().click(); await page.waitForTimeout(1200);
+await page.getByRole("button", { name: "My unit" }).click(); await page.waitForTimeout(800);
+await page.getByRole("button", { name: /Enter picks|Pick for/ }).first().click(); await page.waitForTimeout(1000);
+await page.getByText("Enter a pick out of turn").click(); await page.waitForTimeout(400);
+const btns = page.locator('button[aria-label^="Fri, Oct"]:not([disabled])'); await btns.first().click(); await page.waitForTimeout(900);
+await page.screenshot({ path: "shot-leave-manual.png" });
+await browser.close();

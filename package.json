@@ -1,0 +1,30 @@
+{
+  "name": "sgfd-management-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "St. George Fire Protection District internal management system",
+  "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "dev": "node server/index.js",
+    "build": "vite build",
+    "start": "node server/index.js --production"
+  },
+  "dependencies": {
+    "mssql": "^11.0.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "6.2.108",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "lucide-react": "0.263.1",
+    "papaparse": "^5.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7",
+    "vite": "^5.4.11"
+  }
+}

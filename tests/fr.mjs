@@ -1,0 +1,12 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+const B = "http://localhost:3077";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome" });
+const a = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+await a.goto(B); await a.waitForTimeout(600);
+await a.evaluate(() => fetch("/api/auth/first-run", { method: "POST", headers: { "Content-Type": "application/json", "X-SGFD": "1" }, body: JSON.stringify({ name: "Sandy Admin", email: "sandy@sandbox.example", password: "Correct horse battery" }) }));
+await a.goto(B); await a.waitForTimeout(3500); await a.screenshot({ path: "fx-home.png" });
+const s = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+await s.goto(B); await s.waitForTimeout(3500); await s.screenshot({ path: "fx-signin.png" });
+const q = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+await q.goto(B); await q.waitForTimeout(3000); await q.screenshot({ path: "fx-phone-signin.png" });
+await browser.close();

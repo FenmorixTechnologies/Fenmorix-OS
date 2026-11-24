@@ -1,0 +1,11 @@
+node_modules/
+dist/
+uploads/
+.env
+*.log
+secrets/
+# Never in the repository: signing keys, customer kits, licenses issued to customers
+*.pem
+tools/license-manager/customers/
+tools/license-manager/key-info.json
+tools/license-manager/*.lic

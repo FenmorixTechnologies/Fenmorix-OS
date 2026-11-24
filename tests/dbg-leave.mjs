@@ -1,0 +1,10 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome" });
+const ctx = await browser.newContext(); const page = await ctx.newPage();
+await page.goto("http://localhost:3077"); await page.waitForTimeout(800);
+await page.getByLabel(/^Email/).fill("cody@sgfd.org"); await page.getByLabel(/^Password/).fill("Correct horse battery");
+await page.getByRole("button", { name: "Sign in" }).click(); await page.waitForTimeout(2500);
+const reqs = []; page.on("request", r => reqs.push(r.url().replace("http://localhost:3077", "")));
+page.on("requestfinished", r => reqs.push("done " + r.url().replace("http://localhost:3077", ""))); page.on("requestfailed", r => reqs.push("fail " + r.url())); await page.getByRole("button", { name: "Pick now" }).click(); await page.waitForTimeout(5000);
+console.log(reqs.join("\n"));
+await browser.close();

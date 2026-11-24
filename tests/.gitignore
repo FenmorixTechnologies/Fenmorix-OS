@@ -1,0 +1,25 @@
+# Working copies and output: never in the repository
+app/
+sysroot*/
+sysdata/
+updates/
+tour/
+lgc/
+keys/*.pem
+*.png
+*.jpg
+!aerial-mock.jpg
+*.gif
+*.pdf
+*.xlsx
+*.log
+*.txt
+!fake-voice.txt
+out-*
+*.out
+regress*
+# Generated test data (make-stats-data.mjs, scripts/sandbox/make-demo-stats.mjs)
+stats-mock.json
+demo-calls.json
+demo-units.json
+sandbox-accounts.json

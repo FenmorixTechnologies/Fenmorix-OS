@@ -1,0 +1,221 @@
+{
+ "_note": "Files that belong to modules. A customer package replaces a file with an empty stand-in when every module that owns it is left out. Shared files (FormFields, shifts, messages.js, forms.js crypto, aladtec) are core and never listed.",
+ "src/Messages.jsx": [
+  "messaging"
+ ],
+ "src/Forms.jsx": [
+  "forms"
+ ],
+ "src/FormBuilder.jsx": [
+  "forms"
+ ],
+ "server/pdfFill.js": [
+  "forms"
+ ],
+ "src/TimeTracker.jsx": [
+  "timeclock"
+ ],
+ "src/PunchClock.jsx": [
+  "timeclock"
+ ],
+ "server/timeclock.js": [
+  "timeclock"
+ ],
+ "src/CallOut.jsx": [
+  "callout"
+ ],
+ "src/OffWork.jsx": [
+  "offwork"
+ ],
+ "server/offwork.js": [
+  "offwork"
+ ],
+ "src/SickLeave.jsx": [
+  "sick"
+ ],
+ "server/sick.js": [
+  "sick"
+ ],
+ "src/LeavePicks.jsx": [
+  "leave"
+ ],
+ "server/leave.js": [
+  "leave"
+ ],
+ "src/ForceBack.jsx": [
+  "forceback"
+ ],
+ "server/forceback.js": [
+  "forceback"
+ ],
+ "src/Training.jsx": [
+  "training"
+ ],
+ "src/TrainingPlus.jsx": [
+  "training"
+ ],
+ "server/training.js": [
+  "training"
+ ],
+ "server/trainingPlus.js": [
+  "training"
+ ],
+ "server/bookings.js": [
+  "training"
+ ],
+ "server/isoKinds.js": [
+  "training",
+  "pial"
+ ],
+ "src/Evals.jsx": [
+  "evals"
+ ],
+ "src/EvalSim.jsx": [
+  "evals"
+ ],
+ "src/SceneMap.jsx": [
+  "evals"
+ ],
+ "src/evalsShared.js": [
+  "evals"
+ ],
+ "server/evals.js": [
+  "evals",
+  "recall",
+  "command"
+ ],
+ "server/evalSeeds.js": [
+  "evals"
+ ],
+ "server/evalSeeds2.js": [
+  "evals"
+ ],
+ "server/evalSeedsAC.js": [
+  "evals"
+ ],
+ "server/simSeeds.js": [
+  "evals"
+ ],
+ "server/transcribe.js": [
+  "evals",
+  "recordings"
+ ],
+ "src/Recall.jsx": [
+  "recall"
+ ],
+ "server/recall.js": [
+  "recall"
+ ],
+ "src/Imt.jsx": [
+  "imt"
+ ],
+ "src/ImtForms.jsx": [
+  "imt"
+ ],
+ "src/ImtPrint.js": [
+  "imt"
+ ],
+ "src/pdfPages.js": [
+  "imt"
+ ],
+ "server/imt.js": [
+  "imt"
+ ],
+ "src/ActiveCalls.jsx": [
+  "activecalls"
+ ],
+ "server/cad.js": [
+  "activecalls",
+  "command",
+  "callalerts"
+ ],
+ "server/cadDemo.js": [
+  "activecalls"
+ ],
+ "src/CommandBoard.jsx": [
+  "command"
+ ],
+ "server/command.js": [
+  "command"
+ ],
+ "src/CallAlerts.jsx": [
+  "callalerts"
+ ],
+ "server/callalerts.js": [
+  "callalerts"
+ ],
+ "src/Recordings.jsx": [
+  "recordings"
+ ],
+ "server/recordings.js": [
+  "recordings"
+ ],
+ "src/Investigations.jsx": [
+  "investigations"
+ ],
+ "server/investigations.js": [
+  "investigations"
+ ],
+ "src/CommsStats.jsx": [
+  "stats"
+ ],
+ "server/cadstats.js": [
+  "stats",
+  "board",
+  "pial"
+ ],
+ "src/StatCharts.jsx": [
+  "stats",
+  "board",
+  "pial"
+ ],
+ "src/BoardReport.jsx": [
+  "board"
+ ],
+ "server/board.js": [
+  "board"
+ ],
+ "src/Pial.jsx": [
+  "pial"
+ ],
+ "server/pial.js": [
+  "pial"
+ ],
+ "src/FirePrevention.jsx": [
+  "fireprev"
+ ],
+ "server/fireprev.js": [
+  "fireprev"
+ ],
+ "src/Spot.jsx": [
+  "spot"
+ ],
+ "server/spot.js": [
+  "spot"
+ ],
+ "src/QuickLinks.jsx": [
+  "links"
+ ],
+ "server/links.js": [
+  "links"
+ ],
+ "scripts/cad-active-view-sgfd.sql": [
+  "activecalls"
+ ],
+ "scripts/cad-view-template.sql": [
+  "activecalls"
+ ],
+ "scripts/cad-stats-view-sgfd.sql": [
+  "stats"
+ ],
+ "scripts/cad-stats-view-template.sql": [
+  "stats"
+ ],
+ "scripts/cad-units-view-sgfd.sql": [
+  "stats"
+ ],
+ "scripts/install-whisper.ps1": [
+  "evals",
+  "recordings"
+ ]
+}

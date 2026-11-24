@@ -1,0 +1,42 @@
+Emp ID,Last Name,First Name,Rank,Position,Date Entered Rank,Hire Date,Separation Date,Shift,Driver Since
+SG1001,Landry,James,Captain,Captain,2020-01-01,2010-01-15,,A,
+SG1002,Fontenot,Karen,Captain,Captain,2020-01-01,2011-02-15,,B,
+SG1003,Comeaux,Mark,Captain,Captain,2020-01-01,2012-03-15,,C,
+SG1004,Broussard,Mary,Captain,Captain,2020-01-01,2013-04-15,,A,
+SG1005,Boudreaux,Chris,Captain,Captain,2020-01-01,2014-05-15,,B,
+SG1006,Hebert,Donna,Captain,Captain,2020-01-01,2015-06-15,,C,
+SG1007,LeBlanc,Robert,Lieutenant,Lieutenant,2020-01-01,2016-07-15,,A,
+SG1008,Arceneaux,Nancy,Lieutenant,Lieutenant,2020-01-01,2017-08-15,,B,
+SG1009,Thibodeaux,Steven,Lieutenant,Lieutenant,2020-01-01,2018-01-15,,C,
+SG1010,Breaux,Linda,Lieutenant,Lieutenant,2020-01-01,2019-02-15,,A,
+SG1011,Guidry,Daniel,Lieutenant,Lieutenant,2020-01-01,2020-03-15,,B,
+SG1012,Richard,Carol,Lieutenant,Lieutenant,2020-01-01,2021-04-15,,C,
+SG1013,Landry M,Michael,Driver/Operator,Driver/Operator,2020-01-01,2010-05-15,,A,2026-02-01
+SG1014,Fontenot N,Lisa,Driver/Operator,Driver/Operator,2020-01-01,2011-06-15,,B,2018-06-01
+SG1015,Comeaux O,Kevin,Driver/Operator,Driver/Operator,2020-01-01,2012-07-15,,C,2018-06-01
+SG1016,Broussard P,Sarah,Driver/Operator,Driver/Operator,2020-01-01,2013-08-15,,A,2018-06-01
+SG1017,Boudreaux Q,Paul,Driver/Operator,Driver/Operator,2020-01-01,2014-01-15,,B,2018-06-01
+SG1018,Hebert R,Laura,Driver/Operator,Driver/Operator,2020-01-01,2015-02-15,,C,2018-06-01
+SG1019,LeBlanc S,David,Driver/Operator,Driver/Operator,2020-01-01,2016-03-15,,A,2018-06-01
+SG1020,Arceneaux T,Amy,Driver/Operator,Driver/Operator,2020-01-01,2017-04-15,,B,2018-06-01
+SG1021,Thibodeaux U,James,Firefighter,Suppression,2020-01-01,2018-05-15,,C,
+SG1022,Breaux V,Karen,Firefighter,Suppression,2020-01-01,2019-06-15,,A,
+SG1023,Guidry W,Mark,Firefighter,Suppression,2020-01-01,2020-07-15,,B,
+SG1024,Richard X,Mary,Firefighter,Suppression,2020-01-01,2021-08-15,,C,
+SG1025,Landry Y,Chris,Firefighter,Suppression,2020-01-01,2010-01-15,,A,
+SG1026,Fontenot Z,Donna,Firefighter,Suppression,2020-01-01,2011-02-15,,B,
+SG1027,Comeaux A,Robert,Firefighter,Suppression,2020-01-01,2012-03-15,,C,
+SG1028,Broussard B,Nancy,Firefighter,Suppression,2020-01-01,2013-04-15,,A,
+SG1029,Boudreaux C,Steven,Firefighter,Suppression,2020-01-01,2014-05-15,,B,
+SG1030,Hebert D,Linda,Firefighter,Suppression,2020-01-01,2015-06-15,,C,
+SG1031,LeBlanc E,Daniel,Firefighter,Suppression,2020-01-01,2016-07-15,,A,
+SG1032,Arceneaux F,Carol,Firefighter,Suppression,2020-01-01,2017-08-15,,B,
+SG1033,Thibodeaux G,Michael,Firefighter,Suppression,2020-01-01,2018-01-15,,C,
+SG1034,Breaux H,Lisa,Firefighter,Suppression,2020-01-01,2019-02-15,,A,
+SG1035,Guidry I,Kevin,Firefighter,Suppression,2020-01-01,2020-03-15,,B,
+SG1036,Richard J,Sarah,Firefighter,Suppression,2020-01-01,2021-04-15,,C,
+SG1037,Landry K,Paul,Firefighter,Suppression,2020-01-01,2010-05-15,,A,
+SG1038,Fontenot L,Laura,Firefighter,Suppression,2020-01-01,2011-06-15,,B,
+SG1039,Comeaux M,David,Firefighter,Suppression,2020-01-01,2026-03-02,,C,
+SG1040,Broussard N,Amy,Firefighter,Suppression,2020-01-01,2013-08-15,,A,
+SG2001,Person,Retired,Firefighter,Suppression,2020-01-01,2001-05-01,2025-12-31,A,

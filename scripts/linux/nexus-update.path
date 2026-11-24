@@ -1,0 +1,10 @@
+# Runs the updater when Nexus (User Management > System) asks for an install, restart, rollback or backup
+[Unit]
+Description=Watch for Nexus update requests
+
+[Path]
+PathExists=/opt/nexus/updates/pending.json
+Unit=nexus-update.service
+
+[Install]
+WantedBy=multi-user.target

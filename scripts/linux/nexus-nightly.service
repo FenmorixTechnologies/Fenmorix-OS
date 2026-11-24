@@ -1,0 +1,6 @@
+[Unit]
+Description=Nexus nightly backup (and new demo calls on a sandbox)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/nexus/app/scripts/linux/nightly.sh
