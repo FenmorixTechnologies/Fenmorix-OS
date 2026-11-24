@@ -62,6 +62,7 @@ export function makeIconSet(img, colors = {}) {
     "icon-maskable-512.png": square(img, 512, 0.22, navy).toDataURL("image/png"),
     "apple-touch-icon.png": square(img, 180, 0.14, navy).toDataURL("image/png"),
     "favicon.ico": icoFrom([16, 32, 48].map(size => ({ size, bytes: pngBytes(square(img, size, 0.06, navy)) }))),
+    "org-logo.png": wordmarkFrom(img, 900),   // the logo in its own shape, for the top of the side bar
   };
   // Watermark behind every page: the logo in faint gray on white (the page multiplies it in)
   const [w, wx] = canvas(1600, 1000);
@@ -70,10 +71,24 @@ export function makeIconSet(img, colors = {}) {
   files["nexus-watermark.jpg"] = w.toDataURL("image/jpeg", 0.85);
   return files;
 }
-function wordmarkFrom(img) {
-  const iw = img.naturalWidth || 1200, ih = img.naturalHeight || 240, s = Math.min(1, 1200 / iw);
-  const [c, ctx] = canvas(Math.max(1, Math.round(iw * s)), Math.max(1, Math.round(ih * s)));
-  fit(ctx, img, 0, 0, c.width, c.height);
+// The picture in its own shape, at most `max` wide, with empty (transparent) margins cut off so it fills the space it's given
+function wordmarkFrom(img, max = 1200) {
+  const iw = img.naturalWidth || 1200, ih = img.naturalHeight || 240;
+  const [a, ax] = canvas(iw, ih);
+  ax.drawImage(img, 0, 0, iw, ih);
+  let x0 = 0, y0 = 0, x1 = iw, y1 = ih;
+  try {
+    const d = ax.getImageData(0, 0, iw, ih).data, solid = (x, y) => d[(y * iw + x) * 4 + 3] > 8;
+    const rowHas = y => { for (let x = 0; x < iw; x++) if (solid(x, y)) return true; return false; };
+    const colHas = x => { for (let y = y0; y < y1; y++) if (solid(x, y)) return true; return false; };
+    while (y0 < y1 - 1 && !rowHas(y0)) y0++;
+    while (y1 > y0 + 1 && !rowHas(y1 - 1)) y1--;
+    while (x0 < x1 - 1 && !colHas(x0)) x0++;
+    while (x1 > x0 + 1 && !colHas(x1 - 1)) x1--;
+  } catch { /* a picture the browser won't let us read: keep it whole */ }
+  const w = x1 - x0, h = y1 - y0, s = Math.min(1, max / w);
+  const [c, ctx] = canvas(Math.max(1, Math.round(w * s)), Math.max(1, Math.round(h * s)));
+  ctx.drawImage(a, x0, y0, w, h, 0, 0, c.width, c.height);
   return c.toDataURL("image/png");
 }
 
@@ -126,7 +141,7 @@ export default function BrandingCard({ toast }) {
   const pickWordmark = async file => {
     if (!file) return;
     try { const { img, url } = await loadImage(file); URL.revokeObjectURL(url);
-      setAsk({ title: "Use this name logo", note: `${file.name} replaces the wide logo on the sign-in page.`, run: () => call("/branding/logo", { files: { "brand-wordmark.png": wordmarkFrom(img) } }), msg: "Name logo saved. Reload the page to see it." }); }
+      setAsk({ title: "Use this name logo", note: `${file.name} goes across the top of the side bar and replaces the wide logo on the sign-in page.`, run: () => call("/branding/logo", { files: { "brand-wordmark.png": wordmarkFrom(img), "org-logo.png": wordmarkFrom(img, 900) } }), msg: "Name logo saved. Reload the page to see it." }); }
     catch (e) { toast(e.message); }
   };
   const useLogo = () => setAsk({ title: "Use this logo", note: `${logo.name} becomes the app icon, the browser tab icon and the logo on every page.`,

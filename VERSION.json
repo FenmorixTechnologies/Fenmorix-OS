@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.24.7",
+  "version": "2026.11.24.8",
   "notes": [
+    "Fenmorix OS side bar: the organization's own logo large across the top, with Fenmorix OS smaller underneath (the kit's logo until one is uploaded on the Branding page).",
     "Fix: User Management and Personnel File no longer go blank on installs without the Forms module; Personnel File only shows tabs for the modules installed.",
     "Sandbox: System \u203a Demo modules switches any module on or off (add-ons included) for a demo; the sandbox download now carries every module.",
     "Linux installer: --local tries a customer's system on one computer (Ubuntu on Windows): https://localhost with its own certificate, no web address needed.",

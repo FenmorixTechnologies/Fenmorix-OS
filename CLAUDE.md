@@ -1104,3 +1104,8 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   in certs/, no email/certbot/ufw; checks systemd (WSL: writes /etc/wsl.conf [boot] systemd=true and asks for `wsl --shutdown`).
   License Manager new-customer accepts "localhost" (suggests blank hosts so the same license works on the real machine later; INSTALL.txt
   then has the WSL steps). Run here with stand-ins for apt/systemctl/sudo/npm/psql.
+- Side bar logo (11/2026, Michael): Fenmorix OS installs with their own logo show it large across the top (Brand.jsx, `BRAND.orgLogo`) and
+  "FENMORIX OS" + tagline smaller under it; phone top bar = logo + product. File `org-logo.png` (BRAND_FILES): the logo in its own shape,
+  transparent margins trimmed, 900 wide (BrandingAdmin `wordmarkFrom(img, 900)`, made by makeIconSet and by the name-logo upload); until one
+  is uploaded, brandFile falls back to the kit's setup logo (png/jpg/webp) while an uploaded emblem exists. Directory on Fenmorix OS installs
+  (not SGFD, not sandbox): My card, Everyone, Outside contacts. tests/sweep.mjs = open every section/page, report errors/blank/stuck loading.

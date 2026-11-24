@@ -72,7 +72,7 @@ export function brand() {
     org, short, place, app, url, host: url.replace(/^https?:\/\//, ""),
     sandbox: isSandbox(),
     product: prod, productName: P.name, word: P.word, wordAccent: P.wordAccent, tagline: P.tagline, vendor: P.vendor, copyright: P.copyright,
-    theme: prod, colors: themeOverrides(), terms: savedTerms(), wordmark: !!brandFile("brand-wordmark.png"),
+    theme: prod, colors: themeOverrides(), terms: savedTerms(), wordmark: !!brandFile("brand-wordmark.png"), orgLogo: !!brandFile("org-logo.png"),
     // A new customer's install (kit from the License Manager): the first master admin gets the setup wizard
     setupPending: prod === "fenmorix" && !isSandbox() && sv.setup === "pending",
     sandboxNote: isSandbox() ? clean(e.SANDBOX_NOTE, 300) || "Sandbox: every person, call and record here is made up. Don't enter real names, patient, case or personnel information." : "",
@@ -80,7 +80,7 @@ export function brand() {
 }
 
 // Logo / icon files a brand can replace (same names as in public/)
-export const BRAND_FILES = new Set(["brand-wordmark.png", "logo-large.png", "nexus-emblem.png", "nexus-hero-art.png", "nexus-hero-bolts.png", "nexus-hero-ring.png",
+export const BRAND_FILES = new Set(["org-logo.png", "brand-wordmark.png", "logo-large.png", "nexus-emblem.png", "nexus-hero-art.png", "nexus-hero-bolts.png", "nexus-hero-ring.png",
   "nexus-watermark.jpg", "favicon.ico", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]);
 export function brandAssetsDir() {
   const d = process.env.BRAND_ASSETS_DIR || (product() === "fenmorix" ? path.join(APP_DIR, "public", "brand-fenmorix") : "");
@@ -98,6 +98,12 @@ function brandFile(name) {
   if (product() === "fenmorix") { const u = path.join(uploadedAssetsDir(), name); if (fs.existsSync(u)) return u; }
   const d = brandAssetsDir();
   if (d && fs.existsSync(path.join(d, name))) return path.join(d, name);
+  // The organization's own logo, kept in its real shape (side bar). Until one is uploaded, the logo that came in the customer kit.
+  // (only while a customer logo is in use: "Go back to the Fenmorix OS logo" removes the uploaded files and this goes with them)
+  if (name === "org-logo.png") {
+    const k = product() === "fenmorix" && fs.existsSync(path.join(uploadedAssetsDir(), "nexus-emblem.png")) ? setupLogoFile() : "";
+    return /\.(png|jpg|webp)$/.test(k) ? k : "";
+  }
   const f = path.join(APP_DIR, "public", "brand-fenmorix", name);
   return product() === "fenmorix" && fs.existsSync(f) ? f : "";
 }

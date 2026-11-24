@@ -76,7 +76,8 @@ check("saved: done, name, colors, menu name", saved.setup === "done" && saved.sh
 check("icon set made from the kit logo", ["icon-192.png", "favicon.ico", "nexus-emblem.png", "nexus-watermark.jpg"].every(n => fs.existsSync(`${SYS}/branding/assets/${n}`)));
 await page.getByRole("button", { name: "Open Fenmorix OS" }).click(); await page.waitForTimeout(3000);
 const nav = await page.getByRole("navigation").first().innerText();
-check("app opens with the customer's names", await wizard().count() === 0 && /ACME/.test(nav) && nav.includes("Inbox") && !/\bMessages\b/.test(nav), nav.replace(/\n/g, " | ").slice(0, 200));
+const sideLogo = await page.getByRole("navigation").first().getByRole("img", { name: "Acme County Government" }).count();
+check("app opens with the customer's logo across the top and menu names", await wizard().count() === 0 && sideLogo === 1 && nav.includes("Inbox") && !/\bMessages\b/.test(nav), nav.replace(/\n/g, " | ").slice(0, 200));
 check("not pending any more", (await page.evaluate(() => JSON.parse(document.querySelector('meta[name="nexus-brand"]').content).setupPending)) === false);
 await page.screenshot({ path: "shot-wizard-home.png" });
 check("audited", /Finished the setup wizard/.test(JSON.stringify((await api("/api/audit?q=setup")).body || {})));

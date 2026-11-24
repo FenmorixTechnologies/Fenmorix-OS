@@ -28,6 +28,22 @@ export default function NexusBrand({ size = "big", onClick, title }) {
   const scale = typeof s.nexus === "number" ? Math.min(1, 6 / letters) : 1;
   const wordSize = typeof s.nexus === "number" ? Math.round(s.nexus * scale) : s.nexus;
   const tagSize = typeof s.ms === "number" ? Math.min(s.ms, Math.round(s.ms * 17 / Math.max(17, BRAND.tagline.length))) : s.ms;
+  // A customer's own logo (Fenmorix OS installs): the logo large across the top, the product name smaller under it
+  if (!hero && BRAND.orgLogo && BRAND.product !== "nexus") {
+    const big = size !== "small";
+    return (
+      <div onClick={onClick} role={onClick ? "button" : undefined} title={title} aria-label={BRAND.org}
+        style={{ display: "flex", flexDirection: big ? "column" : "row", alignItems: big ? "stretch" : "center", gap: big ? 6 : 8, cursor: onClick ? "pointer" : "default", minWidth: 0 }}>
+        <img src="/org-logo.png" alt={BRAND.org} style={big ? { width: "100%", height: "auto", maxHeight: 96, objectFit: "contain", objectPosition: "center", display: "block", filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.45))" }
+          : { height: 30, width: "auto", maxWidth: 150, objectFit: "contain", display: "block" }} />
+        <span style={{ lineHeight: 1, fontStyle: "italic", fontFamily: FONT, color: "#fff", textAlign: big ? "center" : "left", minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: big ? 17 : 12, fontWeight: 900, letterSpacing: 0.6, whiteSpace: "nowrap", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.55))" }}>
+            <span style={CHROME}>{BRAND.word}</span>{BRAND.wordAccent && <span style={{ color: THEME.accent }}> {BRAND.wordAccent}</span>}</span>
+          {big && <span style={{ display: "block", fontSize: 8.5, fontWeight: 800, letterSpacing: 0.8, marginTop: 3, whiteSpace: "nowrap", opacity: 0.9 }}>{BRAND.tagline}</span>}
+        </span>
+      </div>
+    );
+  }
   return (
     <div onClick={onClick} role={onClick ? "button" : undefined} title={title}
       aria-label={BRAND.product === "nexus" ? `${BRAND.app} Management System` : BRAND.app} className={hero ? "nx-hero" : undefined}

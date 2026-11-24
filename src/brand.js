@@ -23,6 +23,7 @@ export const BRAND = {
   word: b.word || "NEXUS", wordAccent: b.wordAccent || "", tagline: b.tagline || "MANAGEMENT SYSTEM",
   vendor: b.vendor || "", copyright: b.copyright || "",
   wordmark: !!b.wordmark,
+  orgLogo: !!b.orgLogo,
   // The customer's own menu names {tileKey: name} (Branding page; Fenmorix OS only)
   terms: b.terms && typeof b.terms === "object" ? b.terms : {},
   setupPending: !!b.setupPending,

@@ -106,7 +106,8 @@ await card.getByLabel("Name logo file").setInputFiles(`${T}/test-wordmark.png`);
 await page.getByLabel("Authenticator code").fill(await code(secret));
 await page.getByRole("dialog").getByRole("button", { name: "Use this name logo" }).click(); await page.waitForTimeout(1200);
 const wmk = Buffer.from(await bytes("/brand-wordmark.png"));
-check("name logo scaled to 1200 wide", wmk.readUInt32BE(16) === 1200 && wmk.readUInt32BE(20) === 240, `${wmk.readUInt32BE(16)}x${wmk.readUInt32BE(20)}`);
+const olg = Buffer.from(await bytes("/org-logo.png"));
+check("name logo scaled to 1200 wide (empty margins trimmed); side-bar copy 900 wide", wmk.readUInt32BE(16) === 1200 && wmk.readUInt32BE(20) <= 240 && olg.readUInt32BE(16) === 900, `${wmk.readUInt32BE(16)}x${wmk.readUInt32BE(20)}`);
 
 // ---- Bad input refused ----
 await api("/api/auth/mfa-verify", { code: await code(secret) });
