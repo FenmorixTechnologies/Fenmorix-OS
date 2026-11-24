@@ -17,7 +17,7 @@ export const COOKIE = "sgfd_session";
 const SESSION_HOURS = Number(process.env.SESSION_HOURS || 12);
 // Signed out after this many minutes without using the app (background refreshes don't count)
 const IDLE_MINUTES = Number(process.env.SESSION_IDLE_MINUTES || 60);
-const clientIp = req => String(req.socket?.remoteAddress || "").replace(/^::ffff:/, "");
+import { clientIp, isLocalRequest } from "./clientip.js";
 const MIN_PASSWORD = 10;
 // Passwords expire after this many days (0 = never). Admins (master, accounts admin) also need an authenticator code to sign in
 // unless MFA_ADMINS=off (tests only).
@@ -164,10 +164,6 @@ async function noPasswordsYet() {
   return r.rows[0].n === 0;
 }
 
-function isLocalRequest(req) {
-  const a = req.socket.remoteAddress || "";
-  return a === "127.0.0.1" || a === "::1" || a === "::ffff:127.0.0.1";
-}
 
 function requireMaster(user) {
   if (!user || user.role !== "master") throw new HttpError(403, "Only a master admin can do that.");

@@ -13,4 +13,4 @@ export function allow(key, max, windowMs) {
   if (buckets.size > 20000) for (const [k, v] of buckets) { if (now - v.start > 3600_000) buckets.delete(k); if (buckets.size <= 10000) break; }
   return b.n <= max;
 }
-export const ipOf = req => String(req.socket?.remoteAddress || "").replace(/^::ffff:/, "");
+export { clientIp as ipOf } from "./clientip.js";

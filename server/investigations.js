@@ -46,7 +46,7 @@ const isUuid = v => typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const clean = (v, n = 300) => String(v ?? "").trim().slice(0, n);
 const localToday = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-const clientIp = req => String(req.socket?.remoteAddress || "").replace(/^::ffff:/, "");
+import { clientIp } from "./clientip.js";
 export const STATUSES = { open: "Open", active: "Active", referred: "Referred to DA", closed: "Closed", unfounded: "Unfounded" };
 export const CLASSES = { pending: "Pending", accidental: "Accidental", natural: "Natural", incendiary: "Incendiary", undetermined: "Undetermined" };
 export const PERSON_ROLES = { owner: "Owner", occupant: "Occupant", complainant: "Complainant", witness: "Witness", victim: "Victim", suspect: "Suspect", other: "Other" };

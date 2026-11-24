@@ -1130,3 +1130,7 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   `offFor`; TV = only "everyone" entries, reasons hidden), POST save/copy. UI src/Schedule.jsx (week grid, Fill the week, Copy last week, Today +
   Leaving early), YourDay ScheduleWidget (id schedule), Display view "schedule"; helpers src/scheduleShared.js. Tests: e2e60.mjs via run-biz.sh (37).
 - Quick Links: "Copy password and open the site" + a note that websites can't be signed into from another site.
+- Behind Cloudflare (11/2026, Michael registered fenmorix.com on Cloudflare Pro; LGC to be reachable at lgc.fenmorix.com): server/clientip.js
+  `clientIp` (TRUST_PROXY=cloudflare: CF-Connecting-IP only when the peer is loopback (cloudflared) or a Cloudflare range, net.BlockList) and
+  `isLocalRequest` (loopback AND no cf-connecting-ip/cf-ray/x-forwarded-for/x-real-ip, so first-run never opens through a tunnel). auth.js,
+  investigations.js and ratelimit.js `ipOf` use them.
