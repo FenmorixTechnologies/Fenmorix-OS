@@ -57,7 +57,7 @@ function Profile({ person, me, roster, onSaved }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
           <label style={lab}>Employee number<input aria-label="Employee number" style={inputStyle} value={f.employeeNumber} onChange={e => set("employeeNumber", e.target.value)} /></label>
           <label style={lab}>Job title<input aria-label="Job title" style={inputStyle} value={f.jobTitle} onChange={e => set("jobTitle", e.target.value)} /></label>
-          <label style={lab}>Station / assignment<input aria-label="Station" style={inputStyle} value={f.station} onChange={e => set("station", e.target.value)} /></label>
+          <label style={lab}>{BRAND.words.station}<input aria-label={BRAND.words.station} style={inputStyle} value={f.station} onChange={e => set("station", e.target.value)} /></label>
           <label style={lab}>Hire date<input aria-label="Hire date" type="date" style={inputStyle} value={f.hireDate} onChange={e => set("hireDate", e.target.value)} /></label>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0,2fr) minmax(0,1fr) 70px 100px", gap: 8, marginTop: 10 }}>
@@ -81,7 +81,7 @@ function Profile({ person, me, roster, onSaved }) {
       {row("Division", person.division)}
       {row("Role", ROLE_LABEL[person.role])}
       {row("Job title", person.jobTitle)}
-      {row("Station / assignment", person.station)}
+      {row(BRAND.words.station, person.station)}
       {row("Phone", person.phone)}
       {row("Email", person.email)}
       {hasPrivate && (

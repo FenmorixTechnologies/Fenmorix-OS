@@ -20,16 +20,20 @@ import crypto from "node:crypto";
 import { pool } from "./db.js";
 import { hasPerm, isUuid, ROLE_LABEL } from "./collections.js";
 import { readCookie } from "./auth.js";
+import { moduleOn } from "./license.js";
+import { orgSettings } from "./brand.js";
 
 export const DISPLAY_COOKIE = "sgfd_display";
 // Views a screen can cycle through. Active calls show addresses, so it is never on by default.
-export const VIEWS = { duty: "On duty today", weather: "Weather", oncall: "On call today", classes: "Today's classes", calls: "Active calls", spot: "Spot prices" };
-// Views offered when pairing a screen: spot prices only with that (opt-in) module
-async function offeredViews() {
-  const { moduleOn } = await import("./license.js");
-  return Object.fromEntries(Object.entries(VIEWS).filter(([k]) => k !== "spot" || moduleOn("spot")));
+export const VIEWS = { schedule: "Working today", duty: "On duty today", weather: "Weather", oncall: "On call today", classes: "Today's classes", calls: "Active calls", spot: "Spot prices" };
+// Views offered when pairing a screen: each only when this install has its module (Aladtec's duty board: fire/EMS departments)
+const VIEW_MODULE = { schedule: "timeclock", oncall: "callout", classes: "training", calls: "activecalls", spot: "spot" };
+function offeredViews() {
+  const fire = orgSettings().fire;
+  return Object.fromEntries(Object.entries(VIEWS).filter(([k]) => (!VIEW_MODULE[k] || moduleOn(VIEW_MODULE[k])) && (k !== "duty" || fire)));
 }
-const DEFAULT_VIEWS = ["duty", "weather", "oncall", "classes"];
+const boardsOffered = () => moduleOn("command");
+const defaultViews = () => { const o = offeredViews(); return (o.duty ? ["duty", "weather", "oncall", "classes"] : ["schedule", "weather", "spot", "oncall", "classes"]).filter(k => o[k]).slice(0, 4); };
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // no 0/O, 1/I
 const MAX_AGE = 400 * 24 * 3600;                          // a TV stays paired until signed out (cookie re-sent on every /me)
 
@@ -47,8 +51,9 @@ export async function displayScreenFor(req) {
 }
 
 export function cleanSettings(x = {}) {
-  const views = Array.isArray(x.views) ? [...new Set(x.views.filter(v => VIEWS[v]))] : DEFAULT_VIEWS;
-  return { views, seconds: Math.min(120, Math.max(8, Math.round(Number(x.seconds) || 20))), switchToBoard: x.switchToBoard !== false };
+  const offered = offeredViews();
+  const views = Array.isArray(x.views) ? [...new Set(x.views.filter(v => offered[v]))] : defaultViews();
+  return { views, seconds: Math.min(120, Math.max(8, Math.round(Number(x.seconds) || 20))), switchToBoard: boardsOffered() && x.switchToBoard !== false };
 }
 const screenJson = s => ({ id: s.id, name: s.name, ...cleanSettings(s.settings), paired: !!s.token_hash, pairedAt: s.paired_at, lastSeenAt: s.last_seen_at,
   createdBy: s.created_by_name, userAgent: s.user_agent });
@@ -89,6 +94,7 @@ async function viewData(view) {
     return { configured: true, updatedAt: d.updatedAt, shiftStartTime: d.shiftStartTime || "07:00", assignments: (d.assignments || []).map(strip),
       today: (d.today || []).map(strip), timeOff: [], error: d.error ? "Aladtec can't be reached right now." : "", places };
   }
+  if (view === "schedule") { const { scheduleToday } = await import("./schedule.js"); return (await scheduleToday(null)) || { list: [] }; }
   if (view === "weather") { const { getWeather } = await import("./weather.js"); return getWeather(); }
   if (view === "spot") {
     const { moduleOn } = await import("./license.js");
@@ -128,7 +134,7 @@ export async function handleDisplay(req, res, parts, user, send, jsonBody) {
     if (!(await hasPerm(pool, user, "accounts_admin"))) throw err(403, "Only master admins and accounts admins can set up display screens.");
     if (req.method === "GET" && !b) {
       const rows = (await pool.query("SELECT * FROM display_screens ORDER BY name")).rows;
-      return send(res, 200, { screens: rows.map(screenJson), views: await offeredViews() });
+      return send(res, 200, { screens: rows.map(screenJson), views: offeredViews(), boards: boardsOffered() });
     }
     if (req.method !== "POST") throw err(404, "Not found");
     const body = await jsonBody(req);
@@ -180,7 +186,7 @@ export async function handleDisplay(req, res, parts, user, send, jsonBody) {
     }
     await pool.query("UPDATE display_screens SET last_seen_at = now() WHERE id = $1", [screen.id]);
     res.setHeader("Set-Cookie", cookie(token, MAX_AGE, req.secure));
-    return send(res, 200, { paired: true, name: screen.name, ...cleanSettings(screen.settings), viewNames: VIEWS, now: new Date().toISOString() });
+    return send(res, 200, { paired: true, name: screen.name, ...cleanSettings(screen.settings), viewNames: offeredViews(), now: new Date().toISOString() });
   }
   if (!screen) throw err(401, "This screen isn't paired.");
   const set = cleanSettings(screen.settings);

@@ -101,6 +101,15 @@ async function getSettings() {
     alertScore: Math.min(10, Math.max(1, Number(d.alertScore) || 7)) };
 }
 
+// Leave types: the built-in ones (rename or turn off in Settings) plus the organization's own (settings.kinds / customKinds)
+export function kindsFor(st) {
+  const out = {};
+  for (const [k, v] of Object.entries(KINDS)) { const o = st?.kinds?.[k] || {}; out[k] = { label: o.label || v.label, protected: v.protected, off: !!o.off }; }
+  for (const c of st?.customKinds || []) out[c.key] = { label: c.label, protected: !!c.protected, off: !!c.off, custom: true };
+  return out;
+}
+const usable = (kinds, k) => kinds[k] && !kinds[k].off;
+
 // ---- Access ------------------------------------------------------------------------------------------
 async function scopeOf(user, level) {
   if (user.role === "master") return { all: true, divisions: new Set() };
@@ -280,7 +289,7 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
     const s = await getSettings();
     const y = +localToday().slice(0, 4);
     const ppl = await people(view);
-    return send(res, 200, { settings: s, kinds: KINDS, access: { manage, edit: edit.all ? "all" : [...edit.divisions], view: view.all ? "all" : [...view.divisions] },
+    return send(res, 200, { settings: s, kinds: kindsFor(s), access: { manage, edit: edit.all ? "all" : [...edit.divisions], view: view.all ? "all" : [...view.divisions] },
       people: ppl.map(p => { const sc = scheduleOf(p); return { ...p, pattern: sc.pattern || "", canEdit: inScope(edit, p.division), hours: sc.hours, schedule: { kind: sc.kind, label: sc.label, missing: sc.missing, override: sc.override, divisionKind: sc.divisionKind } }; }), holidays: holidaysFor(s, y - 1, y + 1),
       defaults: defaultHolidays(y).map(h => h.label) });
   }
@@ -293,9 +302,10 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
     const name = new Map(ppl.map(p => [p.id, p.name]));
     const rows = entries.sort((a, b) => b.day.localeCompare(a.day)).map(e => ({ ...entryOut(e), name: name.get(e.user_id) }));
     if (parts[3] === "export.csv") {
+      const KN = kindsFor(await getSettings());
       const qq = v => { const x = String(v ?? ""); return /[",\n]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x; };
       const lines = [["Date", "Name", "Division", "Hours", "Type", "Protected", "Doctor's note", "Called out", "Logged by", "Notes"].join(",")]
-        .concat(rows.map(e => [e.day, e.name, e.division, e.hours, KINDS[e.kind]?.label || e.kind, e.protected ? "Yes" : "", e.noteOnFile ? "Yes" : "", e.calledAt || "", e.enteredBy, e.notes].map(qq).join(",")));
+        .concat(rows.map(e => [e.day, e.name, e.division, e.hours, KN[e.kind]?.label || e.kind, e.protected ? "Yes" : "", e.noteOnFile ? "Yes" : "", e.calledAt || "", e.enteredBy, e.notes].map(qq).join(",")));
       res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="Sick-leave-${from}-to-${to}.csv"` });
       return res.end("﻿" + lines.join("\r\n") + "\r\n");
     }
@@ -334,7 +344,8 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
     if (!isDay(b.from)) throw err(400, "Enter the day they called out.");
     const to = isDay(b.to) && b.to >= b.from ? b.to : b.from;
     if (dayNum(to) - dayNum(b.from) > 60) throw err(400, "Log up to 60 days at a time.");
-    const kind = KINDS[b.kind] ? b.kind : "sick";
+    const KN = kindsFor(await getSettings());
+    const kind = usable(KN, b.kind) ? b.kind : Object.keys(KN).find(k => !KN[k].off) || "sick";
     const sc = scheduleOf(p);
     const hours = Number(b.hours) || sc.hours;
     if (!(hours > 0 && hours <= 24)) throw err(400, "Hours: more than 0, up to 24 per day.");
@@ -348,10 +359,10 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         ON CONFLICT (user_id, day) DO UPDATE SET hours = EXCLUDED.hours, kind = EXCLUDED.kind, protected = EXCLUDED.protected, note_on_file = EXCLUDED.note_on_file,
           called_at = COALESCE(EXCLUDED.called_at, sick_entries.called_at), notes = EXCLUDED.notes, updated_at = now() RETURNING (xmax = 0) AS inserted`,
-        [crypto.randomUUID(), p.id, p.division, d, hours, kind, KINDS[kind].protected, b.noteOnFile === true, called, txt(b.notes, 500), user.id, user.name]);
+        [crypto.randomUUID(), p.id, p.division, d, hours, kind, KN[kind].protected, b.noteOnFile === true, called, txt(b.notes, 500), user.id, user.name]);
       if (r.rows[0].inserted) added++; else updated++;
     }
-    await audit(user, "Logged a sick call-out", `${p.name}: ${days.length === 1 ? pretty(days[0]) : `${pretty(days[0])} – ${pretty(days[days.length - 1])} (${days.length} shifts)`}, ${hours} h each, ${KINDS[kind].label}`);
+    await audit(user, "Logged a sick call-out", `${p.name}: ${days.length === 1 ? pretty(days[0]) : `${pretty(days[0])} – ${pretty(days[days.length - 1])} (${days.length} shifts)`}, ${hours} h each, ${KN[kind].label}`);
     return send(res, 200, { ok: true, added, updated, days });
   }
   if (what === "entries" && isUuid(parts[3])) {
@@ -359,20 +370,22 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
     if (!e) throw err(404, "That entry wasn't found.");
     const p = (await people(edit)).find(x => x.id === e.user_id);
     if (!p && !inScope(edit, e.division)) throw err(403, "You can't change call-outs for that division.");
+    const KN = kindsFor(await getSettings());
     if (parts[4] === "remove") {
       await pool.query("DELETE FROM sick_entries WHERE id = $1", [e.id]);
-      await audit(user, "Deleted a sick call-out", `${e.full_name}: ${pretty(e.d)}, ${Number(e.hours)} h, ${KINDS[e.kind]?.label || e.kind}`);
+      await audit(user, "Deleted a sick call-out", `${e.full_name}: ${pretty(e.d)}, ${Number(e.hours)} h, ${KN[e.kind]?.label || e.kind}`);
       return send(res, 200, { ok: true });
     }
-    const kind = KINDS[b.kind] ? b.kind : e.kind;
+    const kind = b.kind && b.kind !== e.kind && usable(KN, b.kind) ? b.kind : e.kind;
+    const prot = KN[kind] ? KN[kind].protected : e.protected;
     const hours = b.hours !== undefined ? Number(b.hours) : Number(e.hours);
     if (!(hours > 0 && hours <= 24)) throw err(400, "Hours: more than 0, up to 24.");
     const day = isDay(b.day) ? b.day : e.d;
     try {
       await pool.query(`UPDATE sick_entries SET day = $2, hours = $3, kind = $4, protected = $5, note_on_file = $6, notes = $7, updated_at = now() WHERE id = $1`,
-        [e.id, day, hours, kind, KINDS[kind].protected, b.noteOnFile !== undefined ? b.noteOnFile === true : e.note_on_file, b.notes !== undefined ? txt(b.notes, 500) : e.notes]);
+        [e.id, day, hours, kind, prot, b.noteOnFile !== undefined ? b.noteOnFile === true : e.note_on_file, b.notes !== undefined ? txt(b.notes, 500) : e.notes]);
     } catch (x) { if (x.code === "23505") throw err(409, "They already have a call-out on that day."); throw x; }
-    await audit(user, "Changed a sick call-out", `${e.full_name}: ${pretty(e.d)}${day !== e.d ? ` → ${pretty(day)}` : ""}, ${hours} h, ${KINDS[kind].label}`);
+    await audit(user, "Changed a sick call-out", `${e.full_name}: ${pretty(e.d)}${day !== e.d ? ` → ${pretty(day)}` : ""}, ${hours} h, ${KN[kind]?.label || kind}`);
     return send(res, 200, { ok: true });
   }
   if (what === "shifts") {
@@ -403,6 +416,19 @@ export async function handleSick(req, res, parts, user, send, jsonBody, url) {
     if (b.alertScore !== undefined) next.alertScore = Math.min(10, Math.max(1, Number(b.alertScore) || 7));
     if (Array.isArray(b.removed)) next.removed = b.removed.map(x => txt(x, 60)).filter(Boolean).slice(0, 40);
     if (Array.isArray(b.extra)) next.extra = b.extra.filter(h => isDay(h.day)).map(h => ({ day: h.day, label: txt(h.label, 60) || "Holiday" })).slice(0, 100);
+    // Leave types: [{key, label, off, protected (own types only)}]; a new one has no key yet
+    if (Array.isArray(b.kinds)) {
+      const kinds = {}, custom = [];
+      for (const k of b.kinds.slice(0, 30)) {
+        const label = txt(k.label, 60);
+        if (KINDS[k.key]) { kinds[k.key] = { ...(label && label !== KINDS[k.key].label ? { label } : {}), ...(k.off ? { off: true } : {}) }; continue; }
+        if (!label) continue;
+        const key = /^c_[a-z0-9_]{1,30}$/.test(k.key || "") ? k.key : `c_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 24) || "type"}_${custom.length + 1}`;
+        custom.push({ key, label, protected: !!k.protected, off: !!k.off });
+      }
+      next.kinds = kinds; next.customKinds = custom;
+      if (!Object.values(kindsFor(next)).some(k => !k.off)) throw err(400, "Keep at least one leave type turned on.");
+    }
     await pool.query("UPDATE sick_settings SET data = $1", [next]);
     deptCache = { at: 0 };
     await audit(user, "Changed sick leave settings", `look back ${next.lookbackMonths} months, holiday window ±${next.windowDays} day(s), alert at ${next.alertScore}`);

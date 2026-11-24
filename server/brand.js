@@ -8,6 +8,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { configureWork } from "../src/shifts.js";
 
 const APP_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const on = v => /^(1|on|true|yes)$/i.test(String(v || "").trim());
@@ -57,6 +58,76 @@ function savedTerms() {
   for (const [k, v] of Object.entries(t)) if (/^[a-z]{2,20}$/.test(k) && typeof v === "string" && v.trim()) out[k] = clean(v, 40);
   return out;
 }
+// ---- Organization settings (User Management › Organization; every product, St. George included) -----------------------------
+// <SYSTEM_DIR>/settings/org.json {industry: fire|business, words: {station, homeStation, callSign}, work: {...}}: kept outside the app
+// folder so updates never touch it. Fire/EMS installs (St. George, the demo sandbox) default to the fire-service wording and rotations;
+// every other install defaults to a business (locations, no call signs, Mon–Fri days).
+export const settingsDir = () => path.join(path.resolve(process.env.SYSTEM_DIR || path.join(APP_DIR, "..")), "settings");
+let orgCache = { mtime: -1, data: {} };
+function savedOrg() {
+  const f = path.join(settingsDir(), "org.json");
+  let st; try { st = fs.statSync(f); } catch { orgCache = { mtime: -1, data: {} }; return {}; }
+  if (st.mtimeMs !== orgCache.mtime) {
+    let data = {}; try { data = JSON.parse(fs.readFileSync(f, "utf8").replace(/^\uFEFF/, "")) || {}; } catch { data = {}; }
+    orgCache = { mtime: st.mtimeMs, data };
+  }
+  return orgCache.data;
+}
+const DAY = /^\d{4}-\d{2}-\d{2}$/, HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const PAY_KINDS = ["weekly", "biweekly", "semimonthly", "monthly"];
+export function orgSettings() {
+  const sv = savedOrg();
+  const defIndustry = product() === "nexus" || isSandbox() ? "fire" : "business";
+  const industry = ["fire", "business"].includes(sv.industry) ? sv.industry : defIndustry;
+  const fire = industry === "fire";
+  const W = sv.words || {};
+  const word = (k, d) => (typeof W[k] === "string" ? clean(W[k], 40) : d);
+  const words = {
+    station: word("station", fire ? "Station / assignment" : "Location"),
+    homeStation: word("homeStation", fire ? "Home station" : "Location"),
+    callSign: word("callSign", fire ? "Radio call sign" : ""),          // "" = not used (hidden)
+  };
+  const w = sv.work || {}, pay = w.pay || {};
+  const work = {
+    rotations: { fire: typeof w.rotations?.fire === "boolean" ? w.rotations.fire : fire, comms: typeof w.rotations?.comms === "boolean" ? w.rotations.comms : fire },
+    pay: {
+      kind: PAY_KINDS.includes(pay.kind) ? pay.kind : "biweekly",
+      start: DAY.test(String(pay.start || "")) ? pay.start : (fire ? "2026-10-22" : "2026-11-02"),
+      payDays: Number.isFinite(Number(pay.payDays)) ? Math.min(31, Math.max(0, Math.round(Number(pay.payDays)))) : 7,
+    },
+    periodHours: Number(w.periodHours) > 0 ? Math.min(400, Number(w.periodHours)) : (fire ? 80 : null),   // null = workdays × dayHours
+    dayHours: Number(w.dayHours) > 0 ? Math.min(24, Number(w.dayHours)) : 8,
+    dayStart: HHMM.test(String(w.dayStart || "")) ? w.dayStart : "08:00",
+  };
+  configureWork(work);   // server-side copy of the shared schedule code follows the saved settings
+  return { industry, fire, words, work };
+}
+export function saveOrgSettings(next) {
+  const cur = savedOrg(), out = { ...cur };
+  if (next.industry !== undefined) out.industry = ["fire", "business"].includes(next.industry) ? next.industry : undefined;
+  if (next.words && typeof next.words === "object") {
+    out.words = { ...(cur.words || {}) };
+    for (const k of ["station", "homeStation", "callSign"]) if (typeof next.words[k] === "string") out.words[k] = clean(next.words[k], 40);
+  }
+  if (next.work && typeof next.work === "object") {
+    const w = next.work, o = { ...(cur.work || {}) };
+    if (w.rotations) o.rotations = { fire: !!w.rotations.fire, comms: !!w.rotations.comms };
+    if (w.pay) {
+      if (!PAY_KINDS.includes(w.pay.kind)) throw Object.assign(new Error("Pick how often people are paid."), { status: 400 });
+      if ((w.pay.kind === "weekly" || w.pay.kind === "biweekly") && !DAY.test(String(w.pay.start || ""))) throw Object.assign(new Error("Give the first day of any one pay period."), { status: 400 });
+      o.pay = { kind: w.pay.kind, start: DAY.test(String(w.pay.start || "")) ? w.pay.start : undefined, payDays: Math.min(31, Math.max(0, Math.round(Number(w.pay.payDays) || 0))) };
+    }
+    if (w.periodHours !== undefined) o.periodHours = Number(w.periodHours) > 0 ? Math.min(400, Number(w.periodHours)) : null;
+    if (w.dayHours !== undefined) { const h = Number(w.dayHours); if (!(h > 0 && h <= 24)) throw Object.assign(new Error("Hours in a workday should be between 1 and 24."), { status: 400 }); o.dayHours = h; }
+    if (w.dayStart !== undefined) { if (!HHMM.test(String(w.dayStart))) throw Object.assign(new Error("The workday start should look like 08:00."), { status: 400 }); o.dayStart = w.dayStart; }
+    out.work = o;
+  }
+  fs.mkdirSync(settingsDir(), { recursive: true });
+  fs.writeFileSync(path.join(settingsDir(), "org.json"), JSON.stringify(out, null, 1) + "\n");
+  orgCache = { mtime: -1, data: {} };
+  return orgSettings();
+}
+
 export function brand() {
   const e = process.env;
   const prod = product(), P = PRODUCTS[prod], sv = savedBranding();
@@ -75,6 +146,7 @@ export function brand() {
     theme: prod, colors: themeOverrides(), terms: savedTerms(), wordmark: !!brandFile("brand-wordmark.png"), orgLogo: !!brandFile("org-logo.png"),
     // A new customer's install (kit from the License Manager): the first master admin gets the setup wizard
     setupPending: prod === "fenmorix" && !isSandbox() && sv.setup === "pending",
+    ...(() => { const o = orgSettings(); return { industry: o.industry, fire: o.fire, words: o.words, work: o.work }; })(),
     sandboxNote: isSandbox() ? clean(e.SANDBOX_NOTE, 300) || "Sandbox: every person, call and record here is made up. Don't enter real names, patient, case or personnel information." : "",
   };
 }

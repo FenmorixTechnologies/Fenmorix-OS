@@ -1109,3 +1109,24 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   transparent margins trimmed, 900 wide (BrandingAdmin `wordmarkFrom(img, 900)`, made by makeIconSet and by the name-logo upload); until one
   is uploaded, brandFile falls back to the kit's setup logo (png/jpg/webp) while an uploaded emblem exists. Directory on Fenmorix OS installs
   (not SGFD, not sandbox): My card, Everyone, Outside contacts. tests/sweep.mjs = open every section/page, report errors/blank/stuck loading.
+
+## Organization settings, Work Schedule, business wording (11/2026, migration 054)
+- Michael (11/2026, testing LGC): labels and options must be editable per client, not rebuilt. `<SYSTEM_DIR>/settings/org.json` (server/brand.js
+  `orgSettings()` / `saveOrgSettings()`, mtime cache): industry fire|business (default fire for nexus/sandbox, business otherwise), words {station
+  (Personnel File), homeStation (Directory card), callSign ('' = hidden)}, work {rotations {fire, comms}, pay {kind weekly|biweekly|semimonthly|
+  monthly, start, payDays}, periodHours (null = Mon–Fri days × dayHours), dayHours, dayStart}. brand() meta adds industry/fire/words/work;
+  src/brand.js BRAND.fire/words/work. src/shifts.js `configureWork` (client: reads the meta itself on load; server: orgSettings() calls it),
+  payPeriod/previousPeriod/nextPeriod/periodHours/describePay, WORK_PATTERNS filtered in place (ALL_PATTERNS for names). Time Tracker and Your Day
+  use periodHours and hide fire/comms chips unless those rotations are on. Directory: simple nav (My card, Everyone, Outside contacts) when !fire.
+- User Management › Organization (masters, `src/OrgAdmin.jsx`): GET/POST /api/system/org (audited "Changed organization settings"), POST
+  /api/system/divisions {action add|rename|remove, name, to, moveTo} (remove moves people, refuses when old records point at it). Packages without
+  SGFD content seed divisions Administration + Operations (build-package swaps 001/schema.sql).
+- Sick Leave kinds: settings.kinds {key: {label, off}} + customKinds [{key c_*, label, protected, off}] (`kindsFor`); off types not offered.
+- access.js: SECTION_MODULE gives every section its module; Permissions lists only licensed sections; profile levels filtered to them;
+  BUSINESS_PROFILES names (Basic, Supervisor, Manager, Owner / Director) when !fire. display.js offeredViews by module (duty only for fire),
+  switchToBoard only with the Command module.
+- Work Schedule (module timeclock: tile "schedule", api "schedule", section "schedule" edit/manage): server/schedule.js, table work_schedule
+  (user+day unique, start/end, early_at, note), GET ?from&to, /today (status working|later|left_early|done|out, Off Work overlay via offwork.js
+  `offFor`; TV = only "everyone" entries, reasons hidden), POST save/copy. UI src/Schedule.jsx (week grid, Fill the week, Copy last week, Today +
+  Leaving early), YourDay ScheduleWidget (id schedule), Display view "schedule"; helpers src/scheduleShared.js. Tests: e2e60.mjs via run-biz.sh (37).
+- Quick Links: "Copy password and open the site" + a note that websites can't be signed into from another site.

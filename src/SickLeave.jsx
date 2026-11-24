@@ -36,7 +36,7 @@ function Guide() {
 // ---- Log a call-out ------------------------------------------------------------------------------------
 function LogForm({ meta, toast, onDone, preset }) {
   const editable = meta.people.filter(p => p.canEdit);
-  const [f, setF] = useState({ userId: preset || "", from: new Date().toLocaleDateString("en-CA"), to: "", hours: "", kind: "sick", noteOnFile: false, calledAt: "", notes: "" });
+  const [f, setF] = useState({ userId: preset || "", from: new Date().toLocaleDateString("en-CA"), to: "", hours: "", kind: Object.keys(meta.kinds).find(k => !meta.kinds[k].off) || "sick", noteOnFile: false, calledAt: "", notes: "" });
   const set = (k, v) => setF(x => ({ ...x, [k]: v }));
   const person = editable.find(p => p.id === f.userId);
   async function save() {
@@ -55,7 +55,7 @@ function LogForm({ meta, toast, onDone, preset }) {
         <label><span style={label}>Through (optional)</span><input aria-label="Last day" type="date" style={inputStyle} value={f.to} onChange={e => set("to", e.target.value)} /></label>
         <label><span style={label}>Hours per shift</span><input aria-label="Hours" type="number" step="0.25" style={inputStyle} value={f.hours} placeholder={person ? String(person.hours) : ""} onChange={e => set("hours", e.target.value)} /></label>
         <label><span style={label}>Type</span><select aria-label="Type" style={inputStyle} value={f.kind} onChange={e => set("kind", e.target.value)}>
-          {Object.entries(meta.kinds).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
+          {Object.entries(meta.kinds).filter(([k, v]) => !v.off || k === f.kind).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
         <label><span style={label}>Called out at (optional)</span><input aria-label="Called out at" type="datetime-local" style={inputStyle} value={f.calledAt} onChange={e => set("calledAt", e.target.value)} /></label>
         <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13.5, marginTop: 18 }}><input type="checkbox" checked={f.noteOnFile} onChange={e => set("noteOnFile", e.target.checked)} /> Doctor's note on file</label>
         <label style={{ gridColumn: "1 / -1" }}><span style={label}>Notes (no medical details)</span><input aria-label="Notes" style={inputStyle} value={f.notes} onChange={e => set("notes", e.target.value)} placeholder="e.g. called the BC at 0545; covered by OT" /></label>
@@ -77,7 +77,7 @@ function EntryEdit({ e, meta, onClose, onSaved, toast }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         <label><span style={label}>Day</span><input aria-label="Day" type="date" style={inputStyle} value={f.day} onChange={x => set("day", x.target.value)} /></label>
         <label><span style={label}>Hours</span><input aria-label="Hours" type="number" step="0.25" style={inputStyle} value={f.hours} onChange={x => set("hours", x.target.value)} /></label>
-        <label style={{ gridColumn: "1 / -1" }}><span style={label}>Type</span><select aria-label="Type" style={inputStyle} value={f.kind} onChange={x => set("kind", x.target.value)}>{Object.entries(meta.kinds).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
+        <label style={{ gridColumn: "1 / -1" }}><span style={label}>Type</span><select aria-label="Type" style={inputStyle} value={f.kind} onChange={x => set("kind", x.target.value)}>{Object.entries(meta.kinds).filter(([k, v]) => !v.off || k === f.kind).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
         <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13.5 }}><input type="checkbox" checked={f.noteOnFile} onChange={x => set("noteOnFile", x.target.checked)} /> Doctor's note on file</label>
         <label style={{ gridColumn: "1 / -1" }}><span style={label}>Notes</span><input aria-label="Notes" style={inputStyle} value={f.notes} onChange={x => set("notes", x.target.value)} /></label>
       </div>
@@ -318,9 +318,11 @@ function Outlook({ meta, toast, onOpen }) {
 }
 
 // ---- Settings -------------------------------------------------------------------------------------------
+const BUILTIN_KINDS = ["sick", "family", "fmla", "injury", "accommodation"];
 function SettingsPage({ meta, toast, reload }) {
   const s = meta.settings;
-  const [f, setF] = useState({ lookbackMonths: s.lookbackMonths, windowDays: s.windowDays, alertScore: s.alertScore, removed: s.removed || [], extra: s.extra || [] });
+  const [f, setF] = useState({ lookbackMonths: s.lookbackMonths, windowDays: s.windowDays, alertScore: s.alertScore, removed: s.removed || [], extra: s.extra || [],
+    kinds: Object.entries(meta.kinds).map(([key, v]) => ({ key, label: v.label, off: !!v.off, protected: !!v.protected, custom: !!v.custom || !BUILTIN_KINDS.includes(key) })) });
   const [nd, setNd] = useState(""), [nl, setNl] = useState("");
   const set = (k, v) => setF(x => ({ ...x, [k]: v }));
   return <div style={{ ...cardStyle, maxWidth: 760 }}>
@@ -331,6 +333,19 @@ function SettingsPage({ meta, toast, reload }) {
         <option value={0}>The holiday only</option><option value={1}>The day before, the holiday and the day after</option><option value={2}>Two days either side</option></select></label>
       <label><span style={label}>Alert at a score of</span><input aria-label="Alert score" type="number" min="1" max="10" step="0.5" style={{ ...inputStyle, width: 90 }} value={f.alertScore} onChange={e => set("alertScore", e.target.value)} /></label>
     </div>
+    <div style={{ fontWeight: 700, margin: "14px 0 6px" }}>Leave types</div>
+    <div style={{ fontSize: 12.5, color: INK_SOFT, marginBottom: 6 }}>Rename them, turn off the ones your organization doesn't use (FMLA, for example), or add your own. Protected types are kept in totals but never counted in patterns or risk.</div>
+    {f.kinds.map((k, i) => <div key={k.key || `new${i}`} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "3px 0" }}>
+      <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13 }}><input type="checkbox" aria-label={`Use ${k.label}`} checked={!k.off}
+        onChange={e => set("kinds", f.kinds.map((x, j) => j === i ? { ...x, off: !e.target.checked } : x))} /> Use</label>
+      <input aria-label={`Name of leave type ${i + 1}`} style={{ ...inputStyle, flex: "1 1 260px", opacity: k.off ? 0.55 : 1 }} value={k.label}
+        onChange={e => set("kinds", f.kinds.map((x, j) => j === i ? { ...x, label: e.target.value } : x))} />
+      {k.custom ? <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={k.protected}
+        onChange={e => set("kinds", f.kinds.map((x, j) => j === i ? { ...x, protected: e.target.checked } : x))} /> Protected</label>
+        : <span style={{ fontSize: 12, color: INK_SOFT, minWidth: 70 }}>{k.protected ? "Protected" : ""}</span>}
+      {k.custom && <button aria-label={`Remove ${k.label}`} style={{ ...btn("ghost"), color: BRICK, padding: "2px 6px" }} onClick={() => set("kinds", f.kinds.filter((_, j) => j !== i))}><X size={13} /></button>}
+    </div>)}
+    <button style={{ ...btn("outline"), marginTop: 4 }} onClick={() => set("kinds", [...f.kinds, { key: "", label: "", off: false, protected: false, custom: true }])}><Plus size={13} /> Add a leave type</button>
     <div style={{ fontWeight: 700, margin: "14px 0 6px" }}>Holidays and high-call-out days</div>
     <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px" }}>{meta.defaults.map(l => <label key={l} style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13.5 }}>
       <input type="checkbox" checked={!f.removed.includes(l)} onChange={e => set("removed", e.target.checked ? f.removed.filter(x => x !== l) : [...f.removed, l])} /> {l}</label>)}</div>
@@ -343,7 +358,7 @@ function SettingsPage({ meta, toast, reload }) {
       <button style={btn("outline")} disabled={!nd} onClick={() => { set("extra", [...f.extra, { day: nd, label: nl || "Holiday" }]); setNd(""); setNl(""); }}><Plus size={13} /> Add</button>
     </div>
     <div style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 12 }}>How the score works: each person's usual rate of starting a call-out on a scheduled shift (pulled toward the department's rate when they have little history), raised by any pattern that fits the day (holiday, weekday, next to their own leave), turned into a chance for that shift. Score = 10 × (1 − e<sup>−chance ÷ 15%</sup>): a 10% chance is about 4.9, 20% about 7.4, 35% about 9.0.</div>
-    <div style={{ marginTop: 14 }}><button style={btn("primary")} onClick={async () => { try { await api("/settings", { ...f, lookbackMonths: Number(f.lookbackMonths), alertScore: Number(f.alertScore) }); toast("Settings saved."); reload(); } catch (e) { toast(e.message); } }}>Save settings</button></div>
+    <div style={{ marginTop: 14 }}><button style={btn("primary")} onClick={async () => { try { await api("/settings", { ...f, kinds: f.kinds.filter(k => k.label.trim()), lookbackMonths: Number(f.lookbackMonths), alertScore: Number(f.alertScore) }); toast("Settings saved."); reload(); } catch (e) { toast(e.message); } }}>Save settings</button></div>
   </div>;
 }
 

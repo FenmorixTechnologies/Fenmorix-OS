@@ -49,6 +49,9 @@ export const SECTIONS = [
   { key: "board", label: "Board report", tile: "access", everyone: "",
     levels: { view: "Build, save and print operational reports for Fire Board meetings (calls, response times, apparatus, fires, training, prevention)",
       manage: "Also settings (CAD agency, call types) and decide who else can" } },
+  { key: "schedule", label: "Work schedule", divisions: true, tile: "everyone", everyone: "See the work schedule (who's working when)",
+    levels: { edit: "Set the schedule for people in these divisions (days ahead, leaving early); everyone can see it",
+      manage: "Also decide who else can set the schedule" } },
   { key: "offwork", label: "Off Work", divisions: true, tile: "everyone", everyone: "Post their own days off; see who's out (what each person shares with them)",
     levels: { view: "See every Off Work entry, whoever it was shared with", edit: "Also post and change days off for people in these divisions",
       manage: "Also settings (who sees sick call-outs) and decide who else can post for others" }, profiles: { chief: "view", division: "view" } },
@@ -105,11 +108,28 @@ export const BUILTIN_PROFILES = [
   { key: "division", name: "Division Head / Deputy Chief", description: "Chief Officer views plus Help Desk and gear tickets and Comms statistics." },
   { key: "firechief", name: "Fire Chief", description: "Sees everything in every section, manages nothing.", all: "view" },
 ];
+// Which module each section belongs to (src/modules.js keys); core sections have none
+const SECTION_MODULE = { time: "timeclock", schedule: "timeclock", callout: "callout", recordings: "recordings", forms: "forms", messages: "messaging", pial: "pial",
+  leave: "leave", helpdesk: "helpdesk", gear: "gear", board: "board", offwork: "offwork", links: "links", callalerts: "callalerts", forceback: "forceback",
+  command: "command", sick: "sick", training: "training", imt: "imt", evals: "evals", recall: "recall", bookings: "training", stats: "stats",
+  fireprev: "fireprev", investigations: "investigations" };
+for (const s of SECTIONS) if (!s.module && SECTION_MODULE[s.key]) s.module = SECTION_MODULE[s.key];
 const SECTION = Object.fromEntries(SECTIONS.map(s => [s.key, s]));
-// Sections of opt-in modules only show when the module is licensed
+// Only the sections of modules this install has (license) show on the Permissions pages
 async function shownSections() {
   const { moduleOn } = await import("./license.js");
   return SECTIONS.filter(s => !s.module || moduleOn(s.module));
+}
+// Built-in profile names: fire-service ones for a fire/EMS department, plain ones for a business (User Management › Organization)
+const BUSINESS_PROFILES = {
+  basic: { name: "Basic", description: "Every employee: what everyone gets." },
+  chief: { name: "Supervisor", description: "Supervisors: view time, sick leave, days off and the other sections their people use." },
+  division: { name: "Manager", description: "Supervisor views plus tickets and statistics, where this system has them." },
+  firechief: { name: "Owner / Director", description: "Sees everything in every section, manages nothing." },
+};
+async function builtinText(p) {
+  const { orgSettings } = await import("./brand.js");
+  return orgSettings().fire ? { name: p.name, description: p.description } : BUSINESS_PROFILES[p.key] || { name: p.name, description: p.description };
 }
 export const RANK = { view: 1, edit: 2, manage: 3 };
 
@@ -191,7 +211,8 @@ export async function loadProfiles(c) {
   const rows = (await c.query("SELECT key, name, description, builtin, levels, updated_by, updated_at FROM access_profiles")).rows;
   const byKey = new Map(rows.map(r => [r.key, r]));
   const out = [];
-  for (const p of BUILTIN_PROFILES) {
+  for (const p0 of BUILTIN_PROFILES) {
+    const p = { ...p0, ...(await builtinText(p0)) };
     const r = byKey.get(p.key), base = builtinLevels(p.key), levels = { ...base };
     const ch = r?.levels || {};
     for (const k of Array.isArray(ch.remove) ? ch.remove : []) delete levels[k];
@@ -395,6 +416,8 @@ export async function handleAccess(req, res, parts, user, send, jsonBody) {
     const names = new Map((await pool.query("SELECT id, full_name FROM users")).rows.map(r => [r.id, r.full_name]));
     const g2 = (await pool.query("SELECT id, granted_by, granted_at FROM access_grants")).rows;
     const meta = new Map(g2.map(r => [r.id, r]));
+    const shownKeys = new Set((await shownSections()).map(x => x.key));
+    const onlyShown = lv => Object.fromEntries(Object.entries(lv || {}).filter(([k]) => shownKeys.has(k)));
     const visible = grants.filter(g => rights.master || rights.sections.has(g.section));
     return send(res, 200, {
       isMaster: rights.master, canGroups: rights.master || rights.sections.has("accounts"),
@@ -406,7 +429,8 @@ export async function handleAccess(req, res, parts, user, send, jsonBody) {
         grantedBy: names.get(meta.get(g.id)?.granted_by) || "", grantedAt: meta.get(g.id)?.granted_at || null })),
       effective: Object.fromEntries([...byUser].map(([uid, list]) => [uid, list.filter(g => rights.master || rights.sections.has(g.section))])),
       auto: Object.fromEntries(users.map(u => [u.id, auto(u).filter(a => rights.master || rights.sections.has(a.section))])),
-      profiles: rights.master ? profiles : profiles.map(p => ({ ...p, assigned: [] })),
+      // levels only for the sections this install has
+      profiles: (rights.master ? profiles : profiles.map(p => ({ ...p, assigned: [] }))).map(p => ({ ...p, levels: onlyShown(p.levels), base: onlyShown(p.base) })),
       profileOf: Object.fromEntries(users.map(u => [u.id, [...new Set((byUser.get(u.id) || []).filter(g => g.profile).map(g => g.profile))]])),
     });
   }
@@ -496,7 +520,7 @@ export async function handleAccess(req, res, parts, user, send, jsonBody) {
       if (!PROFILE[key]) throw err(400, "Only built-in profiles can be reset.");
       await pool.query("DELETE FROM access_profiles WHERE key = $1", [key]);
       clearAccessCache();
-      await audit(pool, user, "Reset profile", PROFILE[key].name);
+      await audit(pool, user, "Reset profile", (await builtinText(PROFILE[key])).name);
       return send(res, 200, { ok: true });
     }
     if (key && act === "remove") {
@@ -520,7 +544,8 @@ export async function handleAccess(req, res, parts, user, send, jsonBody) {
       // Built-in: keep only the differences from how it ships, so later updates still reach it
       const base = builtinLevels(k);
       stored = { add: Object.fromEntries(Object.entries(levels).filter(([s2, l]) => base[s2] !== l)), remove: Object.keys(base).filter(s2 => !levels[s2]) };
-      const same = !Object.keys(stored.add).length && !stored.remove.length && name === PROFILE[k].name && String(b.description ?? PROFILE[k].description) === PROFILE[k].description;
+      const shipped = await builtinText(PROFILE[k]);
+      const same = !Object.keys(stored.add).length && !stored.remove.length && name === shipped.name && String(b.description ?? shipped.description) === shipped.description;
       if (same) await pool.query("DELETE FROM access_profiles WHERE key = $1", [k]);
       else await pool.query(`INSERT INTO access_profiles (key, name, description, builtin, levels, updated_by) VALUES ($1, $2, $3, true, $4, $5)
                               ON CONFLICT (key) DO UPDATE SET name = $2, description = $3, levels = $4, updated_by = $5, updated_at = now()`,

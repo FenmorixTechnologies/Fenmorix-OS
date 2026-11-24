@@ -27,7 +27,7 @@ import crypto from "node:crypto";
 import { execFile } from "node:child_process";
 import { pool } from "./db.js";
 import { unzip } from "./xlsx.js";
-import { brand, product, savedBranding, brandingDir, uploadedAssetsDir, setupLogoFile, BRAND_FILES, COLOR_KEYS, HEX } from "./brand.js";
+import { orgSettings, saveOrgSettings, brand, product, savedBranding, brandingDir, uploadedAssetsDir, setupLogoFile, BRAND_FILES, COLOR_KEYS, HEX } from "./brand.js";
 import { TILE_LABELS } from "../src/modules.js";
 import { PACKAGE } from "./buildFlags.js";
 
@@ -229,6 +229,56 @@ async function withSeats(sum) {
   return { ...sum, seatsUsed: used };
 }
 
+// ---- Organization page ----------------------------------------------------------------------------------------------------
+async function orgState() {
+  const divisions = (await pool.query(`SELECT d.name, count(u.id) FILTER (WHERE u.active)::int AS people FROM divisions d
+    LEFT JOIN users u ON u.division_id = d.id GROUP BY d.id, d.name ORDER BY d.name`)).rows;
+  return { ...orgSettings(), divisions };
+}
+const divName = v => String(v ?? "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 60);
+async function changeDivision(user, b) {
+  const name = divName(b.name);
+  const row = async n => (await pool.query("SELECT id FROM divisions WHERE lower(name) = lower($1)", [n])).rows[0];
+  if (b.action === "add") {
+    if (!name) throw err(400, "Give the division a name.");
+    if (await row(name)) throw err(409, `There's already a division called ${name}.`);
+    await pool.query("INSERT INTO divisions (name) VALUES ($1)", [name]);
+    return audit(user, "Added a division", name);
+  }
+  const cur = await row(name);
+  if (!cur) throw err(404, "That division isn't there any more.");
+  if (b.action === "rename") {
+    const to = divName(b.to);
+    if (!to) throw err(400, "Give the new name.");
+    const other = await row(to);
+    if (other && other.id !== cur.id) throw err(409, `There's already a division called ${to}.`);
+    await pool.query("UPDATE divisions SET name = $2 WHERE id = $1", [cur.id, to]);
+    const { clearAccessCache } = await import("./access.js"); clearAccessCache();
+    return audit(user, "Renamed a division", `${name} → ${to}`);
+  }
+  if (b.action === "remove") {
+    const c = await pool.connect();
+    try {
+      await c.query("BEGIN");
+      let moved = 0;
+      if (b.moveTo) {
+        const dest = await row(divName(b.moveTo));
+        if (!dest || dest.id === cur.id) throw err(400, "Pick another division to move its people to.");
+        moved = (await c.query("UPDATE users SET division_id = $2 WHERE division_id = $1", [cur.id, dest.id])).rowCount;
+      }
+      const left = Number((await c.query("SELECT count(*) FROM users WHERE division_id = $1", [cur.id])).rows[0].count);
+      if (left) throw err(409, `${left} ${left === 1 ? "person is" : "people are"} still in ${name}. Pick a division to move them to.`);
+      await c.query("DELETE FROM user_sign_divisions WHERE division_id = $1", [cur.id]);
+      try { await c.query("DELETE FROM divisions WHERE id = $1", [cur.id]); }
+      catch (e) { if (e.code === "23503") throw err(409, `${name} is still on older records (purchases, schedules or permissions), so it can't be removed. Rename it instead.`); throw e; }
+      await c.query("COMMIT");
+      const { clearAccessCache } = await import("./access.js"); clearAccessCache();
+      return audit(user, "Removed a division", `${name}${moved ? ` (${moved} moved to ${divName(b.moveTo)})` : ""}`);
+    } catch (e) { await c.query("ROLLBACK").catch(() => {}); throw e; } finally { c.release(); }
+  }
+  throw err(400, "Add, rename or remove?");
+}
+
 export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
   if (user.role !== "master") throw err(403, "System is for master admins.");
   const what = parts[2] || "";
@@ -241,6 +291,7 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     res.writeHead(200, { "Content-Type": type, "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox" });
     return res.end(await fs.readFile(f));
   }
+  if (req.method === "GET" && what === "org") return send(res, 200, await orgState());
   if (req.method === "GET" && what === "branding") return send(res, 200, await brandingState());
   if (req.method === "GET" && what === "license") { const { licenseSummary } = await import("./license.js"); return send(res, 200, await withSeats(licenseSummary())); }
   if (req.method === "GET" && what === "log") {
@@ -280,6 +331,19 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     installLicense(text);
     await audit(user, "Installed a license", `${r.payload.customer} · ${r.payload.id} · ${r.payload.modules.length} modules · expires ${r.payload.expires || "never"}`);
     return send(res, 200, { ...(await withSeats(licenseSummary())), installed: true, restart: true });
+  }
+  // Organization: fire/EMS or business, wording, work schedules and pay periods, divisions (masters; no code needed)
+  if (what === "org") {
+    const before = orgSettings();
+    const after = saveOrgSettings(b);
+    const changed = [before.industry !== after.industry && `type: ${after.industry === "fire" ? "fire/EMS" : "business"}`,
+      JSON.stringify(before.words) !== JSON.stringify(after.words) && "wording", JSON.stringify(before.work) !== JSON.stringify(after.work) && "work schedules / pay periods"].filter(Boolean);
+    if (changed.length) await audit(user, "Changed organization settings", changed.join(", "));
+    return send(res, 200, { ...(await orgState()), saved: true });
+  }
+  if (what === "divisions") {
+    await changeDivision(user, b);
+    return send(res, 200, { ...(await orgState()), saved: true });
   }
   // Sandbox only: which modules the demo shows (no license file on a sandbox; see license.js demoModules)
   if (what === "demo-modules") {

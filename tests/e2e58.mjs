@@ -71,7 +71,7 @@ check("login stored encrypted", !psql("SELECT secret FROM quick_links WHERE titl
 await page.getByRole("button", { name: "Show login for Coin supplier portal" }).click(); await page.waitForTimeout(800);
 const box = page.getByRole("group", { name: "Login for Coin supplier portal" });
 check("owner reveals the login", /lgc-buyer/.test(await box.innerText()) && /S3cret-Bullion!/.test(await box.innerText()));
-await box.getByRole("button", { name: "Copy password" }).click(); await page.waitForTimeout(300);
+await box.getByRole("button", { name: "Copy password", exact: true }).click(); await page.waitForTimeout(300);
 check("password copied", (await page.evaluate(() => navigator.clipboard.readText())) === "S3cret-Bullion!");
 check("reveal logged (name only)", /Revealed a shared login/.test(psql("SELECT string_agg(action || ' ' || detail, ';') FROM audit_log WHERE module = 'Quick Links'"))
   && !psql("SELECT string_agg(detail, ';') FROM audit_log").includes("S3cret"));

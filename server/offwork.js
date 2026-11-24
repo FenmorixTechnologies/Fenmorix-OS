@@ -102,6 +102,12 @@ async function entriesFor(user, r, from, to) {
   return out.sort((a, b) => a.from.localeCompare(b.from) || a.name.localeCompare(b.name));
 }
 
+// Who's out in [from, to], for the work schedule: what this person may see, or (user null: a TV screen) only what's shared with everyone
+export async function offFor(user, from, to) {
+  if (user) return entriesFor(user, await rights(user), from, to);
+  return entriesFor({ id: "" }, { viewAll: false, canEditFor: () => false }, from, to);
+}
+
 export async function handleOffwork(req, res, parts, user, send, jsonBody, url) {
   const what = parts[2];
   const r = await rights(user);

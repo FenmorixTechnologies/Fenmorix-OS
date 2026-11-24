@@ -159,6 +159,7 @@ async function handleApi(req, res, url) {
   if (parts[1] === "callalerts") { const { handleCallAlerts } = await import("./callalerts.js"); return handleCallAlerts(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "system") { const { handleSystem } = await import("./system.js"); return handleSystem(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "forceback") { const { handleForceback } = await import("./forceback.js"); return handleForceback(req, res, parts, user, send, jsonBody); }
+  if (parts[1] === "schedule") { const { handleSchedule } = await import("./schedule.js"); return handleSchedule(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "offwork") { const { handleOffwork } = await import("./offwork.js"); return handleOffwork(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "spot") { const { handleSpot } = await import("./spot.js"); return handleSpot(req, res, parts, user, send, url); }
   if (parts[1] === "links") { const { handleLinks } = await import("./links.js"); return handleLinks(req, res, parts, user, send, jsonBody); }
@@ -328,6 +329,7 @@ try {
   process.exit(1);
 }
 await migrate();
+brand();   // reads the organization settings (pay periods, rotations) into the shared schedule code
 { const ls = licenseState(); console.log(`License: ${ls.mode}${ls.license ? ` (${ls.license.customer}, ${ls.modules.size} modules)` : ""}${ls.error ? ` - ${ls.error}` : ""}`); }
 // A sandbox ships every module and switches them in System › Demo modules: start everything so turning one on needs no restart
 const startOn = k => moduleOn(k) || isSandbox();

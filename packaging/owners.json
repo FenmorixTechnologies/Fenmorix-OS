@@ -217,5 +217,11 @@
  "scripts/install-whisper.ps1": [
   "evals",
   "recordings"
+ ],
+ "server/schedule.js": [
+  "timeclock"
+ ],
+ "src/Schedule.jsx": [
+  "timeclock"
  ]
 }

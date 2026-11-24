@@ -4,7 +4,7 @@ import { BRAND } from "./brand.js";
 import { tileOn, moduleOn } from "./licensing.js";
 // Your Day widgets belong to the section their button opens (hidden when that module isn't licensed)
 const SHIFT_MODULES = ["leave", "forceback", "activecalls", "command", "recall", "training", "callout", "stats"];
-const WIDGET_TILE = { spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
+const WIDGET_TILE = { schedule: "schedule", spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
 import {
   cardStyle, btn, loadShared, money, reqAmount, waitingSummary, canMarkReqPaid, coversDivision,
 } from "./App.jsx";
@@ -14,11 +14,12 @@ import { setBackground } from "./storage.js";
 import ActiveCalls from "./ActiveCalls.jsx";
 import WeatherBar from "./Weather.jsx";
 import { chime, soundOn, setSoundOn } from "./chime.js";
-import { todayISO, payPeriod, pretty, fireShift, commsShifts, dayNum, neededPerShift, unitWord } from "./shifts.js";
+import { todayISO, payPeriod, pretty, fireShift, commsShifts, dayNum, neededPerShift, unitWord, periodHours, workSettings } from "./shifts.js";
 import PunchClock from "./PunchClock.jsx";
 import { useSpot, Change, SpotChart, money as spotMoney, METAL_COLOR } from "./Spot.jsx";
 import { fetchLinks } from "./QuickLinks.jsx";
-import { Coins, Link2, ExternalLink } from "lucide-react";
+import { Coins, Link2, ExternalLink, CalendarClock } from "lucide-react";
+import { STATUS as SCHED_STATUS, dayLine } from "./scheduleShared.js";
 
 // Colors are defined here (not imported) because this file is loaded while
 // App.jsx is still starting up; values used outside a component must be local.
@@ -90,7 +91,8 @@ export function useYourDay() {
         .reduce((s, e) => s + Number(e.hours || 0), 0);
       const daysLeft = dayNum(period.end) - dayNum(today) + 1;
       const workedToday = time.some(e => e.userId === me.id && e.date === today && Number(e.hours) > 0);
-      const need = neededPerShift({ pattern: me.workPattern || "", period, today, remaining: Math.max(0, 80 - worked), workedToday });
+      const target = periodHours(period);
+      const need = neededPerShift({ pattern: me.workPattern || "", period, today, remaining: Math.max(0, target - worked), workedToday });
 
       const myReqs = reqs.filter(r => r.requestedBy === me.name);
       const openReqs = myReqs.filter(r => r.status.startsWith("pending") || r.status === "approved")
@@ -111,7 +113,7 @@ export function useYourDay() {
         accountRequests: auth?.pendingCount || 0,
         inv: invTodo || { reviewDue: false, trainingDue: null },
         me, today, sign, myTickets, overdue, newHelp, newGear, myGearTickets, meetingRequests, todaysMeetings, nextMeeting, reimbToApprove,
-        period, worked, remaining: Math.max(0, 80 - worked), daysLeft, need, pattern: me.workPattern || "", openReqs, onCall,
+        period, worked, target, remaining: Math.max(0, target - worked), daysLeft, need, pattern: me.workPattern || "", openReqs, onCall,
         paidReady: ["master", "accounting"].includes(me.role) ? reqs.filter(r => canMarkReqPaid(me, r)).length : 0,
       });
     };
@@ -307,7 +309,7 @@ export default function YourDayPanel({ data: d, onOpen }) {
   const openForms = d.forms.mine.filter(s => s.open);
   const formLabel = s => s.stage && s.status !== "denied" ? s.stage : s.status === "pending_approval" ? "Waiting for approval"
     : s.reviewed ? "Reviewed" : s.status === "approved" ? "Approved" : s.status === "denied" ? "Denied" : "Submitted";
-  const pct = Math.min(1, d.worked / 80);
+  const pct = Math.min(1, d.worked / (d.target || 80));
 
   return (
     <section aria-label="Your day" style={{ marginBottom: 22 }}>
@@ -320,9 +322,9 @@ export default function YourDayPanel({ data: d, onOpen }) {
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {/* Fire / Comms rotations: only for public-safety installs (a business has no A/B/C shifts) */}
           {SHIFT_MODULES.some(moduleOn) && <>
-          <ShiftChip label="Fire" value={`${fire} shift`} color={BRICK} />
-          <ShiftChip label="Comms days" value={cs.day} color={BRASS_DEEP} />
-          <ShiftChip label="Comms nights" value={cs.night} color={INK} /></>}
+          {workSettings().rotations.fire && <ShiftChip label="Fire" value={`${fire} shift`} color={BRICK} />}
+          {workSettings().rotations.comms && <ShiftChip label="Comms days" value={cs.day} color={BRASS_DEEP} />}
+          {workSettings().rotations.comms && <ShiftChip label="Comms nights" value={cs.night} color={INK} />}</>}
           <button onClick={toggleSound} aria-pressed={sound} title="Play a light ding when something new needs you"
             style={{ border: `1px solid ${LINE}`, background: "#fff", color: sound ? INK : INK_SOFT, cursor: "pointer", fontSize: 12.5, padding: "4px 10px", borderRadius: 999, fontFamily: "inherit" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{sound ? <Bell size={14} color={AMBER} fill="#F4B860" /> : <BellOff size={14} />}{sound ? "Sound on" : "Sound off"}</span>
@@ -377,10 +379,10 @@ export default function YourDayPanel({ data: d, onOpen }) {
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 18, alignItems: "center" }}>
               <Ring pct={pct} color={d.remaining ? BRASS_DEEP : SAGE}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: INK, lineHeight: 1 }}>{hrs(d.worked)}</div>
-                <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 3 }}>of 80 hrs</div>
+                <div style={{ fontSize: 11, color: INK_SOFT, marginTop: 3 }}>of {d.target || 80} hrs</div>
               </Ring>
               <div style={{ display: "grid", gap: 8 }}>
-                <Stat label="Left to 80" value={`${hrs(d.remaining)} h`} color={d.remaining ? BRICK : SAGE} />
+                <Stat label={`Left to ${d.target || 80}`} value={`${hrs(d.remaining)} h`} color={d.remaining ? BRICK : SAGE} />
                 <Stat label={`Needed per ${unitWord(d.pattern, 1)}`} value={!d.remaining ? "Done" : d.need.perShift === null ? "—" : `${hrs(d.need.perShift)} h`} color={INK} />
                 <Stat label="Pay day" value={pretty(d.period.payday, { weekday: "short", month: "short", day: "numeric" })} color={INK} />
               </div>
@@ -409,6 +411,7 @@ export default function YourDayPanel({ data: d, onOpen }) {
           <MessagesWidget onOpen={onOpen} unread={d.messages?.unread || 0} />
           <OnDutyWidget onOpen={onOpen} />
           <BookingsWidget onOpen={onOpen} />
+          <ScheduleWidget onOpen={onOpen} />
           <OffWorkWidget onOpen={onOpen} />
           <SpotWidget onOpen={onOpen} />
           <LinksWidget onOpen={onOpen} />
@@ -514,7 +517,7 @@ function OnDutyWidget({ onOpen }) {
 
 // ---- Widget layout: order + collapsed, saved to the person's profile (/api/prefs "yourDay") ----
 const WidgetLayout = createContext(null);
-const DEFAULT_ORDER = ["spot", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
+const DEFAULT_ORDER = ["spot", "schedule", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
 function useWidgetLayout() {
   const [saved, setSaved] = useState({ order: [], collapsed: [] });
   const [editing, setEditing] = useState(false);
@@ -645,6 +648,36 @@ function MessagesWidget({ onOpen, unread }) {
 // Off Work: who's out today and in the next week (what each person shares with this viewer; sick call-outs as "Out sick")
 const hm = t => { const [h, m] = t.split(":").map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}${h < 12 ? "a" : "p"}`; };
 const OFF_COLOR = { off: BRASS_DEEP, vacation: SAGE, meeting: "#0E7C86", training: "#7A4FB0", ooo: AMBER, remote: INK_SOFT, other: INK_SOFT, sick: BRICK, leave: INK_SOFT };
+// Work schedule (Time Clock module): who's working today, from the schedule; refreshed every 5 minutes
+function ScheduleWidget({ onOpen }) { return tileOn("schedule") ? <ScheduleWidgetBody onOpen={onOpen} /> : null; }
+function ScheduleWidgetBody({ onOpen }) {
+  const [d, setD] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    const load = () => fetch("/api/schedule/today", { credentials: "same-origin", headers: { "X-SGFD-Background": "1" } })
+      .then(r => (r.ok ? r.json() : null)).then(j => { if (alive && j) setD(j); }, () => {});
+    load();
+    const t = setInterval(load, 5 * 60_000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+  const here = d?.list?.filter(e => e.status === "working").length || 0;
+  return (
+    <Widget id="schedule" icon={CalendarClock} tint="#2E7D4F" title="Working today" action="Work Schedule" onAction={() => onOpen("schedule")} count={here}>
+      {!d && <Empty>Loading…</Empty>}
+      {d && !d.list.length && <Empty>No one is on today's schedule.</Empty>}
+      {d && <div style={{ maxHeight: 280, overflowY: "auto" }}>{d.list.map(e => (
+        <div key={e.userId} onClick={() => onOpen("schedule")} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${LINE}`, cursor: "pointer", minWidth: 0 }}>
+          <span title={SCHED_STATUS[e.status].label} style={{ width: 8, height: 8, borderRadius: 4, background: SCHED_STATUS[e.status].color, flexShrink: 0 }} />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <Ellipsis style={{ display: "block", fontWeight: 700 }}>{e.name}</Ellipsis>
+            <Ellipsis style={{ display: "block", fontSize: 12, color: INK_SOFT }}>{e.status === "out" ? (e.off?.label || "Out") : dayLine(e)}{e.note ? ` · ${e.note}` : ""}</Ellipsis>
+          </div>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: SCHED_STATUS[e.status].color, whiteSpace: "nowrap" }}>{SCHED_STATUS[e.status].label}</span>
+        </div>))}</div>}
+    </Widget>
+  );
+}
+
 function OffWorkWidget({ onOpen }) {
   const [d, setD] = useState(null);
   useEffect(() => {

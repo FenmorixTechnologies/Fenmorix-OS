@@ -24,6 +24,10 @@ export const BRAND = {
   vendor: b.vendor || "", copyright: b.copyright || "",
   wordmark: !!b.wordmark,
   orgLogo: !!b.orgLogo,
+  // Organization settings (User Management › Organization): fire/EMS or business, field wording, work settings
+  fire: b.fire !== undefined ? !!b.fire : (b.product || "nexus") === "nexus" || !!b.sandbox,
+  words: { station: "Station / assignment", homeStation: "Home station", callSign: "Radio call sign", ...(b.words || {}) },
+  work: b.work || null,
   // The customer's own menu names {tileKey: name} (Branding page; Fenmorix OS only)
   terms: b.terms && typeof b.terms === "object" ? b.terms : {},
   setupPending: !!b.setupPending,

@@ -7,7 +7,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, Cell
 } from "recharts";
-import { Coins, Link2 } from "lucide-react";
+import { Coins, Link2, CalendarClock } from "lucide-react";
 import { SpotPrices } from "./Spot.jsx";
 import QuickLinksModule from "./QuickLinks.jsx";
 import {
@@ -39,6 +39,7 @@ import EvalsModule from "./Evals.jsx";
 import RecallModule from "./Recall.jsx";
 import FirePreventionModule from "./FirePrevention.jsx";
 import OffWorkModule from "./OffWork.jsx";
+import ScheduleModule from "./Schedule.jsx";
 import NotificationsModule from "./Notifications.jsx";
 import ForceBackModule from "./ForceBack.jsx";
 import CallAlertsModule from "./CallAlerts.jsx";
@@ -3409,7 +3410,8 @@ function SplashScreen({ onSelect }) {
     { key: "callalerts", label: "Call Alerts", icon: Siren, desc: "Get a notification when calls you care about come in; department alerts for people and groups" },
     { key: "forceback", label: "Force Back", icon: Repeat, desc: "Who's next to be forced back, and the log of every call" },
     { key: "directory", label: "Directory", icon: Users, desc: "People by division, stations, outside contacts" },
-    { key: "timetracker", label: "Time Tracker", icon: Clock, desc: "Punch in and out; hours toward your 80-hour pay period" },
+    { key: "timetracker", label: "Time Tracker", icon: Clock, desc: "Punch in and out; hours toward your pay period" },
+    { key: "schedule", label: "Work Schedule", icon: CalendarClock, desc: "Who's working when; set ahead of time, including who leaves early" },
     { key: "callout", label: "Call-Out Schedule", icon: PhoneCall, desc: "Who's on call by division, call-back order, and shifts on duty" },
     { key: "leave", label: "Leave Picks", icon: CalendarDays, desc: "Annual vacation and holiday pick by unit and crew" },
     { key: "training", label: "Training", icon: GraduationCap, desc: "Training hours and what's missing, today's crew, classroom bookings and apparatus" },
@@ -5767,6 +5769,7 @@ export default function App() {
   if (activeModule === "spot") return <AppShell section="Spot Prices" nav={[{ key: "prices", label: "Prices", icon: Coins }]} active="prices" onNav={() => {}} onHome={() => setActiveModule(null)}>
     <h1 style={{ margin: "0 0 10px", fontSize: 24, color: "#13233F" }}>{tileName("spot", "Spot Prices")}</h1><SpotPrices isMaster={sessionUser?.role === "master"} /></AppShell>;
   if (activeModule === "links") return <QuickLinksModule onBack={() => setActiveModule(null)} />;
+  if (activeModule === "schedule") return <ScheduleModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "offwork") return <OffWorkModule onBack={() => setActiveModule(null)} initialView={openWith?.view} />;
   if (activeModule === "fireprev") return <FirePreventionModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "recall") return <RecallModule key={JSON.stringify(openWith || {})} init={openWith} onBack={() => setActiveModule(null)} />;

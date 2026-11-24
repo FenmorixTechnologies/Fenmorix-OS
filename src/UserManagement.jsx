@@ -2,10 +2,11 @@
 // and each person's division, role, signing divisions and permissions.
 import AppShell from "./AppShell.jsx";
 import { useSession } from "./session.js";
-import { KeyRound, Users, ShieldCheck, Layers, User, BadgeCheck, MonitorSmartphone, Server } from "lucide-react";
+import { KeyRound, Users, ShieldCheck, Layers, User, BadgeCheck, MonitorSmartphone, Server, Building2 } from "lucide-react";
 import PermissionsPanel from "./Permissions.jsx";
 import DisplayScreensPanel from "./DisplayAdmin.jsx";
 import SystemPanel from "./SystemAdmin.jsx";
+import OrgPanel from "./OrgAdmin.jsx";
 import React, { useEffect, useState } from "react";
 import {
   wrapStyle, cardStyle, inputStyle, btn, sectionTitle, StyleBlock, MainMenuButton,
@@ -278,16 +279,17 @@ export default function UserManagementModule({ onBack }) {
     ...(isMaster ? [{ key: "profiles", label: "Profiles", icon: BadgeCheck, group: "Permissions" }] : []),
     { key: "groups", label: "Groups", icon: Layers, group: "Permissions" },
     ...(canAccounts ? [{ key: "displays", label: "Display screens", icon: MonitorSmartphone }] : []),
-    ...(isMaster ? [{ key: "system", label: "System", icon: Server, group: "Server" }] : []),
+    ...(isMaster ? [{ key: "org", label: "Organization", icon: Building2, group: "Server" }, { key: "system", label: "System", icon: Server, group: "Server" }] : []),
   ];
-  const activePage = (!canAccounts && (page === "accounts" || page === "displays")) || (!isMaster && page === "system") ? "perm-section" : page;
+  const activePage = (!canAccounts && (page === "accounts" || page === "displays")) || (!isMaster && (page === "system" || page === "org")) ? "perm-section" : page;
   const TITLES = {
     accounts: ["Accounts & sign-in", "Approve account requests and reset passwords."],
     people: ["People & roles", "Set each person's division, role, signing divisions, quick permissions and form access."],
     "perm-person": ["Permissions by person", "Every section: whether it shows in their side bar, their access level, what they can do there, and where it comes from."],
     profiles: ["Permission profiles", "Bundles of view access to give people or groups in one step. Built-in profiles pick up new sections when " + PN + " is updated."],
     "perm-section": ["Permissions by section", "Who can view, edit or manage each section. Managers of a section can give view and edit access in it."],
-    displays: ["Display screens", "TVs that show the duty board, weather, on call and classes in turn, and switch to a live Command Board on their own."],
+    displays: ["Display screens", "TVs in the building that show the day's information in turn (who's working, weather and more)."],
+    org: ["Organization", "Business or fire/EMS department, the words it uses, divisions, workdays and pay periods."],
     system: ["System", "Install updates, restart the service, go back a version, back up and read the logs, without remote desktop."],
     groups: ["Groups", "Named sets of people that fill themselves from rules. Give access to a group once instead of person by person."],
   };
@@ -303,6 +305,7 @@ export default function UserManagementModule({ onBack }) {
         {activePage === "groups" && <PermissionsPanel view="groups" toast={showToast} />}
         {activePage === "displays" && canAccounts && <DisplayScreensPanel toast={showToast} />}
         {activePage === "system" && isMaster && <SystemPanel toast={showToast} />}
+        {activePage === "org" && isMaster && <OrgPanel toast={showToast} />}
         {activePage === "profiles" && <PermissionsPanel view="profiles" toast={showToast} />}
 
         {page === "people" && isMaster && <div style={cardStyle}>

@@ -108,6 +108,13 @@ function build(id) {
     const pkg = JSON.parse(read("package.json")); pkg.name = "fenmorix-os"; pkg.description = "Fenmorix OS (Fenmorix Technologies, LLC)"; write("package.json", JSON.stringify(pkg, null, 2) + "\n");
     for (const n of fs.readdirSync(path.join(app, "db/migrations")).filter(n => /^007_/.test(n)))
       write(`db/migrations/${n}`, read(`db/migrations/${n}`).split("'St. George Fire Protection District'").join("'Our organization'"));
+    // St. George's divisions -> a plain starting pair (each organization edits them in User Management › Organization)
+    const SGFD_DIVS = `('Administration'), ('Communications'), ('Community Relations'), ('Fire Prevention'),
+  ('Medical'), ('Safety'), ('Special Events (FEMA)'), ('Special Events (Non-FEMA)'),
+  ('Special Operations'), ('Special Services'), ('Suppression'), ('Technology'),
+  ('Training'), ('Wellness');`;
+    for (const rel of ["db/schema.sql", ...fs.readdirSync(path.join(app, "db/migrations")).filter(n => /^001_/.test(n)).map(n => `db/migrations/${n}`)])
+      swap(rel, [[SGFD_DIVS, "('Administration'), ('Operations');"]]);
     const appJsx = read("src/App.jsx").replace(/const SGFD_LOGO = "data:image\/png;base64,[A-Za-z0-9+/=]+";/, 'const SGFD_LOGO = "";');
     write("src/App.jsx", appJsx);
     // St. George's seal and knight/dragon art -> the Fenmorix set

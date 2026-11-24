@@ -85,12 +85,12 @@ function PersonCard({ p, fav, onFav, canEdit, onEdit, isMe }) {
         <FavButton on={fav} onToggle={onFav} name={p.name} />
       </div>
       <div style={{ borderTop: `1px solid ${LINE}`, paddingTop: 6 }}>
-        <Line label="Station">{p.station ? (/^\d+$/.test(p.station) ? `Station ${p.station}` : p.station) : <span style={{ color: "#9AA3B2" }}>—</span>}</Line>
+        <Line label={BRAND.fire ? "Station" : BRAND.words.homeStation}>{p.station ? (BRAND.fire && /^\d+$/.test(p.station) ? `Station ${p.station}` : p.station) : <span style={{ color: "#9AA3B2" }}>—</span>}</Line>
         <Line label="Cell"><PhoneLink n={p.cellPhone} text /></Line>
         {"homePhone" in p && <Line label="Home" privateField><PhoneLink n={p.homePhone} /></Line>}
         <Line label="Email">{p.email ? <a href={`mailto:${p.email}`} style={{ color: BLUE }}>{p.email}</a> : <span style={{ color: "#9AA3B2" }}>—</span>}</Line>
         <Line label="Extension">{p.extension ? <b>{p.extension}</b> : <span style={{ color: "#9AA3B2" }}>—</span>}</Line>
-        {p.callSign && <Line label="Call sign"><b>{p.callSign}</b></Line>}
+        {p.callSign && BRAND.words.callSign && <Line label={BRAND.words.callSign}><b>{p.callSign}</b></Line>}
       </div>
       {p.emergency && (
         <div style={{ background: "#FFF6F6", border: "1px solid #F3D3D7", borderRadius: 7, padding: "6px 10px" }}>
@@ -191,15 +191,15 @@ function PersonEditor({ p, stations, onClose, onSaved }) {
       <div style={{ fontSize: 12.5, color: INK_SOFT, marginBottom: 10 }}>Name and division are changed in User Management.</div>
       <div style={grid2}>
         <Field label="Title"><input aria-label="Title" style={inputStyle} value={f.jobTitle} onChange={e => set("jobTitle", e.target.value)} /></Field>
-        <Field label="Home station">
-          <input aria-label="Home station" list="dir-stations" style={inputStyle} value={f.station} onChange={e => set("station", e.target.value)} placeholder="e.g. 61 or Headquarters" />
+        <Field label={BRAND.words.homeStation}>
+          <input aria-label={BRAND.words.homeStation} list="dir-stations" style={inputStyle} value={f.station} onChange={e => set("station", e.target.value)} placeholder={BRAND.fire ? "e.g. 61 or Headquarters" : "e.g. Main store"} />
           <datalist id="dir-stations">{stations.map(s => <option key={s} value={s} />)}</datalist>
         </Field>
         <Field label="Cell phone"><input aria-label="Cell phone" type="tel" style={inputStyle} value={f.cellPhone} onChange={e => set("cellPhone", e.target.value)} /></Field>
         <Field label="Home phone 🔒"><input aria-label="Home phone" type="tel" style={inputStyle} value={f.homePhone} onChange={e => set("homePhone", e.target.value)} /></Field>
         <Field label="Email"><input aria-label="Email" type="email" style={inputStyle} value={f.email} onChange={e => set("email", e.target.value)} /></Field>
         <Field label="Extension / short code"><input aria-label="Extension" style={inputStyle} value={f.extension} onChange={e => set("extension", e.target.value)} /></Field>
-        <Field label="Radio call sign (e.g. SG10)"><input aria-label="Call sign" style={inputStyle} value={f.callSign} onChange={e => set("callSign", e.target.value.toUpperCase())} placeholder="Shows who's on the unit in Active calls" /></Field>
+        {BRAND.words.callSign && <Field label={BRAND.words.callSign}><input aria-label="Call sign" style={inputStyle} value={f.callSign} onChange={e => set("callSign", e.target.value.toUpperCase())} placeholder={BRAND.fire ? "e.g. SG10 · shows who's on the unit in Active calls" : ""} /></Field>}
       </div>
       <div style={{ fontSize: 13, fontWeight: 800, color: BRICK, margin: "16px 0 6px" }}>Emergency contact 🔒</div>
       <div style={grid2}>
@@ -236,7 +236,7 @@ function PlaceEditor({ p, onClose, onSaved }) {
       <div style={grid2}>
         <Field label="Type">
           <select aria-label="Type" style={inputStyle} value={f.kind} onChange={e => set("kind", e.target.value)}>
-            <option value="station">Fire station</option><option value="facility">Facility / office</option><option value="outside">Outside contact</option>
+            {BRAND.fire && <option value="station">Fire station</option>}<option value="facility">Facility / office</option><option value="outside">Outside contact</option>
           </select>
         </Field>
         <Field label="Name"><input aria-label="Name" style={inputStyle} value={f.name} onChange={e => set("name", e.target.value)} placeholder={f.kind === "station" ? "Station 61" : ""} /></Field>
@@ -450,7 +450,7 @@ export default function DirectoryModule({ onBack, initialView }) {
 
   // St. George's Nexus and the fire-department sandbox keep the full fire-service directory; other installs get the simple one
   // (My card, Everyone, Outside contacts). Michael, 11/2026.
-  const fireDirectory = BRAND.product === "nexus" || BRAND.sandbox;
+  const fireDirectory = BRAND.fire;
   const shellNav = !fireDirectory ? [
     { key: "mine", label: "My card", icon: User, badge: needsConfirm ? 1 : 0 },
     { key: "all", label: "Everyone", icon: Users },

@@ -9,10 +9,11 @@ import { DutyBoard } from "./DutyBoard.jsx";
 import { skyIcon } from "./Weather.jsx";
 import { Board } from "./CommandBoard.jsx";
 import { SpotTv } from "./Spot.jsx";
-import { Coins } from "lucide-react";
+import { Coins, CalendarClock } from "lucide-react";
+import { STATUS, dayLine } from "./scheduleShared.js";
 
 const INK = "#13233F", INK_SOFT = "#4B5565", LINE = "#DDE2EA", BRICK = "#C8102E", AMBER = "#B26A00", SAGE = "#2E7D4F", PAPER = "#F3F5F8";
-const ICONS = { duty: Users, weather: CloudSun, oncall: Phone, classes: GraduationCap, calls: Radio, spot: Coins };
+const ICONS = { schedule: CalendarClock, duty: Users, weather: CloudSun, oncall: Phone, classes: GraduationCap, calls: Radio, spot: Coins };
 const BOARD_POLL_MS = 10_000, ME_POLL_MS = 60_000, BOARD_ROTATE_MS = 30_000;
 
 async function get(path) {
@@ -211,6 +212,22 @@ function ViewBody({ view, now }) {
               <div style={{ fontSize: 17, color: INK_SOFT }}>{h.at}</div><I size={34} /><div style={{ fontSize: 26, fontWeight: 800 }}>{h.tempF}°</div>
               <div style={{ fontSize: 15, color: INK_SOFT }}>{h.pop}% · {h.wind}</div></div>); })}
         </div>
+      </div>
+    );
+  }
+  if (view === "schedule") {
+    const list = d.list || [];
+    if (!list.length) return <div style={{ ...big, color: INK_SOFT }}>No one is on today's schedule.</div>;
+    const groups = ["working", "later", "left_early", "done", "out"].map(k => [k, list.filter(e => e.status === k)]).filter(([, l]) => l.length);
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: 16 }}>
+        {groups.map(([k, l]) => (
+          <div key={k} style={{ background: "#fff", border: `1px solid ${LINE}`, borderTop: `6px solid ${STATUS[k].color}`, borderRadius: 12, padding: 16 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: STATUS[k].color, marginBottom: 6 }}>{STATUS[k].label} · {l.length}</div>
+            {l.map(e => <div key={e.userId} style={{ padding: "6px 0", borderTop: `1px solid ${LINE}`, color: INK }}>
+              <div style={{ fontSize: 23, fontWeight: 700 }}>{e.name}</div>
+              <div style={{ fontSize: 18, color: INK_SOFT }}>{e.status === "out" ? (e.off?.label || "Out") : dayLine(e)}</div></div>)}
+          </div>))}
       </div>
     );
   }

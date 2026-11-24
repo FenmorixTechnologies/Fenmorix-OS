@@ -8,10 +8,11 @@ import {
   wrapStyle, cardStyle, inputStyle, btn, sectionTitle, StyleBlock, MainMenuButton, StatCard,
   loadShared, saveStrict, uid, INK, INK_SOFT, LINE, PAPER, BRICK, SAGE, AMBER, BRASS_DEEP,
 } from "./App.jsx";
-import { payPeriod, addDays, todayISO, pretty, fireShift, commsShifts, dayNum, WORK_PATTERNS, neededPerShift, unitWord, worksOn } from "./shifts.js";
+import { payPeriod, addDays, todayISO, pretty, fireShift, commsShifts, dayNum, WORK_PATTERNS, neededPerShift, unitWord, worksOn,
+  previousPeriod, nextPeriod, periodHours, describePay, workSettings } from "./shifts.js";
 import PunchClock from "./PunchClock.jsx";
 
-export const PERIOD_HOURS = 80;
+export const PERIOD_HOURS = 80;   // St. George's; the page uses periodHours(period) from the organization settings
 export const TIME_KINDS = [
   ["regular", "Regular"], ["vacation", "Vacation"], ["comp", "Comp time"], ["sick", "Sick leave"], ["swap", "Swap"],
 ];
@@ -44,16 +45,19 @@ function canViewTimeOf(me, person) {
   return tv.includes("*") || tv.includes(person.division);
 }
 
+// Which fire / Communications shift is on: only for organizations that use those rotations (User Management › Organization)
 function ShiftTags({ iso }) {
+  const r = workSettings().rotations;
+  if (!r.fire && !r.comms) return null;
   const c = commsShifts(iso);
   return (
     <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 2 }}>
-      <span title="Fire (floor) shift on duty" style={{ fontSize: 10.5, fontWeight: 700, color: BRICK, border: `1px solid ${BRICK}55`, borderRadius: 4, padding: "0 4px" }}>
+      {r.fire && <span title="Fire (floor) shift on duty" style={{ fontSize: 10.5, fontWeight: 700, color: BRICK, border: `1px solid ${BRICK}55`, borderRadius: 4, padding: "0 4px" }}>
         Fire {fireShift(iso)}
-      </span>
-      <span title="Communications: day shift 0700–1900 / night shift 1900–0700" style={{ fontSize: 10.5, fontWeight: 700, color: BRASS_DEEP, border: `1px solid ${BRASS_DEEP}55`, borderRadius: 4, padding: "0 4px" }}>
+      </span>}
+      {r.comms && <span title="Communications: day shift 0700–1900 / night shift 1900–0700" style={{ fontSize: 10.5, fontWeight: 700, color: BRASS_DEEP, border: `1px solid ${BRASS_DEEP}55`, borderRadius: 4, padding: "0 4px" }}>
         Comms {c.day}/{c.night}
-      </span>
+      </span>}
     </div>
   );
 }
@@ -205,7 +209,8 @@ export default function TimeTrackerModule({ onBack }) {
   const mine = !!me && person?.id === me.id;
 
   const period = payPeriod(periodStart);
-  const days = Array.from({ length: 14 }, (_, i) => addDays(period.start, i));
+  const days = Array.from({ length: dayNum(period.end) - dayNum(period.start) + 1 }, (_, i) => addDays(period.start, i));
+  const PERIOD_HOURS = periodHours(period);
   const personEntries = entries.filter(e => e.userId === person?.id);
   const inPeriod = personEntries.filter(e => e.date >= period.start && e.date <= period.end);
   const byDay = d => inPeriod.filter(e => e.date === d).sort((a, b) => (a.start || "99").localeCompare(b.start || "99"));
@@ -236,9 +241,9 @@ export default function TimeTrackerModule({ onBack }) {
     showToast("Punch deleted");
   }
   function goPeriod(delta) {
-    const start = addDays(period.start, delta * 14);
+    const p = delta < 0 ? previousPeriod(period) : nextPeriod(period), start = p.start;
     setPeriodStart(start); setEditing(null);
-    setSelectedDay(today >= start && today <= addDays(start, 13) ? today : start);
+    setSelectedDay(today >= start && today <= p.end ? today : start);
   }
 
   if (!loaded) return <div style={{ padding: 40, textAlign: "center", color: INK_SOFT }}>Loading…</div>;
@@ -248,7 +253,7 @@ export default function TimeTrackerModule({ onBack }) {
   const pct = Math.min(100, (total / PERIOD_HOURS) * 100);
   const navBtn = { ...btn("outline"), padding: "6px 11px" };
 
-  const prevStart = addDays(payPeriod(today).start, -14);
+  const prevStart = previousPeriod(payPeriod(today)).start;
   const shellActive = team || person.id !== me.id ? "team" : isCurrent ? "current" : period.start === prevStart ? "previous" : "";
   const shellGo = k => {
     setEditing(null);
@@ -275,7 +280,7 @@ export default function TimeTrackerModule({ onBack }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={sectionTitle}>{mine ? "My time" : `${person.name}'s time`}</div>
-            <div style={{ fontSize: 13, color: INK_SOFT, marginTop: 2 }}>Punches toward the {PERIOD_HOURS}-hour pay period (Thursday through Wednesday; paid the following Wednesday).</div>
+            <div style={{ fontSize: 13, color: INK_SOFT, marginTop: 2 }}>Punches toward the {PERIOD_HOURS}-hour pay period ({describePay()}).</div>
           </div>
           {viewable.length > 1 && (
             <label style={{ fontSize: 12.5, color: INK_SOFT }}>Viewing<br />
@@ -311,7 +316,7 @@ export default function TimeTrackerModule({ onBack }) {
 
         <div style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
           <StatCard label="Hours this period" value={hrs(total)} accent={INK} sub={`of ${PERIOD_HOURS}`} />
-          <StatCard label={over > 0 ? "Over 80" : "Remaining to 80"} value={hrs(over > 0 ? over : remaining)} accent={over > 0 ? AMBER : remaining === 0 ? SAGE : BRICK} />
+          <StatCard label={over > 0 ? `Over ${PERIOD_HOURS}` : `Remaining to ${PERIOD_HOURS}`} value={hrs(over > 0 ? over : remaining)} accent={over > 0 ? AMBER : remaining === 0 ? SAGE : BRICK} />
           <StatCard label={`Needed per ${unitWord(pattern, 1)}`} value={remaining === 0 ? "0" : need.perShift === null ? "—" : hrs(need.perShift)}
             accent={BRASS_DEEP} sub={today > period.end ? "Period has ended" : need.left > 0 ? `${need.left} ${unitWord(pattern, need.left)} left${workedToday ? "" : ", counting today"}` : `No ${unitWord(pattern, 2)} left this period`} />
         </div>
@@ -384,9 +389,11 @@ export default function TimeTrackerModule({ onBack }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <div>
               <div style={{ fontWeight: 700, fontSize: 15 }}>{pretty(selectedDay, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div>
-              <div style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 2 }}>
-                Fire on duty: <b>{fireShift(selectedDay)} shift</b> · Communications: <b>{commsShifts(selectedDay).day}</b> days (0700–1900), <b>{commsShifts(selectedDay).night}</b> nights (1900–0700)
-              </div>
+              {(workSettings().rotations.fire || workSettings().rotations.comms) && <div style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 2 }}>
+                {workSettings().rotations.fire && <>Fire on duty: <b>{fireShift(selectedDay)} shift</b></>}
+                {workSettings().rotations.fire && workSettings().rotations.comms && " · "}
+                {workSettings().rotations.comms && <>Communications: <b>{commsShifts(selectedDay).day}</b> days (0700–1900), <b>{commsShifts(selectedDay).night}</b> nights (1900–0700)</>}
+              </div>}
             </div>
             {mine && editing !== "new" && <button style={btn("primary")} onClick={() => setEditing("new")}>+ Add punch</button>}
           </div>

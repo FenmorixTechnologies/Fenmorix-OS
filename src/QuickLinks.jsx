@@ -50,6 +50,9 @@ function LoginBox({ link, toast, reload }) {
     <button type="button" aria-label={`Copy ${k.toLowerCase()}`} title="Copy" style={{ ...btn("ghost"), padding: "2px 6px" }} onClick={() => copy(v, toast)}><Copy size={13} /></button></div> : null;
   return <div role="group" aria-label={`Login for ${link.title}`} style={{ marginTop: 8, padding: 10, border: `1px dashed ${LINE}`, borderRadius: 8, display: "grid", gap: 4 }}>
     {row("User", s.user)}{row("Password", s.password, true)}{s.note && <div style={{ fontSize: 12.5, color: INK_SOFT }}>{s.note}</div>}
+    {s.password && <div><button type="button" style={{ ...btn("outline"), padding: "4px 10px", fontSize: 12.5 }}
+      onClick={() => { copy(s.password, m => toast(m === "Copied." ? `Password copied. Paste it on ${link.title}'s sign-in page${s.user ? ` (user: ${s.user})` : ""}.` : m)); window.open(link.url, "_blank", "noopener"); }}>
+      <Copy size={13} /> Copy password and open the site</button></div>}
     <div style={{ fontSize: 11.5, color: INK_SOFT }}>Hides again in 30 seconds.{link.personal ? " Only you can see this." : " Viewing a shared login is recorded."}</div></div>;
 }
 
@@ -134,6 +137,7 @@ export default function QuickLinksModule({ onBack }) {
         <h1 style={{ margin: 0, fontSize: 24, color: INK }}>{view === "all" ? "Quick Links" : view}</h1><span style={{ flex: 1 }} />
         <input aria-label="Find a link" placeholder="Find a link…" value={q} onChange={e => setQ(e.target.value)} style={{ ...inputStyle, margin: 0, width: 220 }} />
         {d.canEdit && <button type="button" style={btn("primary")} onClick={() => setEdit({})}><Plus size={14} /> Add a link</button>}</div>
+      <div style={{ fontSize: 12.5, color: INK_SOFT, margin: "-6px 0 12px", maxWidth: 820 }}>Logins are kept here in one safe place (encrypted, and every look at a shared one is recorded). Websites don't let another site sign you in, so to log in: <b>Show login</b>, then <b>Copy password and open the site</b> and paste. Your browser can also offer to remember it after that.</div>
       {!shown.length && <div style={{ color: INK_SOFT }}>{d.links.length ? "No links match." : d.canEdit ? "No links yet. Add the websites the team uses every day." : "No links have been shared with you yet."}</div>}
       {(view === "all" ? cats : [view]).map(c => { const list = shown.filter(l => (l.category || "Other") === c); if (!list.length) return null; return <div key={c} style={{ marginBottom: 18 }}>
         {view === "all" && <div style={{ fontSize: 12, fontWeight: 800, color: INK_SOFT, textTransform: "uppercase", letterSpacing: 0.6, margin: "4px 0 8px" }}>{c}</div>}
