@@ -133,7 +133,7 @@ function Paper({ r, w, data, print }) {
       <div style={{ display: "flex", gap: 14, alignItems: "center", borderBottom: `3px solid ${C.brick}`, paddingBottom: 10 }}>
         <img src="/logo-large.png" alt={BRAND.org} style={{ width: 62, height: 62 }} />
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, color: C.soft }}>ST. GEORGE FIRE PROTECTION DISTRICT · REPORT TO THE FIRE BOARD</div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, color: C.soft }}>{BRAND.org.toUpperCase()} · REPORT TO THE {BRAND.fire ? "FIRE BOARD" : "BOARD"}</div>
           <div style={{ fontFamily: "Georgia, serif", fontSize: 25, fontWeight: 700, color: C.ink, lineHeight: 1.2 }}>{r.title || "Untitled report"}</div>
           {r.preparedBy && <div style={{ fontSize: 12, color: C.soft }}>Prepared by {r.preparedBy}</div>}
         </div>

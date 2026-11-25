@@ -622,7 +622,7 @@ function BinderPaper({ data, items, x, opt }) {
   return <div style={{ fontSize: 12, color: C.ink }}>
     <div style={{ display: "flex", gap: 14, alignItems: "center", borderBottom: `3px solid ${C.brick}`, paddingBottom: 10 }}>
       <img src="/logo-large.png" alt={BRAND.org} style={{ width: 70, height: 70 }} />
-      <div><div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, color: C.soft }}>ST. GEORGE FIRE PROTECTION DISTRICT</div>
+      <div><div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, color: C.soft }}>{BRAND.org.toUpperCase()}</div>
         <div style={{ fontFamily: "Georgia, serif", fontSize: 26, fontWeight: 700 }}>PIAL Grading Binder</div>
         <div style={{ fontSize: 12.5, color: C.soft }}>Graded year {data.year.year} ({fmtDay(data.year.start)} – {fmtDay(data.year.end)}){opt.division ? ` · Items owned by ${opt.division}` : ""} · Prepared {generated}</div></div>
     </div>

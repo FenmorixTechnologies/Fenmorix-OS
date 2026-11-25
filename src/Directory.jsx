@@ -2,7 +2,7 @@
 // duty), outside contacts, favorites, one search box, print, save-to-phone (vCard), the
 // "last verified" stamp and directory checks. Server: server/directory.js.
 import React, { useEffect, useMemo, useState } from "react";
-import { BRAND } from "./brand.js";
+import { BRAND, PN } from "./brand.js";
 import { Star, Users, Building2, Home as HomeIcon, Phone, Printer, Download, Pencil, ShieldCheck, RefreshCw, User, MapPin, BookOpen, Trash2 } from "lucide-react";
 import AppShell from "./AppShell.jsx";
 import { cardStyle, inputStyle, btn, sectionTitle, printDocument, letterhead } from "./App.jsx";
@@ -348,7 +348,7 @@ function AladtecSetup({ places, toast }) {
             Station cards can list who's on duty right now, straight from Aladtec.<br />
             1. Ask Aladtec Support (888-749-5550, support@aladtec.com) for an <b>API profile</b> with access to schedules, scheduled time and members. They'll give you a client ID, a client secret and your API address.<br />
             2. Add them to the app's <code>.env</code> file: <code>ALADTEC_BASE_URL</code>, <code>ALADTEC_CLIENT_ID</code>, <code>ALADTEC_CLIENT_SECRET</code>.<br />
-            3. Run <code>update.ps1</code> (or restart the SGFD App service). It checks right after each shift change (07:00 and 19:00) and every 4 hours in between.
+            3. Run <code>update.ps1</code> (or restart the {PN} service). It checks right after each shift change (07:00 and 19:00) and every 4 hours in between.
           </div>
         )}
         {snap.configured && (
