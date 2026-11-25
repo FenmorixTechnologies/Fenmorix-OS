@@ -7,7 +7,10 @@
 #           node_modules, uploads) -> update.sh. If that fails, the previous app is put back and started.
 # Result: updates/last-result.json (Nexus shows it) and logs/update-<time>-<action>.log. Progress: updates/progress.json.
 set -uo pipefail
-ROOT="${SYSTEM_DIR:-/opt/nexus}"
+# The copy that runs lives in <root>/tools/updater; SYSTEM_DIR (tests) wins
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+if [ -n "${SYSTEM_DIR:-}" ]; then ROOT="$SYSTEM_DIR"; elif [ -f "$HERE/../../app/package.json" ]; then ROOT="$(cd "$HERE/../.." && pwd)"; else ROOT=/opt/nexus; fi
+SVC="${NEXUS_SERVICE:-$(basename "$ROOT")}"; [ -n "${SYSTEM_DIR:-}" ] && [ -z "${NEXUS_SERVICE:-}" ] && SVC=nexus
 APP="$ROOT/app"; UPD="$ROOT/updates"; LOGS="$ROOT/logs"; PREV="$UPD/previous/app"
 PENDING="$UPD/pending.json"
 [ -f "$PENDING" ] || exit 0
@@ -24,9 +27,9 @@ json() { node -e 'const o={};for(let i=1;i<process.argv.length;i+=2){let v=proce
 progress() { echo; echo "== $3"; json id "$JOB_ID" action "$ACTION" step "$1" total "$2" label "$3" at "$(date -Iseconds)" started "$STARTED" > "$UPD/progress.json"; chown nexus:nexus "$UPD/progress.json"; }
 ensure_running() {
   [ "$ACTION" = backup ] && return
-  systemctl is-active --quiet nexus && return
-  echo "The service isn't running; starting it again."; systemctl start nexus; sleep 8
-  systemctl is-active --quiet nexus && MSG="$MSG Nexus was started again." || MSG="$MSG Nexus is NOT running: sign in to the server and run scripts/linux/update.sh."
+  systemctl is-active --quiet "$SVC" && return
+  echo "The service isn't running; starting it again."; systemctl start "$SVC"; sleep 8
+  systemctl is-active --quiet "$SVC" && MSG="$MSG Nexus was started again." || MSG="$MSG Nexus is NOT running: sign in to the server and run scripts/linux/update.sh."
 }
 finish() {
   local ok="$1"; MSG="$2"
@@ -51,8 +54,8 @@ run_backup() { bash "$APP/scripts/linux/backup.sh"; }
 case "$ACTION" in
   restart)
     progress 1 1 "Restarting the service"
-    systemctl restart nexus; sleep 8
-    systemctl is-active --quiet nexus || finish false "The service didn't come back after the restart. Check logs/sgfd-app.log."
+    systemctl restart "$SVC"; sleep 8
+    systemctl is-active --quiet "$SVC" || finish false "The service didn't come back after the restart. Check logs/sgfd-app.log."
     finish true "Restarted." ;;
   backup)
     progress 1 1 "Backing up the database and uploads"
