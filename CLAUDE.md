@@ -1151,3 +1151,6 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   `isLocalRequest` (loopback AND no cf-connecting-ip/cf-ray/x-forwarded-for/x-real-ip, so first-run never opens through a tunnel). auth.js,
   investigations.js and ratelimit.js `ipOf` use them.
 - Report headers (11/2026): BoardReport, CommsStats and Pial print `BRAND.org` (they had St. George hard-coded). Marketing video/deck capture: /home/claude/fxdemo (capture.mjs = fictional Riverbend Regional Public Safety, biz-shots.mjs = LGC demo staff) and /home/claude/video (fx_render.py / fx_scenes.py); OCR the frames for sgfd|nexus|st george before sending.
+- Demo sandbox (11/2026): AWS Lightsail `fenmorix-sandbox` (Ohio us-east-2, Ubuntu 24.04, 2 GB, static IP 3.19.183.152), installed with
+  install-ubuntu.sh --domain sandbox.fenmorix.com --sandbox (Let's Encrypt; Cloudflare record proxied, Always Use HTTPS off so renewals pass).
+  Michael's own server for demos and private work; LGC still on his PC tunnel (lgc.fenmorix.com) until it moves to its own Lightsail box.
