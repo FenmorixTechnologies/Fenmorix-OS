@@ -12,6 +12,7 @@
 // finalized (locked) record that hasn't changed never trips the
 // database's locking rules.
 import { tx } from "./db.js";
+import { orgSettings } from "./brand.js";
 import { hasLegacy, legacyAll, legacyScope, setLegacyPermissions, noPerms, clearAccessCache } from "./access.js";
 import { flushPendingFileDeletes, markFileForDeletion } from "./files.js";
 
@@ -26,7 +27,8 @@ const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback);
 
 export const ROLE_LABEL = {
   user: "Requester", approver1: "Purchaser's signature", approver2: "Pre-approval",
-  fire_chief: "Fire chief (final approval)", accounting: "Accounting", master: "Master admin",
+  get fire_chief() { return orgSettings().industry === "business" ? "Final approval" : "Fire chief (final approval)"; },
+  accounting: "Accounting", master: "Master admin",
 };
 const ROLES = Object.keys(ROLE_LABEL);
 const FREQUENCIES = ["one_time", "monthly", "quarterly", "semiannually", "yearly"];

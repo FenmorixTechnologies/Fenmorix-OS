@@ -88,7 +88,7 @@ const STAGE_COLOR = {
 
 const DEFAULT_DIVISIONS = ["Administration", "Communications", "Community Relations", "Fire Prevention", "Medical", "Safety", "Special Events (FEMA)", "Special Events (Non-FEMA)", "Special Operations", "Special Services", "Suppression", "Technology", "Training", "Wellness"];
 const DEFAULT_CATEGORIES = ["Equipment", "Software & IT", "Vehicles & Fleet", "PPE & Safety Gear", "Facilities", "Training & Certification", "Supplies", "Contracted Services", "Other"];
-const ROLE_LABEL = { user: "Requester", approver1: "Purchaser's signature", approver2: "Pre-approval", fire_chief: "Fire chief (final approval)", accounting: "Accounting", master: "Master admin" };
+const ROLE_LABEL = { user: "Requester", approver1: "Purchaser's signature", approver2: "Pre-approval", fire_chief: BRAND.fire ? "Fire chief (final approval)" : "Final approval", accounting: "Accounting", master: "Master admin" };
 const PAYMENT_METHODS = ["Check", "ACH", "Purchase order", "Credit card", "Cash", "Other"];
 
 function uid() {
@@ -1252,7 +1252,7 @@ function Dashboard({ visibleReqs, statusCounts, catChartData, divisionChartData,
       <div style={{ fontSize: 13, color: INK_SOFT, marginBottom: 18 }}>{scopeLabel}</div>
 
       <div style={{ display: "flex", gap: 12, marginBottom: 22, flexWrap: "wrap" }}>
-        <StatCard label="Awaiting authorization" value={pending} accent={AMBER} sub={`${statusCounts.pending_chief} at fire chief stage`} />
+        <StatCard label="Awaiting authorization" value={pending} accent={AMBER} sub={`${statusCounts.pending_chief} at ${BRAND.fire ? "fire chief" : "final approval"} stage`} />
         <StatCard label="Approved" value={statusCounts.approved} accent={SAGE} />
         <StatCard label="Paid" value={statusCounts.paid} accent={BRASS_DEEP} />
         <StatCard label="Annual recurring commitment" value={money(totalRecurring)} accent={INK} />
@@ -3378,7 +3378,7 @@ function Admin({ divisions, categories, roster, requisitions, updateDivisions, u
       <div style={cardStyle}>
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>People and signing roles</div>
         <div style={{ fontSize: 13, color: INK_SOFT, marginBottom: 12 }}>
-          Account approvals, each person's role (purchaser's signature, pre-approval, Fire Chief, accounting) and the divisions they sign for are kept in User Management, with the rest of their account.
+          Account approvals, each person's role (purchaser's signature, pre-approval, final approval, accounting) and the divisions they sign for are kept in User Management, with the rest of their account.
         </div>
         <button style={btn("outline")} onClick={() => window.dispatchEvent(new CustomEvent("sgfd-open", { detail: { module: "users" } }))}>
           <Users size={14} /> Open User Management
@@ -3399,7 +3399,7 @@ function SplashScreen({ onSelect }) {
     ...(moduleOn("messaging") ? [] : [{ key: "notifications", label: "Notifications", icon: Bell, desc: "Approvals, assignments, turns and other updates sent to you" }]),
     { key: "procurement", label: "Procurement / Requisitions", icon: ClipboardList, desc: "Purchase requisitions, vendors, contracts, and budget reporting" },
     { key: "reimbursements", label: "Reimbursements", icon: Plane, desc: "Travel and non-travel expense reimbursements, with receipt uploads" },
-    { key: "forms", label: "Forms", icon: FileText, desc: "Injury reports, leave requests and other district forms" },
+    { key: "forms", label: "Forms", icon: FileText, desc: "Requests, reports and approvals, routed to the right people" },
     { key: "personnel", label: "Personnel File", icon: Folder, desc: "Your profile, forms filed about you, and certifications" },
     { key: "ppe", label: "PPE & Gear", icon: HardHat, desc: "Track issued gear, inspection dates, and retirement dates; gear tickets for repairs and replacements" },
     { key: "helpdesk", label: "Help Desk", icon: LifeBuoy, desc: "IT support tickets — assignment, updates, and attachments" },

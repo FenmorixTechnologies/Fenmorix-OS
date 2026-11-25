@@ -613,7 +613,7 @@ export default function FormsModule({ onBack, initialTab, initialSubmission }) {
       <>
         <div style={sectionTitle}>{pageTitle}</div>
         <div style={{ fontSize: 13, color: C.INK_SOFT, marginTop: 2, marginBottom: 16 }}>
-          {tab === "forms" ? "Fill out district forms. What you submit is filed in the right personnel file and sent to the people who need it."
+          {tab === "forms" ? "Fill out forms. What you submit is filed in the right personnel file and sent to the people who need it."
             : tab === "waiting" ? "Forms to fill out, approve or handle, and updates on forms you sent."
             : tab === "mine" ? "Forms you've sent and where each one stands."
             : tab === "all" ? "Every submission you're allowed to see."
