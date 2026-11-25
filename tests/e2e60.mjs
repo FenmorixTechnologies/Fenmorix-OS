@@ -41,7 +41,7 @@ const pat = psql("SELECT id FROM users WHERE email = 'pat@shop.example'"), sam =
 for (const id of [pat, sam]) await api("/api/auth/approve", { id, role: "user", division: "Training" });
 
 // ---- Organization: a business by default; wording; pay periods ----
-let o = (await api("/api/system/org")).body;
+let body; let o = (await api("/api/system/org")).body;
 check("a Fenmorix OS install that isn't a fire department starts as a business", o.industry === "business" && o.words.station === "Location" && o.words.callSign === ""
   && !o.work.rotations.fire && !o.work.rotations.comms, JSON.stringify(o).slice(0, 200));
 let m = await meta();
@@ -71,10 +71,39 @@ check("remove and move its people", r.status === 200 && !r.body.divisions.some(d
   && psql(`SELECT d.name FROM users u JOIN divisions d ON d.id = u.division_id WHERE u.id = '${pat}'`) === "Front Counter", JSON.stringify(r.body).slice(0, 200));
 check("division changes are audited", Number(psql("SELECT count(*) FROM audit_log WHERE action IN ('Added a division', 'Renamed a division', 'Removed a division')")) === 3);
 
+// ---- Job roles (no Procurement here, so no purchasing roles) ----
+o = (await api("/api/system/org")).body;
+check("business starts with Owner / Manager / Employee roles", ["Owner", "Manager", "Employee"].every(n => o.roles.some(r => r.name === n)) && o.roles.find(r => r.name === "Manager").profile === "division" && o.profiles.length >= 4, JSON.stringify(o.roles));
+await nav("Organization");
+await page.getByLabel("New job role").fill("Sales associate");
+await page.getByRole("region", { name: "Job roles" }).getByRole("button", { name: "Add role" }).click(); await page.waitForTimeout(900);
+check("add a role on the Organization page", (await api("/api/system/org")).body.roles.some(r => r.name === "Sales associate" && r.profile === ""));
+r = await api("/api/auth/job-role", { id: sam, role: "Manager" });
+check("give someone a role: job title + the role's profile", r.status === 200 && psql(`SELECT job_title FROM users WHERE id = '${sam}'`) === "Manager"
+  && psql(`SELECT string_agg(profile_key, ',') FROM access_profile_members WHERE user_id = '${sam}'`) === "division", JSON.stringify(r.body));
+r = await api("/api/system/roles", { action: "profile", name: "Manager", profile: "chief" });
+check("changing a role's access changes it for its people", r.status === 200 && psql(`SELECT string_agg(profile_key, ',') FROM access_profile_members WHERE user_id = '${sam}'`) === "chief");
+r = await api("/api/system/roles", { action: "rename", name: "Manager", to: "Store manager" });
+check("renaming a role renames its people's title", r.status === 200 && psql(`SELECT job_title FROM users WHERE id = '${sam}'`) === "Store manager");
+check("an unknown role is refused", (await api("/api/auth/job-role", { id: sam, role: "Astronaut" })).status === 400);
+await api("/api/auth/job-role", { id: sam, role: "Employee" });
+check("moving to a role without access takes the old profile off", psql(`SELECT count(*) FROM access_profile_members WHERE user_id = '${sam}'`) === "0" && psql(`SELECT job_title FROM users WHERE id = '${sam}'`) === "Employee");
+await nav("People & roles");
+body = await page.locator("main").innerText();
+check("People & roles: no purchasing roles or fire recordings without those modules", !/Requester|Purchaser|Fire chief|Accounting/.test(body), body.slice(0, 300));
+await page.getByRole("button", { name: "Edit Pat Clerk" }).click(); await page.waitForTimeout(300);
+body = await page.locator("main").innerText();
+check("person editor: job role + access, nothing fire-only", await page.getByLabel("Job role of Pat Clerk").count() === 1 && /Regular user|Master admin/.test(body) && !/Fire Recordings|call-out/i.test(body));
+await page.getByLabel("Job role of Pat Clerk").selectOption("Sales associate");
+await page.getByRole("button", { name: "Save", exact: true }).click(); await page.waitForTimeout(1200);
+check("pick a role in People & roles", psql(`SELECT job_title FROM users WHERE id = '${pat}'`) === "Sales associate");
+check("role changes are audited", Number(psql("SELECT count(*) FROM audit_log WHERE action IN ('Set a job role', 'Added a job role', 'Renamed a job role', 'Changed a job role''s access')")) >= 5);
+await home();
+
 // ---- Wording in Personnel File and Directory; Time Tracker follows the pay settings ----
 await home();
 await nav("Personnel File"); await page.waitForTimeout(800);
-let body = await page.locator("main").innerText();
+body = await page.locator("main").innerText();
 check("Personnel File says Store, not station", /Store/.test(body) && !/Station \/ assignment/.test(body), body.slice(0, 300));
 await home(); await nav("Directory");
 const dnav = await page.locator("nav").first().innerText();

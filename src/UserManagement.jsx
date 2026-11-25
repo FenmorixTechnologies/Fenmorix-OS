@@ -12,16 +12,19 @@ import {
   wrapStyle, cardStyle, inputStyle, btn, sectionTitle, StyleBlock, MainMenuButton,
   loadShared, saveStrict, uid, ROLE_LABEL, INK, INK_SOFT, LINE, PAPER, BRICK, SAGE,
 } from "./App.jsx";
-import AccountsPanel, { SignDivisionsPicker } from "./AccountsPanel.jsx";
+import AccountsPanel, { SignDivisionsPicker, call as authCall } from "./AccountsPanel.jsx";
 import { useListView, ListControls, Pager } from "./ListControls.jsx";
 import { formsApi } from "./Forms.jsx";
 import { PN } from "./brand.js";
 import { moduleOn } from "./licensing.js";
 
 const PERMISSIONS = [
-  ["timeView", "View time punches", "See (not change) other people's Time Tracker hours — for supervisors."],
-  ["calloutEdit", "Edit call-out schedule", "Keep the call-out schedule for divisions besides their own."],
+  ["timeView", "View time punches", "See (not change) other people's Time Tracker hours — for supervisors.", "timeclock"],
+  ["calloutEdit", "Edit call-out schedule", "Keep the call-out schedule for divisions besides their own.", "callout"],
 ];
+// Access roles: the purchasing roles only mean something with Procurement; without it there are just regular users and master admins
+const accessRoles = () => moduleOn("procurement") ? ROLE_LABEL : { user: "Regular user", master: "Master admin" };
+const roleOptions = current => { const l = accessRoles(); return current && !l[current] ? { ...l, [current]: ROLE_LABEL[current] || current } : l; };
 const describe = list => !list?.length ? "—" : list.includes("*") ? "All divisions" : list.join(", ");
 
 // None / all divisions / chosen divisions
@@ -94,7 +97,7 @@ const ADMIN_DUTIES = [
   ["accountsAdmin", "Accounts admin", "Approve or decline account requests and give people temporary passwords. Can't create or reset master admins."],
 ];
 
-function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, onSaveFormAccess }) {
+function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, onSaveFormAccess, jobRoles = [], onJobRole }) {
   const [open, setOpen] = useState(false);
   const blank = () => ({
     division: user.division, role: user.role, signDivisions: user.signDivisions || [],
@@ -104,7 +107,9 @@ function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, o
     formsAdmin: (user.permissions?.formsAdmin || []).length > 0,
     accountsAdmin: (user.permissions?.accountsAdmin || []).length > 0,
     formAccess: formAccess || [],
+    jobRole: jobRoles.some(r => r.name.toLowerCase() === (user.jobTitle || "").toLowerCase()) ? jobRoles.find(r => r.name.toLowerCase() === user.jobTitle.toLowerCase()).name : "",
   });
+  const roleOf = jobRoles.find(r => r.name.toLowerCase() === (user.jobTitle || "").toLowerCase());
   const [f, setF] = useState(blank);
   const set = (k, v) => setF(x => ({ ...x, [k]: v }));
   const signs = f.role === "approver1" || f.role === "approver2";
@@ -113,7 +118,7 @@ function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, o
     (user.signDivisions || []).length ? `signs for ${user.signDivisions.join(", ")}` : null,
     perms.timeView?.length ? `views time: ${describe(perms.timeView)}` : null,
     perms.calloutEdit?.length ? `call-out: ${describe(perms.calloutEdit)}` : null,
-    perms.recordings?.length ? "fire recordings" : null,
+    perms.recordings?.length && moduleOn("recordings") ? "fire recordings" : null,
     perms.directoryAdmin?.length ? "directory admin" : null,
     perms.formsAdmin?.length ? "forms admin" : null,
     perms.accountsAdmin?.length ? "accounts admin" : null,
@@ -130,6 +135,7 @@ function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, o
       },
     });
     if (!ok) return;
+    if ((f.jobRole || "") !== (roleOf?.name || "") && !(await onJobRole(f.jobRole))) return;
     const before = [...(formAccess || [])].sort().join("|"), after = [...f.formAccess].sort().join("|");
     if (before !== after && !(await onSaveFormAccess(f.formAccess))) return;
     setOpen(false);
@@ -139,7 +145,7 @@ function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, o
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <div style={{ fontSize: 13.5 }}>
           <b>{user.name}</b>{isMe && <span style={{ color: INK_SOFT }}> (you)</span>}
-          <span style={{ color: INK_SOFT }}> — {ROLE_LABEL[user.role]}, {user.division}</span>
+          <span style={{ color: INK_SOFT }}> — {(moduleOn("procurement") ? [ROLE_LABEL[user.role], user.division] : [user.jobTitle, (user.role !== "user" || !user.jobTitle) && roleOptions(user.role)[user.role], user.division]).filter(Boolean).join(", ")}</span>
           {extras.length > 0 && <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 2 }}>{extras.join(" · ")}</div>}
         </div>
         {!open && <button aria-label={`Edit ${user.name}`} style={{ ...btn("outline"), padding: "4px 10px", fontSize: 12.5 }} onClick={() => { setF(blank()); setOpen(true); }}>Edit</button>}
@@ -152,26 +158,33 @@ function UserRow({ user, divisions, isMe, onSave, onRemove, forms, formAccess, o
                 {divisions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </label>
-            <label style={{ fontSize: 12, color: INK_SOFT, display: "flex", flexDirection: "column", gap: 3 }}>Role
+            {jobRoles.length > 0 && <label style={{ fontSize: 12, color: INK_SOFT, display: "flex", flexDirection: "column", gap: 3 }}>Job role
+              <select aria-label={`Job role of ${user.name}`} style={{ ...inputStyle, width: "auto" }} value={f.jobRole} onChange={e => set("jobRole", e.target.value)}>
+                <option value="">{user.jobTitle && !roleOf ? `${user.jobTitle} (not a role)` : "No role"}</option>
+                {jobRoles.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
+              </select>
+            </label>}
+            <label style={{ fontSize: 12, color: INK_SOFT, display: "flex", flexDirection: "column", gap: 3 }}>{moduleOn("procurement") ? "Role" : "Access"}
               <select aria-label={`Role of ${user.name}`} style={{ ...inputStyle, width: "auto" }} value={f.role} disabled={isMe} onChange={e => set("role", e.target.value)}>
-                {Object.entries(ROLE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                {Object.entries(roleOptions(user.role)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </label>
           </div>
-          {isMe && <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 4 }}>You can't change your own role.</div>}
+          {isMe && <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 4 }}>You can't change your own {moduleOn("procurement") ? "role" : "access"}.</div>}
+          {f.jobRole && jobRoles.find(r => r.name === f.jobRole)?.profile && <div style={{ fontSize: 12, color: INK_SOFT, marginTop: 4 }}>The {f.jobRole} role comes with its permission profile (set under Organization › Job roles).</div>}
           {signs && <SignDivisionsPicker divisions={divisions} home={f.division} value={f.signDivisions} onChange={v => set("signDivisions", v)} />}
-          <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 10, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 6, padding: "8px 12px", fontSize: 13, cursor: "pointer" }}>
+          {moduleOn("recordings") && <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 10, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 6, padding: "8px 12px", fontSize: 13, cursor: "pointer" }}>
             <input type="checkbox" aria-label={`Fire recordings for ${user.name}`} checked={f.recordings} onChange={e => set("recordings", e.target.checked)} style={{ marginTop: 3 }} />
             <span><b>Working Fire Recordings</b><br /><span style={{ fontSize: 12, color: INK_SOFT }}>Listen to and import fire recordings. (Master admins always can.)</span></span>
-          </label>
+          </label>}
           <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700, color: INK_SOFT, textTransform: "uppercase", letterSpacing: 0.4 }}>Admin duties (without full master access)</div>
-          {ADMIN_DUTIES.map(([key, label, hint]) => (
+          {ADMIN_DUTIES.filter(([key]) => key !== "formsAdmin" || moduleOn("forms")).map(([key, label, hint]) => (
             <label key={key} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 6, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 6, padding: "8px 12px", fontSize: 13, cursor: "pointer" }}>
               <input type="checkbox" aria-label={`${label} for ${user.name}`} checked={f[key]} disabled={user.role === "master"} onChange={e => set(key, e.target.checked)} style={{ marginTop: 3 }} />
               <span><b>{label}</b><br /><span style={{ fontSize: 12, color: INK_SOFT }}>{hint}</span></span>
             </label>
           ))}
-          {PERMISSIONS.map(([key, label, hint]) => (
+          {PERMISSIONS.filter(p => moduleOn(p[3])).map(([key, label, hint]) => (
             <ScopePicker key={key} group={user.id} label={label} hint={hint} value={f[key]} divisions={divisions} onChange={v => set(key, v)} />
           ))}
           {forms.length > 0 && <FormAccessPicker forms={forms} value={f.formAccess} onChange={v => set("formAccess", v)} name={user.name} />}
@@ -193,6 +206,7 @@ export default function UserManagementModule({ onBack }) {
   const [identityId, setIdentityId] = useState(null);
   const [form, setForm] = useState({ name: "", division: "", role: "user" });
   const [toast, setToast] = useState(null);
+  const [jobRoles, setJobRoles] = useState([]);
   const [page, setPage] = useState("accounts");
   const { pendingCount } = useSession();
 
@@ -206,21 +220,24 @@ export default function UserManagementModule({ onBack }) {
       setLoaded(true);
     })();
   }, []);
+  // Roles can change on the Organization page, so fetch them each time People & roles opens
+  useEffect(() => { if (page === "people") authCall("accounts").then(x => setJobRoles(x.jobRoles || []), () => {}); }, [page]);
   const showToast = m => { setToast(m); setTimeout(() => setToast(null), 2400); };
   const me = roster.find(u => u.id === identityId) || null;
 
   const view = useListView(roster, {
-    search: u => [u.name, u.division, ROLE_LABEL[u.role], u.email, (u.signDivisions || []).join(" ")],
+    search: u => [u.name, u.division, ROLE_LABEL[u.role], u.jobTitle, u.email, (u.signDivisions || []).join(" ")],
     sorts: [
       { key: "name", label: "Name", get: u => u.name, dir: "asc" },
       { key: "division", label: "Division", get: u => u.division, dir: "asc" },
-      { key: "role", label: "Role", get: u => ROLE_LABEL[u.role], dir: "asc" },
+      { key: "role", label: "Role", get: u => u.jobTitle || roleOptions(u.role)[u.role], dir: "asc" },
     ],
     filters: [
       { key: "division", label: "Division", get: u => u.division },
-      { key: "role", label: "Role", get: u => u.role, options: Object.entries(ROLE_LABEL).map(([value, label]) => ({ value, label })) },
+      ...(jobRoles.length ? [{ key: "job", label: "Job role", get: u => u.jobTitle || "", options: jobRoles.map(r => ({ value: r.name, label: r.name })) }] : []),
+      { key: "role", label: moduleOn("procurement") ? "Role" : "Access", get: u => u.role, options: Object.entries(accessRoles()).map(([value, label]) => ({ value, label })) },
       { key: "perm", label: "Permission", allLabel: "Any permissions", get: () => "",
-        options: [{ value: "timeView", label: "Can view time punches" }, { value: "calloutEdit", label: "Can edit call-out schedules" }, { value: "recordings", label: "Fire recordings" }],
+        options: [moduleOn("timeclock") && { value: "timeView", label: "Can view time punches" }, moduleOn("callout") && { value: "calloutEdit", label: "Can edit call-out schedules" }, moduleOn("recordings") && { value: "recordings", label: "Fire recordings" }].filter(Boolean),
         match: (u, v) => (u.permissions?.[v] || []).length > 0 },
     ],
   });
@@ -243,6 +260,10 @@ export default function UserManagementModule({ onBack }) {
       setFormAccess((await formsApi("/access")).access);
       return true;
     } catch (e) { showToast(e.message); return false; }
+  }
+  async function setJobRole(u, role) {
+    try { await authCall("job-role", { id: u.id, role }); setRoster(rs => rs.map(x => x.id === u.id ? { ...x, jobTitle: role || "" } : x)); showToast(`${u.name}: ${role || "no role"}`); return true; }
+    catch (e) { showToast(e.message); return false; }
   }
   const editUser = (u, changes) => save(roster.map(x => x.id === u.id ? { ...x, ...changes } : x), `${u.name} updated`);
   async function removeUser(u) {
@@ -284,7 +305,7 @@ export default function UserManagementModule({ onBack }) {
   const activePage = (!canAccounts && (page === "accounts" || page === "displays")) || (!isMaster && (page === "system" || page === "org")) ? "perm-section" : page;
   const TITLES = {
     accounts: ["Accounts & sign-in", "Approve account requests and reset passwords."],
-    people: ["People & roles", "Set each person's division, role, signing divisions, quick permissions and form access."],
+    people: ["People & roles", moduleOn("procurement") ? "Set each person's division, role, signing divisions, quick permissions and form access." : "Set each person's division, job role and access."],
     "perm-person": ["Permissions by person", "Every section: whether it shows in their side bar, their access level, what they can do there, and where it comes from."],
     profiles: ["Permission profiles", "Bundles of view access to give people or groups in one step. Built-in profiles pick up new sections when " + PN + " is updated."],
     "perm-section": ["Permissions by section", "Who can view, edit or manage each section. Managers of a section can give view and edit access in it."],
@@ -299,7 +320,7 @@ export default function UserManagementModule({ onBack }) {
         <div style={sectionTitle}>{TITLES[activePage][0]}</div>
         <div style={{ fontSize: 13, color: INK_SOFT, marginTop: 2, marginBottom: 16 }}>{TITLES[activePage][1]}</div>
 
-        {activePage === "accounts" && <AccountsPanel divisions={divisions} roleLabels={ROLE_LABEL} canMakeMaster={isMaster} />}
+        {activePage === "accounts" && <AccountsPanel divisions={divisions} roleLabels={accessRoles()} canMakeMaster={isMaster} />}
         {activePage === "perm-person" && <PermissionsPanel view="person" toast={showToast} />}
         {activePage === "perm-section" && <PermissionsPanel view="section" toast={showToast} />}
         {activePage === "groups" && <PermissionsPanel view="groups" toast={showToast} />}
@@ -314,6 +335,7 @@ export default function UserManagementModule({ onBack }) {
             <UserRow key={u.id} user={u} divisions={divisions} isMe={u.id === me.id}
               forms={forms} formAccess={formAccess.filter(x => x.userId === u.id).map(x => x.formKey)}
               onSaveFormAccess={keys => saveFormAccess(u, keys)}
+              jobRoles={jobRoles} onJobRole={role => setJobRole(u, role)}
               onSave={changes => editUser(u, changes)} onRemove={() => removeUser(u)} />
           ))}
           <Pager view={view} />
@@ -329,7 +351,7 @@ export default function UserManagementModule({ onBack }) {
                 {divisions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
               <select aria-label="New person's role" style={{ ...inputStyle, flex: 1, minWidth: 150 }} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                {Object.entries(ROLE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                {Object.entries(accessRoles()).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
               <button style={btn("primary")} onClick={addUser}>Add</button>
             </div>

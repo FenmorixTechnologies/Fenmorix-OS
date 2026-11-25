@@ -1,6 +1,8 @@
 {
-  "version": "2026.11.24.12",
+  "version": "2026.11.25.1",
   "notes": [
+    "Job roles (User Management \u203a Organization): make your own roles (Owner, Manager, Sales associate\u2026), each can come with a permission profile; pick a person's role when approving them or in People & roles.",
+    "Without Procurement, People & roles no longer shows the purchasing roles (Requester, Purchaser's signature\u2026) or fire-only items: access is just Regular user or Master admin.",
     "Work Schedule: someone can step out and come back (e.g. a doctor's appointment 10\u201312): 'Coming back' with a time; shows 'Stepped out' until then.",
     "Fix: messages no longer buzz phones and pop up twice.",
     "Fix: a chat sent to someone on Busy / Do not disturb lands in their Messages inbox again.",

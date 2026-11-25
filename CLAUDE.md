@@ -1132,6 +1132,13 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
 - Quick Links: "Copy password and open the site" + a note that websites can't be signed into from another site.
 - Work schedule stepping out (migration 055): `work_schedule.back_at`; earlyAt alone = leaving early, earlyAt + backAt = out for that stretch
   (status `away` "Stepped out" between them, working again after; must fall inside the workday). scheduleShared `STATUS_ORDER`, `awayText`.
+- Job roles (11/2026, no migration): org.json `roles` [{name, profile}] (brand.js `orgSettings().roles`, `cleanRoles`; business default Owner→firechief,
+  Manager→division, Employee; fire = []). A person's role = users.job_title; `server/jobroles.js` `assignRole` (sets the title, removes every
+  role-linked profile membership, adds the role's) via auth.js action `job-role` {id, role} and `approve` {jobRole}; accounts admins only roles
+  with no/basic profile and never for masters. `changeRoles` (POST /api/system/roles add|rename|remove|profile, masters): rename renames titles,
+  profile re-syncs holders, remove keeps the title text. auth `accounts` returns `jobRoles` + `jobTitle`. UI: OrgAdmin `JobRoles` card; People &
+  roles "Job role" select (refetched when the page opens); without Procurement the access-role picker is just Regular user / Master admin and
+  recordings / time view / call-out / forms admin items hide by module. Not in the HTML meta (keeps role names off the sign-in page). e2e60.
 - Messages fixes (11/2026, migration 056): `message_recipients.held` = row held for a later delivery (next shift); `startDeliveries()` only
   announces held rows (it was announcing every unread "now" message a second time = double push/pop-up). A chat diverted while someone isn't
   Available is sent with kind "message" (since 052 it had become a notice). pushClient `subscribeWithRetry`: "Registration failed - push service

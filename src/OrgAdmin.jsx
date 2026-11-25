@@ -102,10 +102,57 @@ export default function OrgAdmin({ toast }) {
       </div>
     </section>
     <Divisions list={s.divisions} toast={toast} onChange={x => setS(o => ({ ...o, divisions: x.divisions }))} />
+    <JobRoles list={s.roles || []} profiles={s.profiles || []} toast={toast} onChange={x => setS(o => ({ ...o, roles: x.roles }))} />
   </>;
 }
 
 // Divisions (departments): add, rename, remove (moving their people to another one)
+// Job roles: what people are called here (their job title), each optionally carrying a permission profile
+function JobRoles({ list, profiles, toast, onChange }) {
+  const [add, setAdd] = useState({ name: "", profile: "" }), [edit, setEdit] = useState(null), [del, setDel] = useState(null), [busy, setBusy] = useState(false);
+  const pname = k => profiles.find(p => p.key === k)?.name || k;
+  const run = async (body, msg) => {
+    setBusy(true);
+    try { onChange(await call("/roles", body)); toast(msg); setEdit(null); setDel(null); setAdd({ name: "", profile: "" }); return true; }
+    catch (e) { toast(e.message); return false; } finally { setBusy(false); }
+  };
+  const ProfilePick = ({ value, onPick, label }) => <select aria-label={label} style={{ ...inputStyle, width: "auto" }} value={value} onChange={e => onPick(e.target.value)}>
+    <option value="">No extra access</option>{profiles.map(p => <option key={p.key} value={p.key}>{p.name}</option>)}</select>;
+  return <section style={cardStyle} aria-label="Job roles">
+    <div style={h}>Job roles</div>
+    <div style={note}>What people are called here, picked when you approve someone or edit them in People &amp; roles. A role can come with a
+      permission profile: everyone given the role gets that access, and changing the role's access changes it for all of them.</div>
+    <div style={{ marginTop: 10, border: `1px solid ${LINE}`, borderRadius: 8 }}>
+      {!list.length && <div style={{ ...note, padding: "10px" }}>No roles yet.</div>}
+      {list.map((r, i) => <div key={r.name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderTop: i ? `1px solid ${LINE}` : "none", flexWrap: "wrap" }}>
+        {edit?.name === r.name ? <>
+          <input aria-label={`New name for ${r.name}`} autoFocus style={{ ...inputStyle, flex: "1 1 200px" }} value={edit.to} onChange={e => setEdit({ ...edit, to: e.target.value })}
+            onKeyDown={e => { if (e.key === "Enter") run({ action: "rename", name: r.name, to: edit.to }, "Renamed."); }} />
+          <button type="button" style={btn("primary")} disabled={busy || !edit.to.trim()} onClick={() => run({ action: "rename", name: r.name, to: edit.to }, "Renamed.")}>Save</button>
+          <button type="button" style={btn("ghost")} onClick={() => setEdit(null)}>Cancel</button>
+        </> : del === r.name ? <>
+          <span style={{ flex: "1 1 200px", color: INK }}>Remove <b>{r.name}</b>?{r.people ? ` Its ${r.people} ${r.people === 1 ? "person keeps" : "people keep"} the title${r.profile ? " but lose the role's access" : ""}.` : ""}</span>
+          <button type="button" style={{ ...btn("primary"), background: BRICK }} disabled={busy} onClick={() => run({ action: "remove", name: r.name }, "Removed.")}>Remove</button>
+          <button type="button" style={btn("ghost")} onClick={() => setDel(null)}>Cancel</button>
+        </> : <>
+          <span style={{ flex: "1 1 160px", color: INK, fontWeight: 600 }}>{r.name}</span>
+          <span style={note}>{r.people} {r.people === 1 ? "person" : "people"}</span>
+          <ProfilePick label={`Access for ${r.name}`} value={r.profile} onPick={v => run({ action: "profile", name: r.name, profile: v }, v ? `${r.name} now comes with ${pname(v)}.` : `${r.name} no longer comes with extra access.`)} />
+          <button type="button" aria-label={`Rename ${r.name}`} style={btn("ghost")} onClick={() => { setDel(null); setEdit({ name: r.name, to: r.name }); }}><Pencil size={14} /> Rename</button>
+          <button type="button" aria-label={`Remove ${r.name}`} style={btn("ghost")} onClick={() => { setEdit(null); setDel(r.name); }}><Trash2 size={14} /> Remove</button>
+        </>}
+      </div>)}
+    </div>
+    <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+      <input aria-label="New job role" style={{ ...inputStyle, flex: "1 1 220px" }} value={add.name} placeholder="New role, e.g. Sales associate" onChange={e => setAdd({ ...add, name: e.target.value })}
+        onKeyDown={e => { if (e.key === "Enter" && add.name.trim()) run({ action: "add", ...add }, "Added."); }} />
+      <ProfilePick label="Access for the new role" value={add.profile} onPick={v => setAdd({ ...add, profile: v })} />
+      <button type="button" style={btn("outline")} disabled={busy || !add.name.trim()} onClick={() => run({ action: "add", ...add }, "Added.")}><Plus size={14} /> Add role</button>
+    </div>
+    <div style={{ ...note, marginTop: 8 }}>The profiles themselves (what Manager or Supervisor can see and do) are set in Permissions › Profiles.</div>
+  </section>;
+}
+
 function Divisions({ list, toast, onChange }) {
   const [add, setAdd] = useState(""), [edit, setEdit] = useState(null), [del, setDel] = useState(null), [busy, setBusy] = useState(false);
   const run = async (body, msg) => {

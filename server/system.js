@@ -233,7 +233,10 @@ async function withSeats(sum) {
 async function orgState() {
   const divisions = (await pool.query(`SELECT d.name, count(u.id) FILTER (WHERE u.active)::int AS people FROM divisions d
     LEFT JOIN users u ON u.division_id = d.id GROUP BY d.id, d.name ORDER BY d.name`)).rows;
-  return { ...orgSettings(), divisions };
+  const { roleCounts } = await import("./jobroles.js");
+  const { loadProfiles } = await import("./access.js");
+  const profiles = (await loadProfiles(pool)).map(p => ({ key: p.key, name: p.name, description: p.description }));
+  return { ...orgSettings(), divisions, roles: await roleCounts(), profiles };
 }
 const divName = v => String(v ?? "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 60);
 async function changeDivision(user, b) {
@@ -339,6 +342,10 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     const changed = [before.industry !== after.industry && `type: ${after.industry === "fire" ? "fire/EMS" : "business"}`,
       JSON.stringify(before.words) !== JSON.stringify(after.words) && "wording", JSON.stringify(before.work) !== JSON.stringify(after.work) && "work schedules / pay periods"].filter(Boolean);
     if (changed.length) await audit(user, "Changed organization settings", changed.join(", "));
+    return send(res, 200, { ...(await orgState()), saved: true });
+  }
+  if (what === "roles") {
+    await (await import("./jobroles.js")).changeRoles(user, b);
     return send(res, 200, { ...(await orgState()), saved: true });
   }
   if (what === "divisions") {

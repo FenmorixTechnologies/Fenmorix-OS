@@ -14,7 +14,7 @@ const btn = kind => ({
   background: kind === "primary" ? INK : "transparent", color: kind === "primary" ? "#FFFFFF" : INK,
 });
 
-async function call(path, body) {
+export async function call(path, body) {
   const res = await fetch(`/api/auth/${path}`, {
     method: body ? "POST" : "GET",
     headers: { "Content-Type": "application/json", "X-SGFD": "1" },
@@ -56,9 +56,13 @@ export function SignDivisionsPicker({ divisions, home, value, onChange, label })
 
 const when = d => (d ? new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "—");
 
-function PendingRow({ a, divisions, roleLabels, onDone, canMakeMaster = true }) {
+// Roles an approver may hand out: masters any; accounts admins only ones without extra access
+export const givableRoles = (roles, isMaster) => (roles || []).filter(r => isMaster || !r.profile || r.profile === "basic");
+
+function PendingRow({ a, divisions, roleLabels, jobRoles = [], onDone, canMakeMaster = true }) {
   const [division, setDivision] = useState(a.division);
   const [role, setRole] = useState("user");
+  const [jobRole, setJobRole] = useState("");
   const [also, setAlso] = useState([]);
   const signs = role === "approver1" || role === "approver2";
   const [busy, setBusy] = useState(false);
@@ -66,9 +70,9 @@ function PendingRow({ a, divisions, roleLabels, onDone, canMakeMaster = true }) 
   async function act(kind) {
     setBusy(true); setError("");
     try {
-      if (kind === "approve") await call("approve", { id: a.id, role, division, signDivisions: signs ? also.filter(d => d !== division) : [] });
+      if (kind === "approve") await call("approve", { id: a.id, role, division, jobRole, signDivisions: signs ? also.filter(d => d !== division) : [] });
       else await call("reject", { id: a.id });
-      onDone(kind === "approve" ? `${a.name} approved as ${roleLabels[role]}.` : `${a.name}'s request was declined.`);
+      onDone(kind === "approve" ? `${a.name} approved as ${jobRole || roleLabels[role]}.` : `${a.name}'s request was declined.`);
     } catch (err) { setError(err.message); setBusy(false); }
   }
   return (
@@ -85,9 +89,13 @@ function PendingRow({ a, divisions, roleLabels, onDone, canMakeMaster = true }) 
         <select aria-label={`Division for ${a.name}`} style={small} value={division} onChange={e => setDivision(e.target.value)}>
           {divisions.map(d => <option key={d} value={d}>{d}</option>)}
         </select>
-        <select aria-label={`Role for ${a.name}`} style={small} value={role} onChange={e => setRole(e.target.value)}>
+        {jobRoles.length > 0 && <select aria-label={`Job role for ${a.name}`} style={small} value={jobRole} onChange={e => setJobRole(e.target.value)}>
+          <option value="">Job role…</option>
+          {givableRoles(jobRoles, canMakeMaster).map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
+        </select>}
+        {Object.keys(roleLabels).filter(k => canMakeMaster || k !== "master").length > 1 && <select aria-label={`Role for ${a.name}`} style={small} value={role} onChange={e => setRole(e.target.value)}>
           {Object.entries(roleLabels).filter(([k]) => canMakeMaster || k !== "master").map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-        </select>
+        </select>}
         <button style={btn("primary")} disabled={busy} onClick={() => act("approve")}>Approve</button>
         <button style={btn()} disabled={busy} onClick={() => act("reject")}>Decline</button>
       </div>
@@ -149,13 +157,14 @@ function PersonRow({ a, onIssued }) {
 
 export default function AccountsPanel({ divisions, roleLabels, canMakeMaster = true }) {
   const [accounts, setAccounts] = useState(null);
+  const [jobRoles, setJobRoles] = useState([]);
   const [notice, setNotice] = useState("");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
 
   async function load() {
-    try { setAccounts((await call("accounts")).accounts); }
+    try { const r = await call("accounts"); setAccounts(r.accounts); setJobRoles(r.jobRoles || []); }
     catch (err) { setError(err.message); }
   }
   useEffect(() => { load(); }, []);
@@ -219,7 +228,7 @@ export default function AccountsPanel({ divisions, roleLabels, canMakeMaster = t
       </div>
       {pending.length === 0 && <div style={{ fontSize: 13, color: "#6B7385", padding: "6px 0 10px" }}>No requests right now.</div>}
       {pending.map(a => (
-        <PendingRow key={a.id} a={a} divisions={divisions} roleLabels={roleLabels} canMakeMaster={canMakeMaster}
+        <PendingRow key={a.id} a={a} divisions={divisions} roleLabels={roleLabels} jobRoles={jobRoles} canMakeMaster={canMakeMaster}
           onDone={msg => { setNotice(msg); load(); }} />
       ))}
 

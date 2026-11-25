@@ -381,7 +381,8 @@ export async function handleAuth(req, res, action, body, user, send, pending = n
       const r = await pool.query(
         `SELECT u.id, u.full_name, u.email, u.role, u.account_status, u.claimed_existing, u.signed_up_at,
                 u.last_login_at, (u.password_hash IS NOT NULL) AS has_password, d.name AS division,
-                (u.totp_enabled_at IS NOT NULL) AS mfa, (u.mfa_locked_at IS NOT NULL) AS mfa_locked, u.password_changed_at, u.signup_org
+                (u.totp_enabled_at IS NOT NULL) AS mfa, (u.mfa_locked_at IS NOT NULL) AS mfa_locked, u.password_changed_at, u.signup_org,
+                COALESCE(u.job_title, '') AS job_title
            FROM users u JOIN divisions d ON d.id = u.division_id
           WHERE u.active
           ORDER BY (u.account_status = 'pending') DESC, u.full_name`);
@@ -389,8 +390,9 @@ export async function handleAuth(req, res, action, body, user, send, pending = n
         accounts: r.rows.map(a => ({
           id: a.id, name: a.full_name, email: a.email || "", role: a.role, division: a.division,
           status: a.account_status, claimedExisting: a.claimed_existing, signedUpAt: a.signed_up_at,
-          lastLoginAt: a.last_login_at, hasPassword: a.has_password, mfa: a.mfa, mfaLocked: a.mfa_locked, passwordChangedAt: a.password_changed_at, organization: a.signup_org || "",
+          lastLoginAt: a.last_login_at, hasPassword: a.has_password, mfa: a.mfa, mfaLocked: a.mfa_locked, passwordChangedAt: a.password_changed_at, organization: a.signup_org || "", jobTitle: a.job_title,
         })),
+        jobRoles: (await import("./jobroles.js")).jobRoles(),
       });
     }
 
@@ -420,13 +422,21 @@ export async function handleAuth(req, res, action, body, user, send, pending = n
         if (also.length) await setSignDivisions(c, body.id, also);
         return r;
       });
-      await audit(user, "Approved account", `${r.rows[0].full_name} — ${ROLE_LABEL[role]}, ${body.division}` +
+      if (body.jobRole) await (await import("./jobroles.js")).assignRole(user, body.id, body.jobRole);
+      await audit(user, "Approved account", `${r.rows[0].full_name} — ${ROLE_LABEL[role]}, ${body.division}` + (body.jobRole ? `, ${body.jobRole}` : "") +
         (also.length ? `; also signs for ${also.join(", ")}` : ""));
       // Leave picks: unlock their roster entry (matched by Emp # or name)
       import("./leave.js").then(m => m.accountReady(body.id)).catch(e => console.warn(`[Leave picks] ${e.message}`));
       return send(res, 200, { ok: true });
     }
 
+    // Give someone one of the organization's job roles (job title + the permission profile the role carries)
+    case "job-role": {
+      await requireAccounts(user);
+      if (!isUuid(body.id)) throw new HttpError(400, "Bad account id");
+      const r = await (await import("./jobroles.js")).assignRole(user, body.id, body.role || "");
+      return send(res, 200, { ok: true, ...r });
+    }
     case "reject": {
       await requireAccounts(user);
       if (!isUuid(body.id)) throw new HttpError(400, "Bad account id");

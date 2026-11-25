@@ -100,7 +100,23 @@ export function orgSettings() {
     dayStart: HHMM.test(String(w.dayStart || "")) ? w.dayStart : "08:00",
   };
   configureWork(work);   // server-side copy of the shared schedule code follows the saved settings
-  return { industry, fire, words, work };
+  // Job roles (User Management › Organization): names people are given (their job title), each optionally carrying a permission
+  // profile. Businesses start with three; fire departments use free-text job titles and start with none.
+  const roles = Array.isArray(sv.roles) ? cleanRoles(sv.roles) : (fire ? [] : DEFAULT_BUSINESS_ROLES.map(r => ({ ...r })));
+  return { industry, fire, words, work, roles };
+}
+export const DEFAULT_BUSINESS_ROLES = [{ name: "Owner", profile: "firechief" }, { name: "Manager", profile: "division" }, { name: "Employee", profile: "" }];
+const PROFILE_KEY = /^[a-z0-9_-]{1,40}$/;
+export function cleanRoles(list) {
+  const out = [], seen = new Set();
+  for (const r of Array.isArray(list) ? list : []) {
+    const name = clean(r?.name, 60), key = name.toLowerCase();
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ name, profile: PROFILE_KEY.test(String(r?.profile || "")) ? r.profile : "" });
+    if (out.length >= 60) break;
+  }
+  return out;
 }
 export function saveOrgSettings(next) {
   const cur = savedOrg(), out = { ...cur };
@@ -122,6 +138,7 @@ export function saveOrgSettings(next) {
     if (w.dayStart !== undefined) { if (!HHMM.test(String(w.dayStart))) throw Object.assign(new Error("The workday start should look like 08:00."), { status: 400 }); o.dayStart = w.dayStart; }
     out.work = o;
   }
+  if (Array.isArray(next.roles)) out.roles = cleanRoles(next.roles);
   fs.mkdirSync(settingsDir(), { recursive: true });
   fs.writeFileSync(path.join(settingsDir(), "org.json"), JSON.stringify(out, null, 1) + "\n");
   orgCache = { mtime: -1, data: {} };
