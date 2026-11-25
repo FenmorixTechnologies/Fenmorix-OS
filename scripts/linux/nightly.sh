@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Nightly: back up, and on a sandbox add yesterday's made-up calls before the 03:00 statistics sync
+# Every 6 hours (nexus-nightly.timer): back up; on a sandbox also add yesterday's made-up calls (adds only days not there yet)
 set -euo pipefail
 ROOT=/opt/nexus; APP="$ROOT/app"
 bash "$APP/scripts/linux/backup.sh"

@@ -1,8 +1,8 @@
 [Unit]
-Description=Nexus nightly backup at 02:15
+Description=Backup every 6 hours (02:15, 08:15, 14:15, 20:15)
 
 [Timer]
-OnCalendar=*-*-* 02:15:00
+OnCalendar=*-*-* 02,08,14,20:15:00
 Persistent=true
 
 [Install]

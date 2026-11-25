@@ -1143,6 +1143,9 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   announces held rows (it was announcing every unread "now" message a second time = double push/pop-up). A chat diverted while someone isn't
   Available is sent with kind "message" (since 052 it had become a notice). pushClient `subscribeWithRetry`: "Registration failed - push service
   error" = browser can't reach its push service; clears and retries once, then explains (Brave: brave://settings/privacy push messaging).
+- Backups every 6 hours (11/2026, Linux kit): nexus-nightly.timer OnCalendar 02,08,14,20:15 (name kept so existing installs only need the
+  timer file swapped); backup.sh copies each run's files to BACKUP_COPY_TO (optional; e.g. /mnt/c/... on WSL), pruned after BACKUP_COPY_DAYS (30).
+  BACKUP_COPY_TO is in LOCKED_KEY (root writes there), so it's set in .env by hand, not from the System page.
 - Behind Cloudflare (11/2026, Michael registered fenmorix.com on Cloudflare Pro; LGC to be reachable at lgc.fenmorix.com): server/clientip.js
   `clientIp` (TRUST_PROXY=cloudflare: CF-Connecting-IP only when the peer is loopback (cloudflared) or a Cloudflare range, net.BlockList) and
   `isLocalRequest` (loopback AND no cf-connecting-ip/cf-ray/x-forwarded-for/x-real-ip, so first-run never opens through a tunnel). auth.js,

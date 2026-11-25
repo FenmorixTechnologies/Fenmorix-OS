@@ -139,7 +139,7 @@ const ENV_FILE = () => process.env.ENV_FILE || path.join(APP_DIR, ".env");
 const ENV_HIST = () => path.join(UPD(), "env-history");
 export const SECRET_KEY = /(PASS|SECRET|TOKEN|PRIVATE|API_KEY|_KEY$|PASSPHRASE|CREDENTIAL)/;
 // Wrong values here can stop Nexus from starting, and then this page can't fix it: change these on the server
-export const LOCKED_KEY = /^(PG[A-Z]*|DATABASE_URL|PORT|HOST|HTTP_REDIRECT_PORT|HTTPS_[A-Z_]+|FORMS_KEY[A-Z_]*|UPLOAD_DIR|SYSTEM_DIR|UPDATER_[A-Z_]+|ENV_FILE|NODE_ENV|SANDBOX|LICENSE_FILE)$/;
+export const LOCKED_KEY = /^(PG[A-Z]*|DATABASE_URL|PORT|HOST|HTTP_REDIRECT_PORT|HTTPS_[A-Z_]+|FORMS_KEY[A-Z_]*|UPLOAD_DIR|SYSTEM_DIR|UPDATER_[A-Z_]+|ENV_FILE|NODE_ENV|SANDBOX|LICENSE_FILE|BACKUP_COPY_TO)$/;
 const KEY_RE = /^[A-Z][A-Z0-9_]{0,63}$/;
 const LINE_RE = /^\s*(#\s*)?(?:export\s+)?([A-Z][A-Z0-9_]*)\s*=(.*)$/;
 function unquote(raw) {

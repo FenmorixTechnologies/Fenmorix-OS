@@ -1,5 +1,5 @@
 [Unit]
-Description=Nexus nightly backup (and new demo calls on a sandbox)
+Description=Backup every 6 hours (and new demo calls on a sandbox)
 
 [Service]
 Type=oneshot
