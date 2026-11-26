@@ -1231,3 +1231,12 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   (run-portal.sh; PORTAL_HOST=127.0.0.1 so 127.0.0.1:3077 is the portal and localhost:3077 the office). build.sh builds dist/portal.js.
 - Cloudflare: portal.fenmorix.com must NOT sit behind the office's Access app; add its DNS only after the office runs a version with
   PORTAL_HOST set (before that the name would show the office app). SSL mode is Full (not strict), so the office's certificate works.
+
+## Website (11/2026)
+- `website/` (not shipped; packaging copies only SHIP): Fenmorix Technologies' own marketing site, one page (index.html + assets/), dark navy +
+  Fenmorix orange, Barlow Condensed / Barlow (Google Fonts), hero = interactive module "switchboard" with Fire department / Business presets,
+  a shift in Fenmorix OS (recall, command board PAR, signature chain, ISO/PIAL), business, security, steps, pricing approach (no prices;
+  hosting by Avexon), contact = mailto michael@fenmorix.com (demo email lists the picked modules). Preview artifact
+  https://claude.ai/artifact/3xT6nGT5N35Ttd2Z47niXQ. fenmorix.com today = Cloudflare Pages project "fenmorix" (BlakSheep) + Worker
+  `fenmorix-site-login`; replacing it waits for Michael's go-ahead. BlakSheep does SEO.
+- packaging SHIP now includes portal.html (vite's third input: every package needs it or `vite build` fails).
