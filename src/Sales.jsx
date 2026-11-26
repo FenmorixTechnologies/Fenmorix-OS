@@ -328,7 +328,7 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
             <Choice label="Market" value={i.segment} options={Object.entries(useBook.segments).map(([k, s]) => ({ key: k, label: s.label }))} onChange={setSeg} />
             <Num label={i.segment === "ps" ? "Users per agency" : "Users per company"} value={i.users} onChange={v => set("users", v)} min={1} />
             <Num label={i.segment === "ps" ? "Agencies in the group" : "Companies in the family"} value={i.members} onChange={v => set("members", v)} min={1} />
-            <Choice label="Delivery" value={i.delivery} options={[{ key: "hosted", label: "Hosted (with Avexon)" }, { key: "onprem", label: "On-premises license" }]} onChange={v => set("delivery", v)} />
+            <Choice label="Delivery" value={i.delivery} options={[{ key: "hosted", label: "Hosted by Avexon" }, { key: "onprem", label: "On-premises license" }]} onChange={v => set("delivery", v)} />
           </div>
           {!!d.clients.length && !form.clientId && <div style={{ fontSize: 12.5, color: ORANGE }}>Pick the client to save the quote. You can price it first.</div>}
           {!d.clients.length && <div style={{ fontSize: 12.5, color: ORANGE }}>Add the client on the Clients page to save a quote.</div>}
@@ -352,7 +352,7 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
         <Card title="Service">
           <div style={row}>
             <Choice label="Environments" value={i.environments} options={useBook.environments} onChange={v => set("environments", v)} />
-            <Choice label="Disaster recovery" value={i.dr} options={useBook.dr.map(x => ({ key: x.key, label: `${x.label} (${x.rto} / ${x.rpo})` }))} onChange={v => set("dr", v)} />
+            <Choice label="Disaster recovery" value={i.dr} options={useBook.dr.map(x => ({ key: x.key, label: `${x.label} (${x.rto} / ${x.rpo})${x.pct ? ` +${Math.round(x.pct * 100)}%` : ""}` }))} onChange={v => set("dr", v)} />
             <Choice label="Support" value={i.support} options={useBook.support.map(x => ({ key: x.key, label: `${x.label} (${x.critical})` }))} onChange={v => set("support", v)} />
             <Choice label="Term" value={String(i.termYears)} options={useBook.terms.map(t => ({ key: String(t.years), label: `${t.label}${t.discount ? ` (−${Math.round(t.discount * 100)}%)` : ""}` }))} onChange={v => set("termYears", Number(v))} />
           </div>
@@ -360,6 +360,13 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
             <label><input type="checkbox" checked={!!i.founding} onChange={e => set("founding", e.target.checked)} /> {useBook.founding.label} ({Math.round(useBook.founding.pct * 100)}% for {useBook.founding.years} years)</label>
             <label><input type="checkbox" checked={i.implementation !== false} onChange={e => set("implementation", e.target.checked)} /> Implementation fee</label></div>
         </Card>
+        {i.delivery !== "onprem" && <Card title={`Hosting and compute (${useBook.seller?.partner || "Avexon"})`}>
+          <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>Not part of Fenmorix's price. {useBook.seller?.partner || "Avexon"} sizes it from the users, the data kept and the recovery tier, and bills it themselves. Enter their figures when you have them: they print as a separate section and count in the savings comparison. Left blank, the quote says hosting is quoted separately.</p>
+          <div style={row}>
+            <Num label="Their yearly price" value={i.hostingAnnual} onChange={v => set("hostingAnnual", v)} />
+            <Num label="Their one-time setup" value={i.hostingOneTime} onChange={v => set("hostingOneTime", v)} />
+            <Field label="Their quote (reference or note)"><input aria-label="Hosting note" value={i.hostingNote || ""} onChange={e => set("hostingNote", e.target.value)} style={inp} /></Field>
+          </div></Card>}
         <Card title="One-time services and extras">
           <div style={row}>
             <Num label="CAD integrations" value={i.cadIntegrations} onChange={v => set("cadIntegrations", v)} />
@@ -402,12 +409,15 @@ function Summary({ r }) {
       {on ? <><Kpi label="License, once" value={money(on.license)} /><Kpi label="Maintenance / yr" value={money(on.yearly)} /></>
         : <><Kpi label="Year one" value={money(r.year1Recurring)} sub={`${money(r.perUserMonth, true)} per user / month`} /><Kpi label="One-time" value={money(r.oneTimeTotal)} /></>}
       <Kpi label={`${r.term.label} total`} value={money(r.contractValue)} />
-      {r.savings ? <Kpi label="Saves a year" value={money(r.savings.yearly)} sub={`${Math.round(r.savings.pct * 100)}% of ${money(r.savings.replaced)}`} color={r.savings.yearly >= 0 ? GREEN : RED} /> : <Kpi label="Users" value={r.totalUsers} />}
+      {r.savings ? <Kpi label={r.savings.hostingUnknown ? "Saves a year, before hosting" : "Saves a year"} value={money(r.savings.yearly)} sub={`${Math.round(r.savings.pct * 100)}% of ${money(r.savings.replaced)}`} color={r.savings.yearly >= 0 ? GREEN : RED} /> : <Kpi label="Users" value={r.totalUsers} />}
     </div>
     {!on && <><div style={lbl}>Yearly</div>{L(r.lines.recurring)}<div style={{ display: "flex", fontSize: 12.5, borderTop: `1px solid ${LINE}`, paddingTop: 3 }}><span style={{ flex: 1 }}>List per year</span><b>{money(r.listAnnual)}</b></div>{L(r.lines.yearly)}{L(r.lines.customAnnual || [])}</>}
     {r.lines.once.length > 0 && <><div style={{ ...lbl, marginTop: 8 }}>One time</div>{L(r.lines.once)}</>}
     <div style={{ ...lbl, marginTop: 8 }}>Year by year</div>
     {r.schedule.map(s => <div key={s.year} style={{ display: "flex", fontSize: 12.5, color: s.inTerm ? INK : SOFT }}><span style={{ flex: 1 }}>Year {s.year}{s.inTerm ? "" : " (renewal)"}</span><b>{money(s.total)}</b></div>)}
+    {r.hosting?.known && <><div style={{ ...lbl, marginTop: 8 }}>{r.hosting.partner} hosting (separate)</div>
+      {r.hosting.annual > 0 && <div style={{ display: "flex", fontSize: 12.5 }}><span style={{ flex: 1 }}>Per year</span><b>{money(r.hosting.annual)}</b></div>}
+      {r.hosting.oneTime > 0 && <div style={{ display: "flex", fontSize: 12.5 }}><span style={{ flex: 1 }}>Setup</span><b>{money(r.hosting.oneTime)}</b></div>}</>}
     {r.notes.map((n, k) => <div key={k} style={{ fontSize: 12, color: ORANGE, marginTop: 6 }}>{n}</div>)}
   </section>;
 }
@@ -473,9 +483,10 @@ function BookEditor({ toast, book, setBook, canManage }) {
         {["s", "m", "l"].map(z => <input key={z} aria-label={`${a.label} ${z}`} type="number" value={a.prices[z]} onChange={ev => upd(y => { y.addons[k].prices[z] = Number(ev.target.value); })} style={inp} />)}</div>)}
     </Card>
     <Card title="Percentages (of the yearly software price)">
+      <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>Hosting, compute and the servers behind each recovery tier are {b.seller?.partner || "Avexon"}'s and priced by them. A recovery fee here is only Fenmorix's own work for that tier (0 = none).</p>
       <div style={grid}>
         {b.environments.filter(e => e.key !== "none").map(e => pctIn(e.label, () => e.pct, (y, v) => { y.environments.find(x => x.key === e.key).pct = v; }))}
-        {b.dr.filter(e => e.key !== "standard").map(e => pctIn(`Recovery: ${e.label}`, () => e.pct, (y, v) => { y.dr.find(x => x.key === e.key).pct = v; }))}
+        {b.dr.filter(e => e.key !== "standard").map(e => pctIn(`Fenmorix fee, ${e.label} recovery`, () => e.pct, (y, v) => { y.dr.find(x => x.key === e.key).pct = v; }))}
         {b.support.filter(e => e.key !== "standard").map(e => pctIn(`Support: ${e.label}`, () => e.pct, (y, v) => { y.support.find(x => x.key === e.key).pct = v; }))}
       </div></Card>
     <Card title="Terms and discounts">

@@ -65,6 +65,7 @@ function cleanInputs(v) {
     manualDiscount: num(i.manualDiscount, 0, 50),
     customLines: (Array.isArray(i.customLines) ? i.customLines : []).slice(0, 20).map(c => ({ label: line(c?.label, 200), amount: num(c?.amount, -1e7, 1e7), kind: c?.kind === "annual" ? "annual" : "once" })).filter(c => c.label),
     currentSpend: cleanSpend(i.currentSpend),
+    hostingAnnual: num(i.hostingAnnual, 0, 1e8), hostingOneTime: num(i.hostingOneTime, 0, 1e8), hostingNote: line(i.hostingNote, 300),
   };
 }
 const clientJson = r => ({

@@ -82,18 +82,24 @@ await page.getByLabel("Disaster recovery").selectOption("enhanced");
 await page.getByLabel("CAD integrations").fill("1");
 await page.waitForTimeout(400);
 const sum = await page.getByRole("region", { name: "Price summary" }).innerText();
-check("live summary", /Command · Mid-size/i.test(sum) && /CAD integration/.test(sum) && /Disaster recovery: Enhanced/.test(sum), sum.slice(0, 400));
+check("live summary", /Command · Mid-size/i.test(sum) && /CAD integration/.test(sum) && /Hosting and compute are not included/.test(sum) && /before hosting/i.test(sum), sum.slice(0, 400));
+check("recovery tier adds no Fenmorix fee by default", !/Disaster recovery: Enhanced/.test(sum));
+await page.getByLabel("Their yearly price").fill("9000");
+await page.getByLabel("Hosting note").fill("Avexon quote AV-1042");
+await page.waitForTimeout(300);
+const sum2 = await page.getByRole("region", { name: "Price summary" }).innerText();
+check("Avexon hosting shown apart", /Avexon hosting \(separate\)/i.test(sum2) && /\$9,000/.test(sum2) && /\$10,500/.test(sum2) && !/not included/.test(sum2), sum2.slice(0, 500));
 await page.screenshot({ path: "shot-sales-builder.png", fullPage: true });
 await page.getByRole("button", { name: "Save quote" }).click(); await page.waitForTimeout(1500);
 let q = psql("SELECT number || '|' || status || '|' || (result->>'year1Recurring') || '|' || (result->>'contractValue') FROM sales_quotes").split("|");
-// Command mid 45000 + enhanced DR 20% = 54000 list; 3-year 10% -> 48600; contract = 48600 * 3 + one-time (7500 implementation + 7500 CAD)
+// Command mid 45000 list (recovery tier = Avexon's hosting, no Fenmorix fee); 3-year 10% -> 40500; contract = 40500 * 3 + one-time (7500 + 7500 CAD); hosting never in it
 check("saved and numbered", q[0] === `Q-${new Date().getFullYear()}-0001` && q[1] === "draft", q.join(" "));
-check("server priced it", Number(q[2]) === 48600 && Number(q[3]) === 48600 * 3 + 15000, q.join(" "));
+check("server priced it", Number(q[2]) === 40500 && Number(q[3]) === 40500 * 3 + 15000, q.join(" "));
 const qid = psql("SELECT id FROM sales_quotes LIMIT 1");
 // tampered result ignored: the server recomputes from inputs
 const r0 = (await api(`/api/sales/quotes/${qid}`)).body.quote;
 await api("/api/sales/quotes", { id: qid, clientId: cid, title: r0.title, inputs: r0.inputs, result: { year1Recurring: 1 }, notes: "Pricing includes the founding offer discussed." });
-check("client-sent result ignored", Number(psql(`SELECT result->>'year1Recurring' FROM sales_quotes WHERE id = '${qid}'`)) === 48600);
+check("client-sent result ignored", Number(psql(`SELECT result->>'year1Recurring' FROM sales_quotes WHERE id = '${qid}'`)) === 40500);
 
 // ---- Print the quote ----
 await page.waitForTimeout(500);
@@ -107,8 +113,10 @@ check("builder read-only when sent", await page.getByLabel("Users per agency").i
 await page.getByRole("button", { name: "Print quote" }).click(); await page.waitForTimeout(1500);
 const html = await page.evaluate(() => document.getElementById("sales-print-frame")?.contentDocument?.documentElement?.outerHTML || "");
 check("quote document", html.includes(q[0]) && html.includes("Riverbend Fire District") && html.includes("Command Board") && html.includes("Terms and conditions")
-  && html.includes("Acceptance") && html.includes("$48,600") && html.includes("founding offer discussed") && !html.includes("DRAFT\"; position"), html.length);
-check("savings on the quote", /Software it replaces/.test(html) && /\$60,000/.test(html));
+  && html.includes("Acceptance") && html.includes("$40,500") && html.includes("founding offer discussed") && !html.includes("DRAFT\"; position"), html.length);
+check("savings on the quote", /Software it replaces/.test(html) && /\$60,000/.test(html) && /with hosting/.test(html));
+check("Avexon hosting section on the quote", /Hosting and compute \(Avexon\)/.test(html) && /\$9,000/.test(html) && /AV-1042/.test(html) && /not part of the Fenmorix totals/.test(html));
+check("terms say hosting is Avexon's", /are not included in Fenmorix(&#39;|')s fees/.test(html));
 check("no SGFD / Nexus text in the quote", !/SGFD|Nexus|St\. George/i.test(html.replace(/<[^>]+>/g, " ")));
 const pdfPage = await ctx.newPage();
 await pdfPage.setContent(html, { waitUntil: "load" }); await pdfPage.waitForTimeout(600);
@@ -123,7 +131,7 @@ check("copy = new draft", psql("SELECT count(*) FROM sales_quotes WHERE status =
 await api(`/api/sales/quotes/${qid}/status`, { status: "accepted" });
 check("accepted -> client active with the modules", psql(`SELECT status || ' ' || (modules ? 'command') FROM sales_clients WHERE id = '${cid}'`) === "active true");
 const ov = (await api("/api/sales")).body;
-check("totals", ov.totals.won === 1 && ov.totals.wonYearly === 48600, JSON.stringify(ov.totals));
+check("totals", ov.totals.won === 1 && ov.totals.wonYearly === 40500, JSON.stringify(ov.totals));
 check("client with quotes can't be removed", (await api(`/api/sales/clients/${cid}/remove`, {})).status === 409);
 const qid2 = psql("SELECT id FROM sales_quotes WHERE status = 'draft'");
 check("draft can be deleted", (await api(`/api/sales/quotes/${qid2}/remove`, {})).status === 200);

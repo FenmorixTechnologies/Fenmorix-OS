@@ -61,9 +61,11 @@ export const DEFAULT_BOOK = {
     { key: "both", label: "Production + training + test", pct: 0.25 },
   ],
   dr: [
+    // The recovery tier sets the target; the servers, second region and standby behind it are Avexon's hosting, priced by Avexon.
+    // pct = Fenmorix's own fee for the tier (0 = none), on top of the software.
     { key: "standard", label: "Standard", pct: 0, backups: "Every 6 hours, plus nightly server snapshots, kept 14–30 days", rto: "24 hours", rpo: "6 hours" },
-    { key: "enhanced", label: "Enhanced", pct: 0.2, backups: "Hourly, plus a copy in a second region", rto: "4 hours", rpo: "1 hour" },
-    { key: "ha", label: "High availability", pct: 0.4, backups: "Standby server in a second region, kept in sync", rto: "1 hour", rpo: "Minutes" },
+    { key: "enhanced", label: "Enhanced", pct: 0, backups: "Hourly, plus a copy in a second region", rto: "4 hours", rpo: "1 hour" },
+    { key: "ha", label: "High availability", pct: 0, backups: "Standby server in a second region, kept in sync", rto: "1 hour", rpo: "Minutes" },
   ],
   support: [
     { key: "standard", label: "Standard", pct: 0, hours: "Monday–Friday, 8 a.m.–5 p.m. Central", critical: "4 business hours", normal: "Next business day" },
@@ -93,7 +95,7 @@ export const DEFAULT_BOOK = {
   // Starting language only. Have an attorney review before any customer signs.
   termsSections: [
     { title: "Subscription", body: "Fenmorix Technologies, LLC (\"Fenmorix\") grants the Customer a non-exclusive, non-transferable right to use Fenmorix OS and the modules listed in this quote for the Customer's internal operations during the subscription term, for the number of users shown." },
-    { title: "Hosting, updates and support", body: "Hosted subscriptions include hosting, security updates, new versions of the licensed modules, backups as described in the disaster recovery tier, and support at the tier shown. Hosting is provided by Fenmorix's hosting partner, Avexon, unless the Customer runs the software on its own servers." },
+    { title: "Hosting, updates and support", body: "The subscription includes security updates, new versions of the licensed modules, and support at the tier shown. Hosting, compute, storage and the backup and recovery infrastructure for the tier shown are not included in Fenmorix's fees: they are provided and quoted by Fenmorix's hosting partner, Avexon, based on the number of users, the amount of data kept and the recovery tier chosen, under Avexon's own quote and terms, unless the Customer runs the software on its own servers." },
     { title: "Customer data", body: "The Customer owns its data. Fenmorix accesses Customer data only to provide, support and secure the service. On request at the end of the term, Fenmorix provides a full export of the Customer's data in a standard format within 30 days, after which it is deleted from Fenmorix's systems." },
     { title: "Security", body: "Fenmorix OS encrypts data in transit, encrypts sensitive fields at rest, requires two-step sign-in for administrators, and keeps an audit log that cannot be edited. Fenmorix notifies the Customer without undue delay of any security incident affecting Customer data." },
     { title: "Price changes", body: "Prices are fixed for the price-lock period shown. After it, subscription fees increase each contract year by the percentage shown in this quote." },
@@ -118,6 +120,7 @@ export const DEFAULT_INPUTS = {
   segment: "ps", users: 40, edition: "operations", addons: [], screens: 0, environments: "none", dr: "standard", support: "standard",
   termYears: 3, founding: false, delivery: "hosted", members: 1, implementation: true, cadIntegrations: 0, migrationHours: 0,
   trainingDays: 0, prepaidBlocks: 0, manualDiscount: 0, customLines: [], currentSpend: [],
+  hostingAnnual: 0, hostingOneTime: 0, hostingNote: "",   // Avexon's figures when known (shown apart; never in Fenmorix's totals)
 };
 
 // inputs -> { size, lines, annual, oneTime, schedule, totals, notes }. Never throws on missing values; uses the book's first options.
@@ -175,7 +178,7 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
   const envPct = env.pct && !(ed.includesTraining && i.environments === "training") ? (ed.includesTraining && i.environments === "both" ? Math.max(0, env.pct - pctOf(book.environments, "training").pct) : env.pct) : 0;
   if (i.environments !== "none") recurring.push({ key: "environments", label: `Environments: ${env.label}${ed.includesTraining && ["training", "both"].includes(i.environments) ? ` (training included with ${ed.label})` : ""}`, amount: round(softwareNet * envPct) });
   const dr = pctOf(book.dr, i.dr);
-  if (!onPrem && dr.pct) recurring.push({ key: "dr", label: `Disaster recovery: ${dr.label} (back within ${dr.rto}, at most ${dr.rpo} of data lost)`, amount: round(softwareNet * dr.pct) });
+  if (!onPrem && dr.pct) recurring.push({ key: "dr", label: `Disaster recovery: ${dr.label} setup and management (back within ${dr.rto}, at most ${dr.rpo} of data lost)`, amount: round(softwareNet * dr.pct) });
   if (onPrem && i.dr !== "standard") notes.push("Disaster recovery tiers apply to hosted systems; on-premises recovery depends on the customer's own servers.");
   const sup = pctOf(book.support, i.support);
   if (sup.pct) recurring.push({ key: "support", label: `${sup.label} support (critical response ${sup.critical})`, amount: round(softwareNet * sup.pct) });
@@ -257,9 +260,14 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
   // ---- What it replaces
   const spend = (i.currentSpend || []).map(s => ({ label: String(s.label || "").slice(0, 120), annual: Number(s.annual) || 0 })).filter(s => s.label || s.annual);
   const replaced = round(spend.reduce((s, x) => s + x.annual, 0));
-  const comparable = finalYear1;
+  // Hosting (Avexon): shown apart, never in Fenmorix's totals; when Avexon's figure is known it counts in the comparison with today's software
+  const hosting = onPrem ? null : { annual: round(Math.max(0, Number(i.hostingAnnual) || 0)), oneTime: round(Math.max(0, Number(i.hostingOneTime) || 0)),
+    note: String(i.hostingNote || "").slice(0, 300), partner: book.seller?.partner || "Avexon" };
+  if (hosting) hosting.known = hosting.annual > 0 || hosting.oneTime > 0;
+  if (hosting && !hosting.known) notes.push(`Hosting and compute are not included: ${hosting.partner} quotes them separately from the number of users, the data kept and the recovery tier (${dr.label}).`);
+  const comparable = finalYear1 + (hosting?.annual || 0);
   const firstThree = schedule.slice(0, 3).reduce((s, r) => s + r.total, 0);
-  const savings = replaced ? { replaced, yearly: round(replaced - comparable), pct: replaced ? (replaced - comparable) / replaced : 0, threeYears: round(replaced * 3 - firstThree) } : null;
+  const savings = replaced ? { replaced, yearly: round(replaced - comparable), pct: replaced ? (replaced - comparable) / replaced : 0, threeYears: round(replaced * 3 - firstThree - (hosting ? hosting.annual * 3 + hosting.oneTime : 0)), withHosting: !!hosting?.known, hostingUnknown: !!hosting && !hosting.known } : null;
 
   const totalUsers = users * members;
   return {
@@ -267,7 +275,7 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
     env, dr, support: sup, lines: { recurring, yearly, once, customAnnual },
     listAnnual, year1Recurring: finalYear1, oneTimeTotal: onPremQuote ? round(oneTimeTotal + onPremQuote.license) : oneTimeTotal,
     contractValue: finalTcv, schedule, onPremQuote, year1Total: schedule[0].total,
-    perUserMonth: round(finalYear1 / totalUsers / 12), savings, spend, notes,
+    perUserMonth: round(finalYear1 / totalUsers / 12), savings, spend, notes, hosting,
     modules: [...new Set([...ed.modules, ...(i.addons || []).map(k => book.addons.find(a => a.key === k)?.module).filter(Boolean)])],
   };
 }

@@ -64,13 +64,22 @@ function modulesHtml(keys) {
     + `Your Day home page, announcements, directory, personnel file, user management, permissions and groups, audit log, notifications, TV display screens, branding.</span></div>`;
   return `<div class="mods">${core}${Object.entries(groups).map(([g, ms]) => `<div class="grp">${esc(g)}</div>` + ms.map(m => `<div class="mod"><b>${esc(m.name)}</b><span>${esc(m.desc || "")}</span></div>`).join("")).join("")}</div>`;
 }
+// Avexon's part: never in Fenmorix's totals. Their figures when entered, else a note that they quote it.
+function hostingHtml(h, dr) {
+  const p = esc(h.partner);
+  if (!h.known) return `<div class="note"><b>Hosting and compute are not included above.</b> ${p} quotes them separately, sized to the number of users, the data kept and the recovery tier chosen (${esc(dr.label)}: back within ${esc(dr.rto)}, at most ${esc(dr.rpo)} of data lost). Higher recovery tiers need more infrastructure and cost more to host.</div>`;
+  return `<h3>Hosting and compute (${p})</h3><table><tbody>
+    ${h.annual ? `<tr><td>Hosting, compute, storage and ${esc(dr.label.toLowerCase())} recovery, per year</td><td class="n">${money(h.annual)}</td></tr>` : ""}
+    ${h.oneTime ? `<tr><td>Hosting setup, one time</td><td class="n">${money(h.oneTime)}</td></tr>` : ""}
+  </tbody></table><p class="muted" style="margin:0 0 8px">From ${p}'s quote${h.note ? `: ${esc(h.note)}` : ""}. Billed by ${p} under its own terms; not part of the Fenmorix totals.</p>`;
+}
 function serviceHtml(r, book) {
   const hosted = r.delivery !== "onprem";
   return `<table><tbody>
-    <tr><td class="lab" style="width:30%">Delivery</td><td>${hosted ? `Hosted and maintained for you, with our hosting partner ${esc(SELLER.partner)}` : "On your own servers (on-premises license with yearly maintenance)"}</td></tr>
+    <tr><td class="lab" style="width:30%">Delivery</td><td>${hosted ? `Hosted by our partner ${esc(SELLER.partner)}; Fenmorix maintains the software. <b>Hosting and compute are quoted separately by ${esc(SELLER.partner)}</b>, sized to your users and data.` : "On your own servers (on-premises license with yearly maintenance)"}</td></tr>
     <tr><td class="lab">Users</td><td>${r.members > 1 ? `${r.members} ${r.segment === "ps" ? "agencies" : "companies"} × ${r.users} users (${r.totalUsers} in all)` : `${r.users} users`}</td></tr>
     <tr><td class="lab">Environments</td><td>${esc(r.env.label)}${r.env.note ? ` <span class="muted">— ${esc(r.env.note)}</span>` : ""}${r.edition.includesTraining ? ` <span class="muted">(a training environment comes with ${esc(r.edition.label)})</span>` : ""}</td></tr>
-    ${hosted ? `<tr><td class="lab">Backups &amp; recovery</td><td><b>${esc(r.dr.label)}</b>: ${esc(r.dr.backups)}. Back in service within ${esc(r.dr.rto)}; at most ${esc(r.dr.rpo)} of data lost.</td></tr>` : ""}
+    ${hosted ? `<tr><td class="lab">Backups &amp; recovery</td><td><b>${esc(r.dr.label)}</b>: ${esc(r.dr.backups)}. Target: back in service within ${esc(r.dr.rto)}; at most ${esc(r.dr.rpo)} of data lost. <span class="muted">The backup and standby servers for this tier are part of ${esc(SELLER.partner)}'s hosting quote.</span></td></tr>` : ""}
     <tr><td class="lab">Support</td><td><b>${esc(r.support.label)}</b>: ${esc(r.support.hours)}. Critical issues: response within ${esc(r.support.critical)}. Everything else: ${esc(r.support.normal)}.</td></tr>
     <tr><td class="lab">Updates</td><td>${hosted ? "New versions and security updates installed for you, with a rollback point before each one." : "New versions and security updates while maintenance is current."}</td></tr>
     <tr><td class="lab">Term</td><td>${esc(r.term.label)}; prices locked for ${r.term.lockYears} year${r.term.lockYears === 1 ? "" : "s"}, then ${pct(r.term.escalator)} a year.</td></tr>
@@ -98,7 +107,7 @@ export function quoteHtml(q, client, opts = {}) {
   <p style="margin:0">${esc(r.edition.blurb || "")}</p>
   <div class="kpis">${kpis.map(([l, v]) => `<div class="kpi"><span class="lab">${l}</span><b>${v}</b></div>`).join("")}</div>
   ${sv && sv.replaced ? `<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi save"><span class="lab">Software it replaces / year</span><b>${money(sv.replaced)}</b></div>
-    <div class="kpi save"><span class="lab">Yearly difference</span><b>${money(sv.yearly)}${sv.pct > 0 ? ` (${pct(sv.pct)})` : ""}</b></div><div class="kpi save"><span class="lab">First three years</span><b>${money(sv.threeYears)}</b></div></div>` : ""}
+    <div class="kpi save"><span class="lab">Yearly difference${sv.hostingUnknown ? " (before hosting)" : sv.withHosting ? " (with hosting)" : ""}</span><b>${money(sv.yearly)}${sv.pct > 0 ? ` (${pct(sv.pct)})` : ""}</b></div><div class="kpi save"><span class="lab">First three years</span><b>${money(sv.threeYears)}</b></div></div>` : ""}
   ${q.notes ? `<div class="note">${nl(q.notes)}</div>` : ""}
 
   <h2>What's included</h2>
@@ -120,6 +129,7 @@ export function quoteHtml(q, client, opts = {}) {
       <tr class="tot"><td>Year one</td><td class="n">${money(r.year1Recurring)}</td></tr></tbody></table>`}
   ${r.lines.once.length ? `<h3>One-time</h3><table><thead><tr><th>Item</th><th class="n">Amount</th></tr></thead><tbody>${rows(r.lines.once)}
       <tr class="tot"><td>One-time total</td><td class="n">${money(r.lines.once.reduce((s, l) => s + l.amount, 0))}</td></tr></tbody></table>` : ""}
+  ${r.hosting ? hostingHtml(r.hosting, r.dr) : ""}
   <h3>Year by year</h3>
   <table><thead><tr><th>Contract year</th><th class="n">${onPrem ? "Maintenance" : "Subscription"}</th><th class="n">One-time</th><th class="n">Total</th></tr></thead><tbody>
     ${r.schedule.map(s => `<tr${s.inTerm ? "" : ' class="muted"'}><td>Year ${s.year}${s.inTerm ? "" : " (renewal, for planning)"}</td><td class="n">${money(s.recurring)}</td><td class="n">${s.oneTime ? money(s.oneTime) : "—"}</td><td class="n">${money(s.total)}</td></tr>`).join("")}
@@ -165,7 +175,7 @@ export function specHtml(book, segKey, edKey, { prices = false } = {}) {
     ${book.environments.filter(e => e.key !== "none").map(e => `<tr><td style="width:32%"><b>${esc(e.label)}</b></td><td>${esc(e.note || "Separate copies for training and for trying updates before they reach production.")}</td></tr>`).join("")}</tbody></table>
   <h2>Platform</h2>
   <table><tbody>
-    <tr><td class="lab" style="width:30%">Hosting</td><td>Hosted and maintained with our partner ${esc(SELLER.partner)}, or on your own servers (Linux or Windows).</td></tr>
+    <tr><td class="lab" style="width:30%">Hosting</td><td>Hosted by our partner ${esc(SELLER.partner)}, or on your own servers (Linux or Windows). Hosting and compute are quoted separately by ${esc(SELLER.partner)}, sized to your users, data and recovery tier.</td></tr>
     <tr><td class="lab">Security</td><td>Encrypted connections, sensitive fields encrypted at rest, two-step sign-in for administrators, role- and group-based permissions, an audit log that can't be edited.</td></tr>
     <tr><td class="lab">Your brand</td><td>Your name, logo, colors and menu names; your own web address.</td></tr>
     <tr><td class="lab">Works on</td><td>Any current browser on desktops, tablets and phones; installs as an app; push notifications; TV display screens.</td></tr>

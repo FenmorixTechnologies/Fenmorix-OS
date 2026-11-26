@@ -1170,4 +1170,8 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   Access section `sales` (view/edit/manage). Audit module "Clients & Quotes".
 - UI `src/Sales.jsx` (Overview, Clients, ClientView with vault + work log, QuoteBuilder with live Summary, Quotes, Spec sheets, BookEditor) and
   `src/SalesPrint.js` (quoteHtml / specHtml / printHtml, logo embedded as a data URL). Own input style (App.jsx exports aren't ready at load).
-  Tests: tests/e2e61.mjs via run-office.sh (34).
+  Tests: tests/e2e61.mjs via run-office.sh (38).
+- Michael (11/2026): hosting and compute are NOT in Fenmorix's price; Avexon sizes and quotes them (users, data, recovery tier), and the
+  recovery tier's servers are part of that. book.dr pct defaults 0 (= Fenmorix's own fee for a tier, optional); inputs hostingAnnual /
+  hostingOneTime / hostingNote = Avexon's figures, returned as result.hosting {known}, printed as a separate section, never in Fenmorix
+  totals, counted in the savings comparison (labelled "before hosting" when unknown). Terms "Hosting, updates and support" say so.
