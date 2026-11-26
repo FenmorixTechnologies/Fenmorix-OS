@@ -75,7 +75,7 @@ export const MODULES = [
   { key: "links", name: "Quick Links & Shared Logins", group: "Workflow", tiles: ["links"], api: ["links"], collections: [], optIn: true,
     desc: "The websites the team uses every day, one click away; shared logins encrypted, shown only to the people chosen, every view logged." },
   // Vendor's own tools: only on Fenmorix Technologies' office install (a license naming "sales"); never in a customer package
-  { key: "sales", name: "Clients & Quotes", group: "Vendor tools", tiles: ["sales", "books"], api: ["sales", "books", "hub"], collections: [], optIn: true, vendor: true,
+  { key: "sales", name: "Clients & Quotes", group: "Vendor tools", tiles: ["sales", "books"], api: ["sales", "books", "hub", "clientportal"], collections: [], optIn: true, vendor: true,
     desc: "Client book with contacts and a secure vault for their server logins, price book, quote calculator, printable quotes and spec sheets, work log." },
 ];
 

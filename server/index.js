@@ -169,6 +169,7 @@ async function handleApi(req, res, url) {
   if (parts[1] === "schedule") { const { handleSchedule } = await import("./schedule.js"); return handleSchedule(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "offwork") { const { handleOffwork } = await import("./offwork.js"); return handleOffwork(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "spot") { const { handleSpot } = await import("./spot.js"); return handleSpot(req, res, parts, user, send, url); }
+  if (parts[1] === "clientportal") { const { handlePortalAdmin } = await import("./portal.js"); return handlePortalAdmin(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "hub") { const { handleHub } = await import("./hub.js"); return handleHub(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "books") { const { handleBooks } = await import("./books.js"); return handleBooks(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "sales") { const { handleSales } = await import("./sales.js"); return handleSales(req, res, parts, user, send, jsonBody); }
@@ -259,12 +260,12 @@ async function servePdfjs(req, res, url) {
 
 // The app's code goes only to signed-in people and paired TV screens. Everyone else gets signin.html and the scripts it
 // loads (worked out once from the built page: its <script>/<link> files and what they import), plus pictures and icons.
-let publicFiles = null;
-async function publicScripts() {
-  if (publicFiles) return publicFiles;
-  const set = new Set(["sw.js"]);
+const publicFilesFor = {};
+async function publicScripts(page = "signin.html") {
+  if (publicFilesFor[page]) return publicFilesFor[page];
+  const set = new Set(page === "signin.html" ? ["sw.js"] : []);
   try {
-    const html = await fs.readFile(path.join(DIST, "signin.html"), "utf8");
+    const html = await fs.readFile(path.join(DIST, page), "utf8");
     const queue = [...html.matchAll(/(?:src|href)="\/([^"]+\.(?:js|mjs|css))"/g)].map(m => m[1]);
     while (queue.length) {
       const f = path.posix.normalize(queue.shift());
@@ -275,8 +276,35 @@ async function publicScripts() {
       for (const m of code.matchAll(/(?:from|import)\s*\(?\s*["'](\.{1,2}\/[^"']+\.(?:js|mjs|css))["']/g)) queue.push(path.posix.join(path.posix.dirname(f), m[1]));
     }
   } catch { /* no signin.html: an older build; everything stays as it was */ }
-  publicFiles = set;
+  publicFilesFor[page] = set;
   return set;
+}
+
+// The client portal's own web address (PORTAL_HOST, office install with Clients & Quotes): only the portal page, its scripts, pictures
+// and /api/portal/* answer there. Nothing of the office app (its pages, scripts or API) can be reached through that address.
+async function servePortalHost(req, res, url) {
+  const p = url.pathname;
+  if (!moduleOn("sales")) return send(res, 404, "Not found", "text/plain");
+  if (p === "/api/health") return send(res, 200, { ok: true });
+  if (p.startsWith("/api/portal/")) {
+    if (req.method !== "GET" && req.headers["x-sgfd"] !== "1") return send(res, 403, { error: "Request blocked" });
+    const { handlePortal } = await import("./portal.js");
+    return handlePortal(req, res, url, send, r => jsonBody(r, 256 * 1024));
+  }
+  if (p.startsWith("/api/") || p.startsWith("/vendor/")) return send(res, 404, "Not found", "text/plain");
+  let file = path.join(DIST, path.normalize(decodeURIComponent(p)).replace(/^([/\\])+/, ""));
+  if (!file.startsWith(DIST + path.sep) && file !== DIST) return send(res, 403, { error: "Forbidden" });
+  const ext = path.extname(file).toLowerCase(), rel = path.relative(DIST, file).split(path.sep).join("/");
+  const exists = await fs.stat(file).then(s => s.isFile(), () => false);
+  if (!exists || ext === ".html" || !ext) file = path.join(DIST, "portal.html");
+  else if ([".js", ".mjs", ".css", ".map"].includes(ext) && !(await publicScripts("portal.html")).has(rel)) return send(res, 404, "Not found", "text/plain");
+  else if (![".js", ".mjs", ".css", ".png", ".ico", ".svg", ".jpg", ".webp", ".woff2"].includes(ext)) return send(res, 404, "Not found", "text/plain");
+  try {
+    const data = await fs.readFile(file), html = path.extname(file) === ".html";
+    res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream", ...SECURITY_HEADERS,
+      ...(html ? { ...PAGE_HEADERS, "Cache-Control": "no-store" } : {}), ...(req.secure ? { "Strict-Transport-Security": "max-age=31536000" } : {}) });
+    res.end(data);
+  } catch { send(res, 404, "The client portal isn't built on this server.", "text/plain"); }
 }
 async function mayLoadApp(req) {
   if (await getSessionUser(req)) return true;
@@ -375,10 +403,12 @@ try {
 }
 if (!tls && PORT === 443) console.warn("PORT is 443 but no HTTPS certificate is set in .env: the app will answer plain http on 443.");
 
+const portalOn = !!String(process.env.PORTAL_HOST || "").trim();
 async function handler(req, res) {
   req.secure = !!tls;
   const url = new URL(req.url, "http://localhost");
   try {
+    if (portalOn && (await import("./portal.js")).isPortalRequest(req)) return await servePortalHost(req, res, url);
     if (url.pathname.startsWith("/api/")) return await handleApi(req, res, url);
     if (url.pathname.startsWith("/vendor/pdfjs/")) return await servePdfjs(req, res, url);
     if (vite) return vite.middlewares(req, res, () => send(res, 404, "Not found", "text/plain"));

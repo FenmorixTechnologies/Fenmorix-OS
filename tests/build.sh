@@ -6,3 +6,7 @@ NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild s
 cd /home/claude/testrun/app && cp ${SRC}/public/logo-large.png dist/ && \
 NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild src/signedOut.jsx --bundle --outfile=dist/signin.js --loader:.js=jsx --jsx=automatic --define:process.env.NODE_ENV='"production"' --log-level=warning && \
 sed 's#<script src="/app.js"></script>#<script src="/signin.js"></script>#' dist/index.html > dist/signin.html
+# The client portal's own bundle (production: vite's third input, portal.html)
+cd /home/claude/testrun/app && \
+NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild src/portal/main.jsx --bundle --outfile=dist/portal.js --loader:.js=jsx --jsx=automatic --define:process.env.NODE_ENV='"production"' --alias:lucide-react=/home/claude/testrun/stubs/lucide-real.js --log-level=warning && \
+sed 's#<script src="/app.js"></script>#<script src="/portal.js"></script>#; s#<title>[^<]*</title>#<title>Fenmorix Client Portal</title>#' dist/index.html > dist/portal.html

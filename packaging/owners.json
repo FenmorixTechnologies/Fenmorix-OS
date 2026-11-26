@@ -250,5 +250,14 @@
  ],
  "src/HubAdmin.jsx": [
   "sales"
+ ],
+ "server/portal.js": [
+  "sales"
+ ],
+ "src/PortalAdmin.jsx": [
+  "sales"
+ ],
+ "src/portal/Portal.jsx": [
+  "sales"
  ]
 }

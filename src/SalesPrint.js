@@ -46,6 +46,7 @@ const CSS = `
 `;
 // The Fenmorix logo, embedded so a saved PDF or HTML copy carries it (loadLogo() fills it before the first print)
 let LOGO = "/api/sales/logo";
+export function setLogo(dataUrl) { LOGO = dataUrl; }   // the server (client portal) embeds the logo itself
 export async function loadLogo() {
   if (LOGO.startsWith("data:")) return;
   try {

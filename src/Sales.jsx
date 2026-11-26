@@ -10,6 +10,7 @@ import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine } from "./pricing
 import { MODULES } from "./modules.js";
 import { quoteHtml, specHtml, printHtml, specPrices } from "./SalesPrint.js";
 import { Installations, Releases } from "./HubAdmin.jsx";
+import { PortalCard, PortalRequests } from "./PortalAdmin.jsx";
 
 const INK = "#13233F", SOFT = "#4B5565", LINE = "#DDE2EA", ORANGE = "#C94D00", GREEN = "#1F8A4C", RED = "#B42318";
 const lbl = { fontSize: 12, fontWeight: 700, color: SOFT, display: "block", marginBottom: 3 };
@@ -58,6 +59,7 @@ function Overview({ d, open }) {
       <Kpi label="Hours this month" value={t.hoursThisMonth} sub={`${t.billableThisMonth} billable`} />
       <Kpi label="Renewals in 90 days" value={t.renewalsSoon} color={t.renewalsSoon ? ORANGE : INK} />
     </div>
+    <PortalRequests open={open} />
     <Card title="Recent quotes" actions={<button type="button" style={btn("primary")} onClick={() => open("new")}><FilePlus2 size={14} /> New quote</button>}>
       <QuoteTable quotes={d.quotes.slice(0, 10)} open={open} />
     </Card>
@@ -197,7 +199,7 @@ function VaultEditor({ clientId, entry, toast, onDone, onCancel }) {
   </div>;
 }
 
-function ClientView({ id, rights, toast, open, reloadAll }) {
+function ClientView({ id, rights, toast, open, reloadAll, init }) {
   const [d, setD] = useState(null), [editing, setEditing] = useState(false), [vaultEdit, setVaultEdit] = useState(null);
   const [act, setAct] = useState({ kind: "call", body: "", hours: "", billable: false, day: new Date().toISOString().slice(0, 10) });
   const load = () => api(`/clients/${id}`).then(setD, e => toast(e.message));
@@ -239,6 +241,7 @@ function ClientView({ id, rights, toast, open, reloadAll }) {
         {d.vault.map(v => <VaultEntry key={v.id} v={v} toast={toast} reload={load} edit={setVaultEdit} />)}
       </div></Card>}
     <Card title="Quotes" style={{ marginTop: d.vault ? 0 : 14 }}><QuoteTable quotes={d.quotes} open={open} client={false} /></Card>
+    <PortalCard client={c} toast={toast} initTicket={init?.ticket} />
     <Card title="Work log" actions={<span style={{ fontSize: 12.5, color: SOFT }}>{hours} hours logged · {billable} billable</span>}>
       {rights.canEdit && <div style={{ display: "grid", gridTemplateColumns: "130px 120px 1fr 80px auto auto", gap: 6, alignItems: "center", marginBottom: 10 }}>
         <input aria-label="Day" type="date" value={act.day} onChange={e => setAct(a => ({ ...a, day: e.target.value }))} style={inp} />
@@ -604,7 +607,7 @@ export default function SalesModule({ onBack }) {
     {d && book && !clientEdit && <>
       {view.page === "overview" && <Overview d={d} open={open} />}
       {view.page === "clients" && <ClientsPage d={d} open={open} edit={setClientEdit} />}
-      {view.page === "client" && <ClientView id={view.id} rights={d.rights} toast={toast} open={open} reloadAll={load} />}
+      {view.page === "client" && <ClientView id={view.id} init={view.init} rights={d.rights} toast={toast} open={open} reloadAll={load} />}
       {view.page === "quotes" && <QuotesPage d={d} open={open} />}
       {(view.page === "new" || view.page === "quote") && <QuoteBuilder key={view.t} quoteId={view.page === "quote" ? view.id : null} init={view.init} d={d} book={book} toast={toast} open={open} reloadAll={load} />}
       {view.page === "specs" && <SpecSheets book={book} />}

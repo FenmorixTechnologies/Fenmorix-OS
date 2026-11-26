@@ -1214,3 +1214,20 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   every UPDATE_CHECK_HOURS (6); download -> sha256 + signature -> system.js `stageRelease` (now exported, with `queueAction`, `currentVersion`)
   -> Install as before with a code; auto = night install in [autoAt, +60 min) via queueAction as "Automatic update". UI SystemAdmin `UpdatesCard`.
   Tests: e2e63 (run-hub.sh; dev2 test key tests/keys/dev2-private.pem, not in git). tests/make-sysdata.mjs remakes e2e51/53 zips.
+
+## Client portal (11/2026, migration 060)
+- Customers' contacts sign in at the portal's own address (PORTAL_HOST, e.g. portal.fenmorix.com; PORTAL_URL for links). index.js
+  `servePortalHost`: on that host ONLY portal.html, the scripts reachable from it (publicScripts("portal.html")), pictures and /api/portal/*
+  answer; everything else 404 / portal page. Needs module "sales" (office only). Portal API on other hosts = 404 (not mounted in handleApi).
+- `server/portal.js`: portal_users (separate from app users; scrypt via auth.js hashPassword/verifyPassword, invite = sha256 one-time
+  token, 7 days), portal_sessions (cookie fx_portal, 60 min idle, 12 h max), portal_tickets + portal_posts (support requests; vendor_seen /
+  client_seen), portal_docs (pdf/png/jpeg/docx/xlsx sniffed, downloaded as attachment). Overview = client modules/renewal/instance, servers
+  from hub_installs (version vs latest published release, last check-in, users, auto), quotes (never drafts, internal notes or the price
+  book; HTML rendered server-side with SalesPrint quoteHtml + setLogo), tickets, release notes, docs. Accept {name, title, agree} /
+  decline {note}: sales_quotes.decided_by/title/ip/note (migration 060), client -> active + modules, sales_activity line. Rate limits per
+  address and email; audit module "Client portal". Vendor side `/api/clientportal` (sales edit; access changes = manage): users + links
+  (emailed when SMTP is set), tickets reply/status, docs. UI: `src/portal/Portal.jsx` (+ main.jsx, portal.html, vite input "portal"; must
+  never import App.jsx), vendor `src/PortalAdmin.jsx` (PortalCard on the client page, PortalRequests on the Overview). Tests: e2e64
+  (run-portal.sh; PORTAL_HOST=127.0.0.1 so 127.0.0.1:3077 is the portal and localhost:3077 the office). build.sh builds dist/portal.js.
+- Cloudflare: portal.fenmorix.com must NOT sit behind the office's Access app; add its DNS only after the office runs a version with
+  PORTAL_HOST set (before that the name would show the office app). SSL mode is Full (not strict), so the office's certificate works.

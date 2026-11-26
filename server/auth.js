@@ -35,7 +35,7 @@ export async function hashPassword(password) {
   return `scrypt$16384$8$1$${salt.toString("base64")}$${key.toString("base64")}`;
 }
 
-async function verifyPassword(password, stored) {
+export async function verifyPassword(password, stored) {
   if (!stored) return false;
   const [alg, N, r, p, salt, hash] = stored.split("$");
   if (alg !== "scrypt") return false;

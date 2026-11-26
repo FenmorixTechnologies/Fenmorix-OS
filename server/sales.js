@@ -79,7 +79,7 @@ const clientJson = r => ({
 const quoteJson = (r, full) => ({
   id: r.id, number: r.number, clientId: r.client_id, clientName: r.client_name, title: r.title, status: r.status, validUntil: r.valid_until ? String(r.valid_until).slice(0, 10) : null,
   year1: Number(r.result?.year1Recurring || 0), oneTime: Number(r.result?.oneTimeTotal || 0), contractValue: Number(r.result?.contractValue || 0),
-  edition: r.result?.edition?.label || "", createdAt: r.created_at, updatedAt: r.updated_at, sentAt: r.sent_at, decidedAt: r.decided_at, createdBy: r.created_by_name,
+  edition: r.result?.edition?.label || "", decidedBy: r.decided_by || "", decidedNote: r.decided_note || "", createdAt: r.created_at, updatedAt: r.updated_at, sentAt: r.sent_at, decidedAt: r.decided_at, createdBy: r.created_by_name,
   ...(full ? { inputs: r.inputs, result: r.result, book: r.book, notes: r.notes, internalNotes: r.internal_notes } : {}),
 });
 async function nextNumber(c) {
