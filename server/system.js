@@ -218,7 +218,7 @@ async function changeEnv(user, changes) {
     if (c.remove) { if (at >= 0) lines.splice(at, 1); continue; }
     if (at >= 0) lines[at] = c.line; else added.push(c.line);
   }
-  if (added.length) { if (!lines.some(l => l.startsWith("# --- Set in Nexus"))) lines.push("", "# --- Set in Nexus (User Management > System) ---"); lines.push(...added); }
+  if (added.length) { if (!lines.some(l => /^# --- Set in (Nexus|the app)/.test(l))) lines.push("", "# --- Set in the app (User Management > System) ---"); lines.push(...added); }
   const backup = await backupEnv("before");
   await fs.writeFile(ENV_FILE(), lines.join(eol) + eol, "utf8");      // in place: the file keeps its permissions
   await audit(user, "Changed server settings", `${clean.map(c => `${c.key}${c.remove ? " (removed)" : ""}`).join(", ")} · backup ${backup}`.slice(0, 500));

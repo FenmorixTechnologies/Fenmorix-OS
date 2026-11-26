@@ -1,5 +1,5 @@
 {
-  "version": "2026.11.26.1",
+  "version": "2026.11.26.2",
   "notes": [
     "Fixes and improvements.",
     "Linux installs: backups every 6 hours (was nightly), and an optional second copy to another folder or drive (BACKUP_COPY_TO in the settings file).",

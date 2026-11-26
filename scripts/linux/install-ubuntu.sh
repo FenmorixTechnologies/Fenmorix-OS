@@ -98,7 +98,7 @@ if [ ! -f "$APP/.env" ]; then
   sudo -u postgres psql -qtc "SELECT 1 FROM pg_database WHERE datname = 'nexus'" | grep -q 1 || sudo -u postgres createdb -O nexus_app nexus
   q() { printf '"%s"' "${1//\"/}"; }
   {
-    echo "# Written by install-ubuntu.sh on $(date -I). Change settings in Nexus: User Management > System > Server settings."
+    echo "# Written by install-ubuntu.sh on $(date -I). Change settings in the app: User Management > System > Server settings."
     echo "PGHOST=127.0.0.1"; echo "PGPORT=5432"; echo "PGDATABASE=nexus"; echo "PGUSER=nexus_app"; echo "PGPASSWORD=$DBPASS"
     echo "PORT=443"; echo "HOST=0.0.0.0"; echo "HTTP_REDIRECT_PORT=80"; echo "PUBLIC_URL=https://$DOMAIN"
     echo "HTTPS_CERT_FILE=$ROOT/certs/fullchain.pem"; echo "HTTPS_KEY_FILE=$ROOT/certs/privkey.pem"
@@ -192,7 +192,7 @@ systemctl enable --now nexus-update.path nexus-nightly.timer
 systemctl enable nexus
 systemctl restart nexus
 for i in $(seq 1 40); do curl -fsk -o /dev/null "https://127.0.0.1/" && break; sleep 2; done
-curl -fsk -o /dev/null "https://127.0.0.1/" || die "Nexus didn't answer. See $ROOT/logs/sgfd-app.log"
+curl -fsk -o /dev/null "https://127.0.0.1/" || die "The app didn't answer. See $ROOT/logs/sgfd-app.log"
 
 if [ "$SANDBOX" = 1 ]; then
   say "Demo department"

@@ -128,5 +128,5 @@ $out = & (Join-Path $Dir "whisper-cli.exe") --help 2>&1 | Out-String
 if ($out -notmatch "output-txt") { throw "whisper-cli.exe didn't start properly. If it mentions a missing DLL, install the Microsoft Visual C++ Redistributable (x64) and run this again." }
 icacls $Dir /inheritance:e | Out-Null
 Write-Host "`nTranscription is ready: $ModelFile" -ForegroundColor Green
-Write-Host "Open a Working Fire recording in Nexus and click 'Transcribe Working Fire Audio'."
-if ($Model -ne "small.en") { Write-Host "Using $Model. Nexus picks small.en first if it's also there (or set WHISPER_MODEL in .env)." }
+Write-Host "Open a Working Fire recording in the app and click 'Transcribe Working Fire Audio'."
+if ($Model -ne "small.en") { Write-Host "Using $Model. The app picks small.en first if it's also there (or set WHISPER_MODEL in .env)." }

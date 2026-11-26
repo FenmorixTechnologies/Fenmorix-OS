@@ -28,4 +28,4 @@ $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest
 Register-ScheduledTask -TaskName $TaskName -Action $action -Settings $settings -Principal $principal -Force | Out-Null
 
 Write-Host "Made the '$TaskName' task." -ForegroundColor Green
-Write-Host "In Nexus: User Management > System. Installing, restarting and rolling back there need a code from your authenticator."
+Write-Host "In the app: User Management > System. Installing, restarting and rolling back there need a code from your authenticator."

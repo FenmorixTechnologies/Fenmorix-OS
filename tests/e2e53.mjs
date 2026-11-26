@@ -55,7 +55,7 @@ r = await api("/api/system/env", { changes: [{ key: "SMTP_PORT", value: "25" }, 
 check("saved", r.status === 200 && r.body.saved, JSON.stringify(r.body).slice(0, 200));
 const txt = fs.readFileSync(ENV, "utf8");
 check("written in place, Windows line endings kept, comments kept", txt.includes("\r\n") && txt.startsWith("# sample settings") && /^SMTP_PORT=25\r$/m.test(txt) && !/OLD_SETTING/.test(txt), txt);
-check("values that need quotes are quoted; new ones added at the end", /^SMTP_PASS="new pass # with hash"\r$/m.test(txt) && /# --- Set in Nexus/.test(txt) && /^CUSTOM_NOTE=Hello there\r$/m.test(txt) && /^PUBLIC_URL=https:\/\/nexus\.example\.org\r$/m.test(txt), txt);
+check("values that need quotes are quoted; new ones added at the end", /^SMTP_PASS="new pass # with hash"\r$/m.test(txt) && /# --- Set in the app/.test(txt) && /^CUSTOM_NOTE=Hello there\r$/m.test(txt) && /^PUBLIC_URL=https:\/\/nexus\.example\.org\r$/m.test(txt), txt);
 check("untouched lines untouched", /^PGPASSWORD=sample-db-pass\r$/m.test(txt) && /^SMTP_FROM="Sample Sender <sender@example.org>"\r$/m.test(txt));
 check("Node reads it back the same", (() => { const v = {}; for (const l of txt.split(/\r?\n/)) { const m = /^([A-Z_]+)=(.*)$/.exec(l); if (m) v[m[1]] = m[2]; } return true; })()
   && execSync(`node -e 'process.loadEnvFile("${ENV}"); console.log(process.env.SMTP_PASS + "|" + process.env.CUSTOM_NOTE + "|" + process.env.SMTP_FROM)'`).toString().trim() === "new pass # with hash|Hello there|Sample Sender <sender@example.org>");

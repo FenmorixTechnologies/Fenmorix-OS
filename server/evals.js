@@ -624,7 +624,7 @@ export async function handleEvals(req, res, parts, user, send, jsonBody, url) {
           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, [crypto.randomUUID(), cd.id, month, ...v, sign ? "signed" : "draft", user.id, user.name, sign ? sig : null, sign ? new Date() : null]);
         if (sign) await audit(c2, user, "Signed review", `${await userName(cd.user_id)}: ${p.name} month ${month}${v[4] ? " (improvement plan)" : ""}`);
       });
-      if (sign) await notify(user, [cd.user_id], `${p.name}: ${month}-month review`, `Your ${month}-month review was signed by ${user.name}. Please read it and sign that you've seen it.\n\nNexus: Main menu › Evaluations.`);
+      if (sign) await notify(user, [cd.user_id], `${p.name}: ${month}-month review`, `Your ${month}-month review was signed by ${user.name}. Please read it and sign that you've seen it.\n\n${brand().productName}: Main menu › Evaluations.`);
       return send(res, 200, { ok: true });
     }
   }

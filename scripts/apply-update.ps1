@@ -44,8 +44,8 @@ function Ensure-Running {
   if (-not $svc -or $svc.Status -eq "Running") { return "" }
   Write-Host "`nThe service isn't running; starting it again."
   try { Start-Service -Name $ServiceName -ErrorAction Stop; Start-Sleep -Seconds 8 } catch { Write-Host $_.Exception.Message }
-  if ((Get-Service -Name $ServiceName).Status -eq "Running") { return " Nexus was started again." }
-  return " Nexus is NOT running: remote in and run scripts\update.ps1."
+  if ((Get-Service -Name $ServiceName).Status -eq "Running") { return " The app was started again." }
+  return " The app is NOT running: remote in and run scripts\update.ps1."
 }
 
 function Finish([bool]$ok, [string]$message) {
@@ -111,7 +111,7 @@ try {
       if (-not (Test-Path (Join-Path $Previous "package.json"))) { Finish $false "There's no earlier version kept." }
       Progress 1 2 "Putting the previous version back"
       Restore-Snapshot $Previous $AppDir
-      Progress 2 2 "Building and starting (Nexus is down for about a minute)"
+      Progress 2 2 "Building and starting (the app is down for about a minute)"
       if ((Run-Update) -ne 0) { Finish $false "The previous version was copied back but didn't start. Remote in and run scripts\update.ps1." }
       Finish $true "Rolled back to the previous version."
     }
@@ -138,7 +138,7 @@ try {
       Progress 5 6 "Copying the new version over"
       Copy-Over $newApp $AppDir
 
-      Progress 6 6 "Building and starting (Nexus is down for about a minute)"
+      Progress 6 6 "Building and starting (the app is down for about a minute)"
       $code = Run-Update
       if ($code -ne 0) {
         Progress 6 6 "The new version didn't start. Putting the previous version back"

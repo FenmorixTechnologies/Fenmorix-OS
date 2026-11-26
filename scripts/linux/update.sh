@@ -32,4 +32,4 @@ for i in $(seq 1 45); do
   sleep 2
 done
 tail -c +$((MARK + 1)) "$LOG" 2>/dev/null | tail -30
-echo "Nexus didn't answer after the restart."; exit 1
+echo "The app didn't answer after the restart."; exit 1

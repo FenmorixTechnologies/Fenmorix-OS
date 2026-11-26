@@ -20,7 +20,7 @@ field() { node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1]
 ACTION="$(field action)"; JOB_ID="$(field id)"; BY="$(field by)"; VERSION="$(field version)"; ZIP="$(field zip)"; SHA="$(field sha256)"
 STAMP="$(date +%Y%m%d-%H%M%S)"; LOGNAME="update-$STAMP-$ACTION.log"; LOG="$LOGS/$LOGNAME"
 exec > >(tee -a "$LOG") 2>&1
-echo "Nexus updater: $ACTION, asked for by $BY at $(field at)"
+echo "Updater: $ACTION, asked for by $BY at $(field at)"
 STARTED="$(date -Iseconds)"
 
 json() { node -e 'const o={};for(let i=1;i<process.argv.length;i+=2){let v=process.argv[i+1];if(v==="true"||v==="false")v=v==="true";else if(/^\d+$/.test(v))v=Number(v);o[process.argv[i]]=v}process.stdout.write(JSON.stringify(o,null,1))' "$@"; }
@@ -29,7 +29,7 @@ ensure_running() {
   [ "$ACTION" = backup ] && return
   systemctl is-active --quiet "$SVC" && return
   echo "The service isn't running; starting it again."; systemctl start "$SVC"; sleep 8
-  systemctl is-active --quiet "$SVC" && MSG="$MSG Nexus was started again." || MSG="$MSG Nexus is NOT running: sign in to the server and run scripts/linux/update.sh."
+  systemctl is-active --quiet "$SVC" && MSG="$MSG The app was started again." || MSG="$MSG The app is NOT running: sign in to the server and run scripts/linux/update.sh."
 }
 finish() {
   local ok="$1"; MSG="$2"
@@ -65,7 +65,7 @@ case "$ACTION" in
     [ -f "$PREV/package.json" ] || finish false "There's no earlier version kept."
     progress 1 2 "Putting the previous version back"
     restore_snapshot
-    progress 2 2 "Building and starting (Nexus is down for about a minute)"
+    progress 2 2 "Building and starting (the app is down for about a minute)"
     run_update || finish false "The previous version was copied back but didn't start. Sign in to the server and run scripts/linux/update.sh."
     finish true "Rolled back to the previous version." ;;
   install)
@@ -82,7 +82,7 @@ case "$ACTION" in
     save_snapshot
     progress 5 6 "Copying the new version over"
     copy_over "$STAGING/app"; chown -R nexus:nexus "$APP"
-    progress 6 6 "Building and starting (Nexus is down for about a minute)"
+    progress 6 6 "Building and starting (the app is down for about a minute)"
     if ! run_update; then
       progress 6 6 "The new version didn't start. Putting the previous version back"
       restore_snapshot
