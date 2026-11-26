@@ -6,7 +6,7 @@ import { LayoutDashboard, Building2, FileText, FilePlus2, BookOpen, Printer, Plu
   Send, Check, X, Server, Clock, ExternalLink, Search } from "lucide-react";
 import AppShell from "./AppShell.jsx";
 import { cardStyle, btn } from "./App.jsx";
-import { DEFAULT_INPUTS, calculate, money, sizeFor } from "./pricing.js";
+import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine } from "./pricing.js";
 import { MODULES } from "./modules.js";
 import { quoteHtml, specHtml, printHtml } from "./SalesPrint.js";
 
@@ -39,6 +39,7 @@ const Field = ({ label, children, style }) => <label style={{ display: "block", 
 const Kpi = ({ label, value, sub, color = INK }) => <div style={{ ...cardStyle, padding: 14, borderLeft: `4px solid ${color === INK ? "#FF7900" : color}` }}>
   <div style={{ fontSize: 11.5, fontWeight: 800, color: SOFT, textTransform: "uppercase", letterSpacing: 0.5 }}>{label}</div>
   <div style={{ fontSize: 24, fontWeight: 800, color, marginTop: 2 }}>{value}</div>{sub && <div style={{ fontSize: 12, color: SOFT }}>{sub}</div>}</div>;
+const CAD_DEFAULT = { existing: 2500, new: 7500, includedViews: 2, extraView: 1500 };
 const th = { textAlign: "left", fontSize: 11.5, color: SOFT, padding: "6px 8px", borderBottom: `2px solid ${LINE}`, whiteSpace: "nowrap" };
 const td = { padding: "7px 8px", borderBottom: `1px solid ${LINE}`, fontSize: 13.5, verticalAlign: "top" };
 const tdn = { ...td, textAlign: "right", whiteSpace: "nowrap" };
@@ -367,9 +368,31 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
             <Num label="Their one-time setup" value={i.hostingOneTime} onChange={v => set("hostingOneTime", v)} />
             <Field label="Their quote (reference or note)"><input aria-label="Hosting note" value={i.hostingNote || ""} onChange={e => set("hostingNote", e.target.value)} style={inp} /></Field>
           </div></Card>}
+        <Card title="CAD connection">
+          {(() => { const c = { existing: 2500, new: useBook.oneTime.cadIntegration ?? 7500, includedViews: 2, extraView: 1500, ...(useBook.oneTime.cad || {}) };
+            const kind = i.cadKind && i.cadKind !== "none" ? i.cadKind : Number(i.cadIntegrations) > 0 ? "new" : "none";
+            return <>
+              <div role="radiogroup" aria-label="CAD connection" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 8, marginBottom: 10 }}>
+                {[["none", "No CAD connection", "Active calls and call statistics stay off, or come from uploaded reports."],
+                  ["existing", `Views already exist · ${money(c.existing)}`, `A CAD we already have SQL views for (same vendor, or a shared regional CAD already connected). ${money(c.new - c.existing)} less than a new one.`],
+                  ["new", `New CAD vendor · ${money(c.new)}`, "A CAD not connected before: map its database, build and test the views."]].map(([k, t, d]) =>
+                  <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setForm(f => ({ ...f, inputs: { ...f.inputs, cadKind: k, cadIntegrations: 0 } }))}
+                    style={{ textAlign: "left", font: "inherit", cursor: "pointer", borderRadius: 10, padding: 10, border: `2px solid ${kind === k ? "#FF7900" : LINE}`, background: kind === k ? "#FFF7EF" : "#fff", color: INK }}>
+                    <b>{t}</b><div style={{ fontSize: 12, color: SOFT }}>{d}</div></button>)}
+              </div>
+              {kind !== "none" && <div style={row}>
+                <Field label="CAD system"><input aria-label="CAD system" placeholder="e.g. CentralSquare Enterprise" value={i.cadVendor || ""} onChange={e => set("cadVendor", e.target.value)} style={inp} /></Field>
+                <Num label="How many CAD systems" value={i.cadSystems || 1} onChange={v => set("cadSystems", v)} min={1} />
+              </div>}
+              <div style={row}>
+                <Num label={`More standard views (${money(c.extraView)} each)`} value={i.cadExtraViews} onChange={v => set("cadExtraViews", v)} />
+                <Num label={`Custom views, hours ($${useBook.hourly.custom}/h)`} value={i.cadCustomHours} onChange={v => set("cadCustomHours", v)} step={0.5} />
+              </div>
+              <div style={{ fontSize: 12, color: SOFT }}>Included: {c.includedViews} standard views (active calls and call statistics). More standard views: apparatus and unit times, a master incident list for reports. Anything the customer designs is custom.</div>
+            </>; })()}
+        </Card>
         <Card title="One-time services and extras">
           <div style={row}>
-            <Num label="CAD integrations" value={i.cadIntegrations} onChange={v => set("cadIntegrations", v)} />
             <Num label="Data migration hours" value={i.migrationHours} onChange={v => set("migrationHours", v)} step={0.5} />
             <Num label="On-site training days" value={i.trainingDays} onChange={v => set("trainingDays", v)} step={0.5} />
             <Num label={`Prepaid ${useBook.hourly.prepaidHours}-hour blocks`} value={i.prepaidBlocks} onChange={v => set("prepaidBlocks", v)} />
@@ -388,7 +411,16 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
             <input aria-label={`Replaces ${k + 1}`} placeholder="Product" value={s.label} onChange={e => set("currentSpend", spend.map((x, j) => (j === k ? { ...x, label: e.target.value } : x)))} style={inp} />
             <input aria-label={`Replaces ${k + 1} per year`} type="number" placeholder="Per year" value={s.annual || ""} onChange={e => set("currentSpend", spend.map((x, j) => (j === k ? { ...x, annual: Number(e.target.value) } : x)))} style={inp} />
             <button type="button" aria-label="Remove" style={btn("ghost")} onClick={() => set("currentSpend", spend.filter((_, j) => j !== k))}><X size={14} /></button></div>)}
-          <button type="button" style={btn("ghost")} onClick={() => set("currentSpend", [...spend, { label: "", annual: 0 }])}><Plus size={13} /> Add software</button>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <button type="button" style={btn("ghost")} onClick={() => set("currentSpend", [...spend, { label: "", annual: 0 }])}><Plus size={13} /> Add software</button>
+            {(useBook.marketRates || []).length > 0 && <select aria-label="Add a typical cost" value="" style={{ ...inp, width: "auto", maxWidth: 360 }}
+              onChange={e => { const rate = useBook.marketRates.find(m => m.key === e.target.value); const l = marketLine(rate, (Number(i.users) || 1) * (Number(i.members) || 1), r?.size?.key || "m");
+                if (l) set("currentSpend", [...spend, { label: l.label + " (typical)", annual: l.annual }]); }}>
+              <option value="">Add a typical cost…</option>
+              {useBook.marketRates.map(m => <option key={m.key} value={m.key} title={m.source}>{m.label}{m.basis === "user" ? ` · ${money(m.annual, m.annual % 1 !== 0)}/user/yr` : ""}</option>)}
+            </select>}
+          </div>
+          <div style={{ fontSize: 11.5, color: SOFT, marginTop: 6 }}>Typical costs come from public contracts and published prices (Price book › Typical competitor costs). Replace them with the customer's real invoices when you have them.</div>
         </Card>
         <Card title="Notes">
           <Field label="On the quote (the customer sees this)"><textarea aria-label="Quote notes" rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} style={inp} /></Field>
@@ -498,7 +530,9 @@ function BookEditor({ toast, book, setBook, canManage }) {
         {n("Quote valid (days)", () => b.quoteValidDays, (y, v) => { y.quoteValidDays = v; })}</div></Card>
     <Card title="One-time, hourly, on-premises">
       <div style={grid}>
-        {n("CAD integration", () => b.oneTime.cadIntegration, (y, v) => { y.oneTime.cadIntegration = v; })}
+        {n("CAD: views already exist", () => (b.oneTime.cad || {}).existing ?? 2500, (y, v) => { y.oneTime.cad = { ...CAD_DEFAULT, ...(y.oneTime.cad || {}), existing: v }; })}
+        {n("CAD: new vendor", () => (b.oneTime.cad || {}).new ?? b.oneTime.cadIntegration ?? 7500, (y, v) => { y.oneTime.cad = { ...CAD_DEFAULT, ...(y.oneTime.cad || {}), new: v }; y.oneTime.cadIntegration = v; })}
+        {n("CAD: each extra standard view", () => (b.oneTime.cad || {}).extraView ?? 1500, (y, v) => { y.oneTime.cad = { ...CAD_DEFAULT, ...(y.oneTime.cad || {}), extraView: v }; })}
         {n("Migration $/hour", () => b.oneTime.migrationHourly, (y, v) => { y.oneTime.migrationHourly = v; })}
         {n("Training day", () => b.oneTime.trainingDay, (y, v) => { y.oneTime.trainingDay = v; })}
         {n("Group setup", () => b.oneTime.groupSetup, (y, v) => { y.oneTime.groupSetup = v; })}
@@ -509,6 +543,15 @@ function BookEditor({ toast, book, setBook, canManage }) {
         {n("On-prem license × yearly", () => b.onPrem.licenseMultiple, (y, v) => { y.onPrem.licenseMultiple = v; }, 0.05)}
         {pctIn("On-prem maintenance %", () => b.onPrem.maintenancePct, (y, v) => { y.onPrem.maintenancePct = v; })}
       </div></Card>
+    <Card title="Typical competitor costs">
+      <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>What departments pay today, from public contracts and published prices. The quote builder's "Add a typical cost" uses these. Per-user rates are multiplied by the quote's users; flat rates use the quote's size.</p>
+      <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr><th style={th}>Product</th><th style={th}>Basis</th><th style={th}>Small</th><th style={th}>Mid</th><th style={th}>Large</th><th style={th}>Source</th></tr></thead>
+        <tbody>{(b.marketRates || []).map((m, k) => <tr key={m.key}><td style={td}><b>{m.label}</b><div style={{ fontSize: 11.5, color: SOFT }}>Replaced by: {m.replaces}</div></td>
+          <td style={td}>{m.basis === "user" ? "per user / yr" : "per year"}</td>
+          {m.basis === "user" ? <td style={td} colSpan={3}><input aria-label={`${m.label} per user`} type="number" step="0.01" value={m.annual} onChange={e => upd(y => { y.marketRates[k].annual = Number(e.target.value); })} style={{ ...inp, width: 110 }} /></td>
+            : ["s", "m", "l"].map(z => <td key={z} style={td}><input aria-label={`${m.label} ${z}`} type="number" value={m.annual[z]} onChange={e => upd(y => { y.marketRates[k].annual[z] = Number(e.target.value); })} style={{ ...inp, width: 100 }} /></td>)}
+          <td style={{ ...td, fontSize: 11.5, color: SOFT, maxWidth: 320 }}>{m.source}{m.setup ? ` · setup ${money(m.setup.m)}` : ""}</td></tr>)}</tbody></table></div>
+    </Card>
     <Card title="Groups">
       <div style={grid}>
         {b.group.discounts.map((g, k) => pctIn(`${g.min}+ agencies %`, () => g.pct, (y, v) => { y.group.discounts[k].pct = v; }))}

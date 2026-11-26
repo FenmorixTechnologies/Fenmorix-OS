@@ -72,7 +72,12 @@ export const DEFAULT_BOOK = {
     { key: "priority", label: "Priority", pct: 0.15, hours: "Monday–Friday, 8 a.m.–5 p.m. Central", critical: "1 hour", normal: "4 business hours" },
     { key: "247", label: "24/7 Critical", pct: 0.25, hours: "Around the clock for outages; business hours for everything else", critical: "1 hour, any time", normal: "4 business hours" },
   ],
-  oneTime: { cadIntegration: 7500, migrationHourly: 150, trainingDay: 1500, groupSetup: 5000, additionalMemberImplementation: 0.4 },
+  oneTime: { cadIntegration: 7500, migrationHourly: 150, trainingDay: 1500, groupSetup: 5000, additionalMemberImplementation: 0.4,
+    // CAD: "existing" = a CAD we already have SQL views for (same vendor/version, or a shared regional CAD already connected): install our
+    // views, map and test. "new" = a CAD vendor not integrated before: learn its database, build and test the views. Each includes
+    // `includedViews` standard views (active calls + call statistics); more standard views (apparatus/unit times, a master incident list
+    // for reports...) are `extraView` each; custom views / queries are billed by the hour at hourly.custom.
+    cad: { existing: 2500, new: 7500, includedViews: 2, extraView: 1500 } },
   group: {
     discounts: [{ min: 2, pct: 0.10 }, { min: 4, pct: 0.15 }, { min: 7, pct: 0.20 }],
     platformFees: [{ min: 2, fee: 8000 }, { min: 6, fee: 15000 }],
@@ -88,6 +93,47 @@ export const DEFAULT_BOOK = {
   founding: { pct: 0.25, years: 3, label: "Founding customer" },
   onPrem: { licenseMultiple: 2.75, maintenancePct: 0.2 },
   hourly: { custom: 165, prepaidHours: 20, prepaidRate: 135 },
+  // What departments pay today for software Fenmorix OS can replace, from public contracts and published prices (11/2026).
+  // basis "user" = per user per year (× the quote's users); "flat" = per year by size {s, m, l}. setup = their one-time fee, if known.
+  // Starting points for the "Software it replaces" lines; always confirm the customer's real invoice.
+  marketRates: [
+    { key: "aladtec", label: "Aladtec (staff scheduling)", replaces: "Time Clock, Work Schedule, Who's Out", basis: "user", annual: 81,
+      source: "Willowick, OH quote 2026: 71 users, $5,759.55/yr ($81.12/user)" },
+    { key: "vector-lms", label: "Vector Solutions LMS (training records)", replaces: "Training", basis: "user", annual: 115,
+      source: "Santa Fe County, NM order 2026: $113–$118 per member/yr, +3%/yr" },
+    { key: "vector-checkit", label: "Vector Check It (equipment & PPE checks)", replaces: "Equipment & Asset Tracking", basis: "user", annual: 62,
+      source: "Santa Fe County, NM order 2026: $61.74 per person/yr" },
+    { key: "pstrax", label: "PSTrax (apparatus checks, SCBA, PPE, assets)", replaces: "Equipment & Asset Tracking", basis: "flat", annual: { s: 6000, m: 9950, l: 15900 }, setup: { s: 5000, m: 8000, l: 15900 },
+      source: "Troy, MI 2021: $9,950/yr (7 stations); Berkeley, CA 2022: $15,900/yr + $15,900 implementation" },
+    { key: "firstdue", label: "First Due (suite, not counting its RMS)", replaces: "Inspections, preplans, training, assets, personnel", basis: "flat", annual: { s: 8750, m: 15000, l: 120000 },
+      source: "Olivette, MO 2024: $8,750/yr; Truckee Meadows FPD, NV 2021: $15,000/yr; Baton Rouge FD 2022: $120,000/yr (15 modules), up to 5%/yr" },
+    { key: "fireworks", label: "FireWorks modules (not NFIRS reporting)", replaces: "Inspections, investigations, preplans, inventory, analytics, CAD interface", basis: "flat", annual: { s: 18440, m: 18440, l: 18440 },
+      source: "Apex, NC quote: $18,440/yr for inspections, investigations, preplan, inventory, analytics, CAD interface, cloud; +5%/yr" },
+    { key: "jotform", label: "Jotform (forms)", replaces: "Forms & Case Management", basis: "flat", annual: { s: 1188, m: 1188, l: 1188 },
+      source: "jotform.com: Gold $99/mo billed yearly, one user (HIPAA needs Gold or Enterprise)" },
+    { key: "active911", label: "Active911 (alerting)", replaces: "Dispatch Alerts, Emergency Recall", basis: "user", annual: 16.65,
+      source: "active911.com: $16.65 per device/yr (1–50 devices)" },
+    { key: "iamresponding", label: "IamResponding (response & recall)", replaces: "Dispatch Alerts, Emergency Recall", basis: "flat", annual: { s: 349, m: 700, l: 1500 },
+      source: "iamresponding.com: from $349/yr; larger departments quoted" },
+    { key: "everbridge", label: "Everbridge (mass notification / recall)", replaces: "Emergency Recall, Messaging", basis: "flat", annual: { s: 6250, m: 15000, l: 30000 },
+      source: "Big Horn Co., MT $6,250/yr; Fillmore Co., MN $6,257/yr; Allegany Co., MD $28,792/yr" },
+    { key: "tabletcommand", label: "Tablet Command (incident command)", replaces: "Incident Command Board", basis: "flat", annual: { s: 31000, m: 31000, l: 31000 }, setup: { s: 15500, m: 15500, l: 15500 },
+      source: "Placentia, CA: $31,000/yr + $15,500 one-time (6 apparatus)" },
+    { key: "firstwatch", label: "FirstWatch (CAD analytics dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "flat", annual: { s: 42700, m: 42700, l: 42700 }, setup: { s: 86644, m: 86644, l: 86644 },
+      source: "2025 resolution (ecode360 BL4015): $3,559.07/month + $86,644.29 project initiation" },
+    { key: "cleargov", label: "ClearGov (budgeting)", replaces: "Purchasing & Requisitions, Board Reports", basis: "flat", annual: { s: 13000, m: 15000, l: 48000 }, setup: { s: 6000, m: 8500, l: 8500 },
+      source: "Johnstown, OH ~$13,000/yr + $6,000 setup; Freetown, MA ~$15,000/yr + $8,500; Mercer Co., PA $48,305" },
+    { key: "procurify", label: "Procurify (requisitions & purchasing)", replaces: "Purchasing & Requisitions, Expense Reimbursements", basis: "flat", annual: { s: 4210, m: 15000, l: 40000 },
+      source: "Vendr buyer data: median $15,000/yr, range $4,210–$40,000" },
+    { key: "otter", label: "Otter.ai Business (transcription)", replaces: "Radio Recordings & Transcripts", basis: "user", annual: 240,
+      source: "otter.ai: Business $19.99/user/month billed yearly (count only the people who'd use it)" },
+    { key: "slack", label: "Slack Pro (team messaging)", replaces: "Messaging & Chat", basis: "user", annual: 96,
+      source: "Vendr: companies pay about $7.25–$8.70/user/month" },
+    { key: "deputy", label: "Deputy (business time clock & scheduling)", replaces: "Time Clock, Work Schedule", basis: "user", annual: 78,
+      source: "deputy.com: Core $6.50/user/month" },
+    { key: "powerbi", label: "Power BI Pro (dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "user", annual: 168,
+      source: "Microsoft list price $14/user/month since April 2025 (count only report builders/viewers)" },
+  ],
   quoteValidDays: 30,
   seller: { name: "Fenmorix Technologies, LLC", email: "michael@fenmorix.com", phone: "", web: "fenmorix.com",
     place: "Baton Rouge, Louisiana", partner: "Avexon", partnerEmail: "solutions@avexon.com" },
@@ -118,7 +164,7 @@ export function sizeFor(seg, users) {
 
 export const DEFAULT_INPUTS = {
   segment: "ps", users: 40, edition: "operations", addons: [], screens: 0, environments: "none", dr: "standard", support: "standard",
-  termYears: 3, founding: false, delivery: "hosted", members: 1, implementation: true, cadIntegrations: 0, migrationHours: 0,
+  termYears: 3, founding: false, delivery: "hosted", members: 1, implementation: true, cadIntegrations: 0, cadKind: "none", cadSystems: 1, cadVendor: "", cadExtraViews: 0, cadCustomHours: 0, migrationHours: 0,
   trainingDays: 0, prepaidBlocks: 0, manualDiscount: 0, customLines: [], currentSpend: [],
   hostingAnnual: 0, hostingOneTime: 0, hostingNote: "",   // Avexon's figures when known (shown apart; never in Fenmorix's totals)
 };
@@ -203,8 +249,23 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
       once.push({ key: "groupSetup", label: "Group setup: shared dashboards, sharing rules, group admin training", amount: book.oneTime.groupSetup });
     }
   }
-  const cad = Math.max(0, Math.round(Number(i.cadIntegrations) || 0));
-  if (cad) once.push({ key: "cad", label: `CAD integration × ${cad}`, amount: book.oneTime.cadIntegration * cad });
+  // CAD (older quotes only carry cadIntegrations = a count of new integrations)
+  const cadP = { existing: 2500, new: book.oneTime.cadIntegration ?? 7500, includedViews: 2, extraView: 1500, ...(book.oneTime.cad || {}) };
+  let cadKind = ["existing", "new"].includes(i.cadKind) ? i.cadKind : "none";
+  let systems = Math.max(1, Math.min(10, Math.round(Number(i.cadSystems) || 1)));
+  if (cadKind === "none" && Number(i.cadIntegrations) > 0) { cadKind = "new"; systems = Math.min(10, Math.round(Number(i.cadIntegrations))); }
+  const vendor = String(i.cadVendor || "").trim().slice(0, 80);
+  const forWhat = `${vendor ? vendor : "the CAD"}${systems > 1 ? ` × ${systems}` : ""}`;
+  if (cadKind === "existing") {
+    once.push({ key: "cad", label: `CAD connection for ${forWhat}: our ready-made SQL views (${cadP.includedViews} standard views: active calls and call statistics), installed, mapped and tested`, amount: cadP.existing * systems });
+    if (cadP.new > cadP.existing) notes.push(`CAD views already exist for this system, so the CAD connection is ${money((cadP.new - cadP.existing) * systems)} less than a new integration.`);
+  } else if (cadKind === "new") {
+    once.push({ key: "cad", label: `CAD integration for ${forWhat} (a CAD not connected before): map its database, build and test ${cadP.includedViews} standard views (active calls and call statistics)`, amount: cadP.new * systems });
+  }
+  const extraViews = Math.max(0, Math.round(Number(i.cadExtraViews) || 0));
+  if (extraViews) once.push({ key: "cadViews", label: `Additional standard CAD views × ${extraViews} (e.g. apparatus/unit times, master incident list for reports)`, amount: cadP.extraView * extraViews });
+  const cadHours = Math.max(0, Number(i.cadCustomHours) || 0);
+  if (cadHours) once.push({ key: "cadCustom", label: `Custom CAD views and queries, ${cadHours} hours × $${book.hourly.custom}`, amount: round(cadHours * book.hourly.custom) });
   const mig = Math.max(0, Number(i.migrationHours) || 0);
   if (mig) once.push({ key: "migration", label: `Data migration, ${mig} hours × $${book.oneTime.migrationHourly}`, amount: round(mig * book.oneTime.migrationHourly) });
   const days = Math.max(0, Number(i.trainingDays) || 0);
@@ -275,9 +336,18 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
     env, dr, support: sup, lines: { recurring, yearly, once, customAnnual },
     listAnnual, year1Recurring: finalYear1, oneTimeTotal: onPremQuote ? round(oneTimeTotal + onPremQuote.license) : oneTimeTotal,
     contractValue: finalTcv, schedule, onPremQuote, year1Total: schedule[0].total,
-    perUserMonth: round(finalYear1 / totalUsers / 12), savings, spend, notes, hosting,
+    perUserMonth: round(finalYear1 / totalUsers / 12), savings, spend, notes, hosting, cad: { kind: cadKind, systems, vendor, extraViews, hours: cadHours },
     modules: [...new Set([...ed.modules, ...(i.addons || []).map(k => book.addons.find(a => a.key === k)?.module).filter(Boolean)])],
   };
+}
+
+// One "Software it replaces" line from a market rate, for this many users at this size
+export function marketLine(rate, users, sizeKey) {
+  if (!rate) return null;
+  const n = Math.max(1, Math.round(Number(users) || 1));
+  const annual = rate.basis === "user" ? Math.round(rate.annual * n) : Number(rate.annual?.[sizeKey] ?? rate.annual?.m ?? 0);
+  const label = rate.basis === "user" ? `${rate.label}: ${n} users × ${money(rate.annual, rate.annual % 1 !== 0)}/yr` : rate.label;
+  return { label, annual, setup: rate.setup ? Number(rate.setup[sizeKey] ?? 0) : 0, source: rate.source };
 }
 
 export function money(n, cents = false) {

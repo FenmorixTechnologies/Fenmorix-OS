@@ -61,6 +61,8 @@ function cleanInputs(v) {
     environments: line(i.environments, 20) || "none", dr: line(i.dr, 20) || "standard", support: line(i.support, 20) || "standard",
     termYears: Math.round(num(i.termYears, 1, 10)) || 1, founding: !!i.founding, delivery: i.delivery === "onprem" ? "onprem" : "hosted",
     members: Math.round(num(i.members, 1, 50)) || 1, implementation: i.implementation !== false, cadIntegrations: Math.round(num(i.cadIntegrations, 0, 20)),
+    cadKind: ["existing", "new"].includes(i.cadKind) ? i.cadKind : "none", cadSystems: Math.round(num(i.cadSystems, 1, 10)) || 1, cadVendor: line(i.cadVendor, 80),
+    cadExtraViews: Math.round(num(i.cadExtraViews, 0, 50)), cadCustomHours: num(i.cadCustomHours, 0, 1000),
     migrationHours: num(i.migrationHours, 0, 2000), trainingDays: num(i.trainingDays, 0, 60), prepaidBlocks: Math.round(num(i.prepaidBlocks, 0, 20)),
     manualDiscount: num(i.manualDiscount, 0, 50),
     customLines: (Array.isArray(i.customLines) ? i.customLines : []).slice(0, 20).map(c => ({ label: line(c?.label, 200), amount: num(c?.amount, -1e7, 1e7), kind: c?.kind === "annual" ? "annual" : "once" })).filter(c => c.label),

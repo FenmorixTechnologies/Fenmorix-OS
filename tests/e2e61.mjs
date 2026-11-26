@@ -79,7 +79,8 @@ await page.getByLabel("Users per agency").fill("85");
 await page.getByRole("button", { name: /^Command/ }).click();
 await page.getByLabel("Term", { exact: true }).selectOption("3");
 await page.getByLabel("Disaster recovery").selectOption("enhanced");
-await page.getByLabel("CAD integrations").fill("1");
+await page.getByRole("radio", { name: /New CAD vendor/ }).click();
+await page.getByLabel("CAD system", { exact: true }).fill("CentralSquare Enterprise");
 await page.waitForTimeout(400);
 const sum = await page.getByRole("region", { name: "Price summary" }).innerText();
 check("live summary", /Command · Mid-size/i.test(sum) && /CAD integration/.test(sum) && /Hosting and compute are not included/.test(sum) && /before hosting/i.test(sum), sum.slice(0, 400));
@@ -89,6 +90,11 @@ await page.getByLabel("Hosting note").fill("Avexon quote AV-1042");
 await page.waitForTimeout(300);
 const sum2 = await page.getByRole("region", { name: "Price summary" }).innerText();
 check("Avexon hosting shown apart", /Avexon hosting \(separate\)/i.test(sum2) && /\$9,000/.test(sum2) && /\$10,500/.test(sum2) && !/not included/.test(sum2), sum2.slice(0, 500));
+await page.getByLabel("Add a typical cost").selectOption("aladtec");
+await page.waitForTimeout(300);
+check("typical cost added from the price book", await page.getByLabel("Replaces 3", { exact: true }).inputValue() === "Aladtec (staff scheduling): 85 users × $81/yr (typical)"
+  && await page.getByLabel("Replaces 3 per year", { exact: true }).inputValue() === "6885");
+await page.getByRole("button", { name: "Remove" }).nth(2).click();
 await page.screenshot({ path: "shot-sales-builder.png", fullPage: true });
 await page.getByRole("button", { name: "Save quote" }).click(); await page.waitForTimeout(1500);
 let q = psql("SELECT number || '|' || status || '|' || (result->>'year1Recurring') || '|' || (result->>'contractValue') FROM sales_quotes").split("|");
@@ -99,6 +105,14 @@ const qid = psql("SELECT id FROM sales_quotes LIMIT 1");
 // tampered result ignored: the server recomputes from inputs
 const r0 = (await api(`/api/sales/quotes/${qid}`)).body.quote;
 await api("/api/sales/quotes", { id: qid, clientId: cid, title: r0.title, inputs: r0.inputs, result: { year1Recurring: 1 }, notes: "Pricing includes the founding offer discussed." });
+// CAD choices priced by the server
+const cadQ = async inputs => (await api("/api/sales/calc", { inputs: { segment: "ps", edition: "command", users: 85, termYears: 3, ...inputs } })).body.result;
+let cq = await cadQ({ cadKind: "existing", cadVendor: "CentralSquare Enterprise" });
+check("CAD with existing views = discounted", cq.lines.once.find(l => l.key === "cad")?.amount === 2500 && cq.notes.some(n => /\$5,000 less than a new integration/.test(n)), JSON.stringify(cq.lines.once));
+cq = await cadQ({ cadKind: "new", cadSystems: 2, cadExtraViews: 2, cadCustomHours: 6 });
+check("new CAD vendors, extra and custom views billed", cq.lines.once.find(l => l.key === "cad")?.amount === 15000 && cq.lines.once.find(l => l.key === "cadViews")?.amount === 3000
+  && cq.lines.once.find(l => l.key === "cadCustom")?.amount === 990, JSON.stringify(cq.lines.once));
+check("older quotes' CAD count still priced", (await cadQ({ cadIntegrations: 1 })).lines.once.find(l => l.key === "cad")?.amount === 7500);
 check("client-sent result ignored", Number(psql(`SELECT result->>'year1Recurring' FROM sales_quotes WHERE id = '${qid}'`)) === 40500);
 
 // ---- Print the quote ----

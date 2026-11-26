@@ -1175,3 +1175,11 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   recovery tier's servers are part of that. book.dr pct defaults 0 (= Fenmorix's own fee for a tier, optional); inputs hostingAnnual /
   hostingOneTime / hostingNote = Avexon's figures, returned as result.hosting {known}, printed as a separate section, never in Fenmorix
   totals, counted in the savings comparison (labelled "before hosting" when unknown). Terms "Hosting, updates and support" say so.
+- CAD pricing (11/2026, Michael): book.oneTime.cad {existing 2500 (we already have SQL views for that CAD / shared regional CAD), new 7500
+  (vendor not integrated before), includedViews 2 (active calls + statistics), extraView 1500}; inputs cadKind none|existing|new, cadSystems,
+  cadVendor, cadExtraViews, cadCustomHours (× hourly.custom). Old quotes' cadIntegrations count = new. Idea from Michael: a future Reports
+  module reading a master incident list view from CAD so departments build their own reports (that view = an extra standard view).
+- book.marketRates = typical competitor costs from public contracts / published prices (Aladtec, Vector, PSTrax, First Due, FireWorks modules,
+  Jotform, Active911, IamResponding, Everbridge, Tablet Command, FirstWatch, ClearGov, Procurify, Otter, Slack, Deputy, Power BI), with sources;
+  `marketLine(rate, users, size)`; builder "Add a typical cost…" adds a Software-it-replaces line; Price book › Typical competitor costs.
+  Tests e2e61 (42).
