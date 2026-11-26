@@ -122,7 +122,7 @@ export default function SystemPanel({ toast }) {
 
     <section style={cardStyle} aria-label="Install an update">
       <div style={{ fontWeight: 800, color: INK }}>Install an update</div>
-      <div style={{ fontSize: 13, color: INK_SOFT, margin: "2px 0 10px" }}>Pick the sgfd-nexus-app.zip exactly as it was sent. It's checked here first; installing backs up the database, keeps the current version for rollback, and puts it back by itself if the new one doesn't start.</div>
+      <div style={{ fontSize: 13, color: INK_SOFT, margin: "2px 0 10px" }}>Pick the update zip made for this server ({s.packageName ? <b>{s.packageName}-&lt;version&gt;.zip</b> : "the zip sent for this install"}), exactly as it was sent; a zip made for another install is refused. It's checked here first; installing backs up the database, keeps the current version for rollback, and puts it back by itself if the new one doesn't start.</div>
       {!inc && <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         <input ref={fileRef} type="file" aria-label="Release zip" accept=".zip" onChange={e => setFile(e.target.files[0] || null)} />
         <button type="button" style={btn("primary")} disabled={!file || busy} onClick={upload}><UploadCloud size={14} /> {busy ? "Checking…" : "Upload and check"}</button></div>}

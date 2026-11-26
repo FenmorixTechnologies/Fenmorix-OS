@@ -7,5 +7,7 @@
 export const REQUIRE_LICENSE = false;
 export const SGFD_CONTENT = true;
 export const PACKAGE = "";
+// The download's file name without the version ("fenmorix-os-lgc"), shown on the System page.
+export const PACKAGE_NAME = "";
 // Test builds only (packaging --test): a customer package that still accepts development licenses. Never shipped.
 export const ALLOW_DEV_LICENSE = false;

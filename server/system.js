@@ -29,7 +29,7 @@ import { pool } from "./db.js";
 import { unzip } from "./xlsx.js";
 import { orgSettings, saveOrgSettings, brand, product, savedBranding, brandingDir, uploadedAssetsDir, setupLogoFile, BRAND_FILES, COLOR_KEYS, HEX } from "./brand.js";
 import { TILE_LABELS } from "../src/modules.js";
-import { PACKAGE } from "./buildFlags.js";
+import { PACKAGE, PACKAGE_NAME } from "./buildFlags.js";
 
 const err = (status, message) => Object.assign(new Error(message), { status });
 const APP_DIR = path.resolve(import.meta.dirname, "..");
@@ -113,6 +113,7 @@ async function status() {
     startedAt: new Date(started).toISOString(), uptimeSeconds: Math.round((Date.now() - started) / 1000), memoryMb: Math.round(process.memoryUsage().rss / 1048576),
     disk, dbBytes: Number(db.size), migrations: applied.size, updater: await updaterReady(), task: TASK(),
     pending: await readJson(path.join(UPD(), "pending.json")), progress: await readJson(path.join(UPD(), "progress.json")), last: await readJson(path.join(UPD(), "last-result.json")),
+packageName: PACKAGE_NAME || (PACKAGE ? PACKAGE : "sgfd-nexus"),
     incoming, rollbackReady: fss.existsSync(path.join(UPD(), "previous", "app", "package.json")),
     backups: backups.slice(0, 8), updateLogs: updateLogs.slice(0, 15),
   };

@@ -127,7 +127,7 @@ function build(id) {
   }
   if (!c.sandboxScripts) { rm(path.join(app, "scripts/sandbox")); rm(path.join(app, "scripts/linux/reset-sandbox.sh")); report.removed.push("scripts/sandbox"); }
 
-  write("server/buildFlags.js", `// Set by the packaging tool for ${c.customer}'s download.\nexport const REQUIRE_LICENSE = ${!!c.requireLicense};\nexport const SGFD_CONTENT = ${!!c.sgfdContent};\nexport const PACKAGE = ${JSON.stringify(id)};\nexport const ALLOW_DEV_LICENSE = ${TEST};\n`);
+  write("server/buildFlags.js", `// Set by the packaging tool for ${c.customer}'s download.\nexport const REQUIRE_LICENSE = ${!!c.requireLicense};\nexport const SGFD_CONTENT = ${!!c.sgfdContent};\nexport const PACKAGE = ${JSON.stringify(id)};\nexport const PACKAGE_NAME = ${JSON.stringify(c.name)};\nexport const ALLOW_DEV_LICENSE = ${TEST};\n`);
   // Release notes that talk about St. George only go in St. George's download
   if (!c.sgfdContent) version.notes = (version.notes || []).filter(n => !/St\.? George|SGFD/.test(n));
   write("VERSION.json", JSON.stringify({ ...version, package: id, customer: c.customer, product: c.product, modules: [...on] }, null, 2));
