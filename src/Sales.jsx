@@ -8,7 +8,7 @@ import AppShell from "./AppShell.jsx";
 import { cardStyle, btn } from "./App.jsx";
 import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine } from "./pricing.js";
 import { MODULES } from "./modules.js";
-import { quoteHtml, specHtml, printHtml } from "./SalesPrint.js";
+import { quoteHtml, specHtml, printHtml, specPrices } from "./SalesPrint.js";
 
 const INK = "#13233F", SOFT = "#4B5565", LINE = "#DDE2EA", ORANGE = "#C94D00", GREEN = "#1F8A4C", RED = "#B42318";
 const lbl = { fontSize: 12, fontWeight: 700, color: SOFT, display: "block", marginBottom: 3 };
@@ -478,6 +478,10 @@ function SpecSheets({ book }) {
         <Choice label="Edition" value={ed} options={s.editions} onChange={setEd} />
         <label style={{ fontSize: 13.5, paddingBottom: 8 }}><input type="checkbox" checked={prices} onChange={e => setPrices(e.target.checked)} /> Show prices</label>
         <button type="button" style={btn("primary")} onClick={() => printHtml(() => specHtml(book, seg, ed, { prices }))}><Printer size={14} /> Print spec sheet</button></div>
+      {prices && (() => { const pr = specPrices(book, seg, ed); return <div style={{ marginTop: 14, overflowX: "auto" }} role="region" aria-label="Spec sheet prices">
+        <table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr>{pr.head.map((h, i) => <th key={i} style={{ ...th, textAlign: i ? "right" : "left" }}>{h}</th>)}</tr></thead>
+          <tbody>{pr.rows.map((r, k) => <tr key={k}>{r.map((c, i) => <td key={i} style={i ? tdn : td}>{i ? c : <b>{c}</b>}</td>)}</tr>)}</tbody></table>
+        <div style={{ fontSize: 12, color: SOFT, marginTop: 4 }}>{pr.note}</div></div>; })()}
       <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 6 }}>
         {(s.editions.find(e => e.key === ed) || s.editions[0]).modules.map(k => { const m = MODULES.find(x => x.key === k); return m && <div key={k} style={{ fontSize: 13, border: `1px solid ${LINE}`, borderRadius: 8, padding: 8 }}><b>{m.name}</b><div style={{ color: SOFT, fontSize: 12 }}>{m.desc}</div></div>; })}
       </div>

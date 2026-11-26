@@ -152,14 +152,30 @@ export function quoteHtml(q, client, opts = {}) {
   return doc(`${q.number} ${client.name}`, body, opts.draft);
 }
 
+// The spec sheet's price table (also shown on the Spec sheets page)
+export function specPrices(book, segKey, edKey) {
+  const seg = book.segments[segKey], ed = seg.editions.find(e => e.key === edKey) || seg.editions[0];
+  const partner = book.seller?.partner || "Avexon";
+  if (segKey === "biz") return {
+    head: ["", "Price"],
+    rows: [["Per user, per month (billed yearly)", money(ed.perUserMonth)], ["Yearly minimum", money(ed.minYear)],
+      ...seg.sizes.map(z => [`One-time implementation, ${z.label} (up to ${z.upTo} users)`, money(seg.implementation[z.key])])],
+    note: `Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
+  return {
+    head: ["", ...seg.sizes.map(z => `${z.label} (up to ${z.upTo} users)`)],
+    rows: [[`${ed.label}, per year`, ...seg.sizes.map(z => money(ed.prices[z.key]))], ["One-time implementation", ...seg.sizes.map(z => money(seg.implementation[z.key]))]],
+    note: `One price per agency, by size. Above ${seg.quoteAbove} users, quoted. Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
+}
+
 // Spec sheet: what an edition includes and the service options (no prices unless asked)
 export function specHtml(book, segKey, edKey, { prices = false } = {}) {
   useSeller(book);
   const seg = book.segments[segKey], ed = seg.editions.find(e => e.key === edKey) || seg.editions[0];
   const addons = book.addons.filter(a => a.segments.includes(segKey) && !(a.module && ed.modules.includes(a.module)));
-  const priceLine = !prices ? "" : segKey === "biz"
-    ? `<p><b>${money(ed.perUserMonth)} per user per month</b>, billed yearly (yearly minimum ${money(ed.minYear)}). One-time implementation from ${money(seg.implementation.s)}.</p>`
-    : `<p>${seg.sizes.map(z => `<b>${esc(z.label)}</b> (up to ${z.upTo} users): ${money(ed.prices[z.key])}/year`).join(" · ")}. One-time implementation from ${money(seg.implementation.s)}.</p>`;
+  const pr = specPrices(book, segKey, edKey);
+  const priceLine = !prices ? "" : `<h2>Pricing</h2><table><thead><tr>${pr.head.map((h, i) => `<th${i ? ' class="n"' : ""}>${esc(h)}</th>`).join("")}</tr></thead>
+    <tbody>${pr.rows.map(r => `<tr>${r.map((c, i) => `<td${i ? ' class="n"' : ""}>${i ? c : `<b>${esc(c)}</b>`}</td>`).join("")}</tr>`).join("")}</tbody></table>
+    <p class="muted" style="margin:0">${esc(pr.note)}</p>`;
   const body = `
   ${header("SPEC SHEET", `Fenmorix OS ${esc(ed.label)} · ${esc(seg.label)}<br>${longDate()}`)}
   <h2 style="margin-top:18px">Fenmorix OS ${esc(ed.label)}</h2>

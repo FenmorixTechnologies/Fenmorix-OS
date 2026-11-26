@@ -175,7 +175,15 @@ await page.getByLabel("Edition", { exact: true }).selectOption("command");
 await page.getByRole("button", { name: "Print spec sheet" }).click(); await page.waitForTimeout(1200);
 const spec = await page.evaluate(() => document.getElementById("sales-print-frame")?.contentDocument?.documentElement?.outerHTML || "");
 check("spec sheet", /SPEC SHEET/.test(spec) && /Command Board/.test(spec) && /High availability/.test(spec) && !/\$45,000/.test(spec), spec.length);
-const sp = await ctx.newPage(); await sp.setContent(spec, { waitUntil: "load" }); await sp.waitForTimeout(500);
+await page.getByLabel("Show prices").check(); await page.waitForTimeout(300);
+const onScreen = await page.getByRole("region", { name: "Spec sheet prices" }).innerText();
+check("prices on screen (public safety)", /\$20,000/.test(onScreen) && /\$4[57],000/.test(onScreen) && /\$85,000/.test(onScreen) && /\$7,500/.test(onScreen), onScreen);
+await page.getByRole("button", { name: "Print spec sheet" }).click(); await page.waitForTimeout(1200);
+const specP = await page.evaluate(() => document.getElementById("sales-print-frame")?.contentDocument?.documentElement?.outerHTML || "");
+check("printed spec sheet has the price table", /<h2>Pricing<\/h2>/.test(specP) && /\$4[57],000/.test(specP) && /Mid-size \(up to 100 users\)/.test(specP));
+await page.getByLabel("Market", { exact: true }).selectOption("biz"); await page.waitForTimeout(300);
+check("prices on screen (business)", /\$12/.test(await page.getByRole("region", { name: "Spec sheet prices" }).innerText()));
+const sp = await ctx.newPage(); await sp.setContent(specP, { waitUntil: "load" }); await sp.waitForTimeout(500);
 await sp.pdf({ path: "sales-spec.pdf", format: "Letter", printBackground: true, preferCSSPageSize: true }); await sp.close();
 
 // ---- Overview + quotes list shots ----
