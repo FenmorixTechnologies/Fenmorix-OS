@@ -53,7 +53,7 @@ await page.locator("nav button", { hasText: "System" }).first().click(); await p
 const card = page.getByRole("region", { name: "License" });
 let t = await card.innerText();
 check("license card: customer, expiry, users", /Lakeview Fire Department/.test(t) && /2030-01-01/.test(t) && /1 of 3/.test(t), t.slice(0, 300));
-check("modules listed on/off", await card.getByLabel("ISO / PIAL Rating Tracker: on").count() === 1 && await card.getByLabel("Incident Command Board: off").count() === 1);
+check("modules listed on/off", await card.getByLabel("ISO / PIAL Rating Tracker: on").count() === 1 && await card.getByLabel("Incident Command Board: not licensed").count() === 1);
 await card.screenshot({ path: "shot-license-card.png" });
 // Install a tampered file: refused; the real one stays
 const lic = fs.readFileSync(`${K}/hosted.lic`, "utf8");
@@ -66,7 +66,7 @@ await card.getByLabel("License file").setInputFiles("/tmp/claude-0/hosted.lic");
 await page.getByLabel("Authenticator code").fill(await code(secret));
 await page.getByRole("dialog").getByRole("button", { name: "Install the license" }).click(); await page.waitForTimeout(1200);
 t = await card.innerText();
-check("new license installed from the page", /Hosted Customer/.test(t) && await card.getByLabel("Incident Command Board: on").count() === 1 && await card.getByLabel("ISO / PIAL Rating Tracker: off").count() === 1, t.slice(0, 200));
+check("new license installed from the page", /Hosted Customer/.test(t) && await card.getByLabel("Incident Command Board: on").count() === 1 && await card.getByLabel("ISO / PIAL Rating Tracker: not licensed").count() === 1, t.slice(0, 200));
 check("restart offered", await card.getByRole("button", { name: "Restart now to apply it" }).count() === 1);
 check("previous license kept as a copy", fs.existsSync(`${process.env.LICENSE_FILE || `${K}/active.lic`}.previous`));
 await page.goto(BASE); await page.waitForTimeout(2000);

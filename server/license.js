@@ -41,6 +41,26 @@ export function demoModules() {
   try { const j = JSON.parse(fs.readFileSync(demoModulesFile(), "utf8")); return Array.isArray(j.modules) ? j.modules.filter(k => moduleByKey[k] && !moduleByKey[k].vendor) : null; }
   catch { return null; }
 }
+// Modules a master switched off on this server (System page). The license still allows them; switching back on needs no new license.
+export const offModulesFile = () => path.join(path.dirname(path.dirname(licenseFile())), "settings", "modules-off.json");
+export function offModules() {
+  try { const j = JSON.parse(fs.readFileSync(offModulesFile(), "utf8")); return Array.isArray(j.off) ? j.off.filter(k => moduleByKey[k]) : []; } catch { return []; }
+}
+// Off = the chosen ones plus every module that needs one of them
+function withDependents(off, on) {
+  const out = new Set(off.filter(k => on.has(k)));
+  for (let ch = true; ch;) { ch = false; for (const k of on) if (!out.has(k) && (moduleByKey[k].needs || []).some(n => out.has(n))) { out.add(k); ch = true; } }
+  return out;
+}
+export function setOffModules(keys) {
+  const s = licenseState(), allowed = s.licensed || s.modules;
+  const off = [...withDependents([...new Set(Array.isArray(keys) ? keys : [])].filter(k => moduleByKey[k]), allowed)];
+  const f = offModulesFile();
+  fs.mkdirSync(path.dirname(f), { recursive: true });
+  fs.writeFileSync(f, JSON.stringify({ off, savedAt: new Date().toISOString() }, null, 1) + "\n");
+  clearLicenseCache();
+  return off;
+}
 export function setDemoModules(keys) {
   const list = withNeeds([...new Set((Array.isArray(keys) ? keys : []).filter(k => moduleByKey[k] && !moduleByKey[k].vendor))]);
   const f = demoModulesFile();
@@ -104,6 +124,11 @@ export function licenseState() {
       } else if (p.expires && addDays(now, 30) >= p.expires) state.warning = `The license ends on ${p.expires}.`;
     }
   }
+  // Switched off on this server (not for a sandbox's demo switches, which already pick the modules)
+  if (!state.demo && state.modules.size) {
+    const off = withDependents(offModules(), state.modules);
+    if (off.size) { state.licensed = new Set(state.modules); state.off = off; state.modules = new Set([...state.modules].filter(k => !off.has(k))); }
+  }
   cache = { at: Date.now(), state };
   return state;
 }
@@ -124,7 +149,8 @@ export function licenseSummary() {
     mode: s.mode, demo: isSandbox() && !p, demoSaved: !!s.demo, error: s.error || "", warning: s.warning || "", requireLicense: REQUIRE_LICENSE, file: licenseFile(),
     license: p ? { id: p.id, customer: p.customer, product: p.product || "", issued: p.issued, expires: p.expires || null, seats: p.seats || 0,
       environments: p.environments || [], hosts: p.hosts || [], kid: p.kid, notes: p.notes || "" } : null,
-    modules: MODULE_KEYS.filter(k => !moduleByKey[k].vendor || s.modules.has(k)).map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k), optIn: !!moduleByKey[k].optIn, desc: moduleByKey[k].desc || "", needs: moduleByKey[k].needs || [] })),
+    modules: MODULE_KEYS.filter(k => !moduleByKey[k].vendor || (s.licensed || s.modules).has(k)).map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k),
+      licensed: (s.licensed || s.modules).has(k), switchedOff: !!s.off?.has(k), optIn: !!moduleByKey[k].optIn, desc: moduleByKey[k].desc || "", needs: moduleByKey[k].needs || [] })),
     core: CORE.tiles,
   };
 }

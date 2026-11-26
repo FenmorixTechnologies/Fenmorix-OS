@@ -191,12 +191,42 @@ function LicenseCard({ toast, restart, busy }) {
       {[["License", p.id], ["Issued", p.issued], ["Expires", p.expires || "Never"], ["Users", p.seats ? `${l.seatsUsed} of ${p.seats}` : `${l.seatsUsed} (no limit)`],
         ["Environments", (p.environments || []).join(", ") || "Any"], ["For", (p.hosts || []).join(", ") || "Any server"]].map(([k, v]) =>
         <div key={k}><div style={{ fontSize: 11.5, color: INK_SOFT, fontWeight: 700, textTransform: "uppercase" }}>{k}</div><div style={{ color: INK, fontWeight: 600 }}>{v}</div></div>)}</div>}
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, marginTop: 8 }}>
-      {groups.map(g => <div key={g}><div style={{ fontSize: 12, fontWeight: 800, color: INK_SOFT, textTransform: "uppercase", marginBottom: 4 }}>{g}</div>
-        {l.modules.filter(m => m.group === g).map(m => <div key={m.key} aria-label={`${m.name}: ${m.on ? "on" : "off"}`} style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", color: m.on ? INK : "#98A2B3" }}>
-          {m.on ? <CheckCircle2 size={14} color={SAGE} /> : <span style={{ width: 14, height: 14, borderRadius: 7, border: "1.5px solid #C8CFDA", display: "inline-block" }} />}{m.name}</div>)}</div>)}</div>
+    <ModuleSwitches key={(p?.id || l.mode) + JSON.stringify(l.modules.map(m => m.licensed))} l={l} setL={setL} groups={groups} toast={toast} />
     {ask && <CodeDialog title={ask.title} note={ask.note} run={ask.run} onCancel={() => setAsk(null)} onDone={done} />}
   </section>;
+}
+
+// Licensed modules can be switched off here (and back on) without a new license: the section disappears for everyone, nothing is
+// deleted, and it comes back as it was. Modules that need a switched-off one go off with it. Unlicensed ones show greyed.
+function ModuleSwitches({ l, setL, groups, toast }) {
+  const lic = l.modules.filter(m => m.licensed);
+  const [sel, setSel] = useState(() => new Set(lic.filter(m => m.on).map(m => m.key))), [busy, setBusy] = useState(false);
+  const byKey = Object.fromEntries(l.modules.map(m => [m.key, m]));
+  const current = new Set(lic.filter(m => m.on).map(m => m.key));
+  const dirty = sel.size !== current.size || [...sel].some(k => !current.has(k));
+  const flip = k => setSel(old => {
+    const n = new Set(old);
+    if (n.has(k)) { n.delete(k); for (let ch = true; ch;) { ch = false; for (const m of lic) if (n.has(m.key) && m.needs.some(x => byKey[x]?.licensed && !n.has(x))) { n.delete(m.key); ch = true; } } }
+    else { const add = x => { if (!byKey[x]?.licensed) return; n.add(x); (byKey[x]?.needs || []).forEach(y => !n.has(y) && add(y)); }; add(k); }
+    return n;
+  });
+  const save = async () => {
+    setBusy(true);
+    try { const x = await call("/modules-off", { off: lic.filter(m => !sel.has(m.key)).map(m => m.key) }); setL(x); setSel(new Set(x.modules.filter(m => m.licensed && m.on).map(m => m.key))); toast("Saved. Everyone sees the change the next time a page loads."); }
+    catch (x) { toast(x.message); } finally { setBusy(false); }
+  };
+  return <>
+    <div style={{ fontSize: 13, color: INK_SOFT, marginTop: 10 }}>Untick a module to switch it off on this server. Nothing is deleted; switch it back on any time and it's as it was. (Background feeds like CAD and transcripts follow at the next restart.)</div>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, marginTop: 8 }}>
+      {groups.map(g => <div key={g}><div style={{ fontSize: 12, fontWeight: 800, color: INK_SOFT, textTransform: "uppercase", marginBottom: 4 }}>{g}</div>
+        {l.modules.filter(m => m.group === g).map(m => m.licensed
+          ? <label key={m.key} title={m.desc} style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", color: sel.has(m.key) ? INK : "#98A2B3", cursor: "pointer" }}>
+              <input type="checkbox" aria-label={`${m.name}: ${sel.has(m.key) ? "on" : "off"}`} checked={sel.has(m.key)} onChange={() => flip(m.key)} />{m.name}{m.switchedOff && !dirty ? " (switched off)" : ""}</label>
+          : <div key={m.key} aria-label={`${m.name}: not licensed`} title="Not in this license" style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", color: "#B8C0CC" }}>
+              <span style={{ width: 13, height: 13, borderRadius: 3, border: "1.5px solid #D5DBE3", display: "inline-block" }} />{m.name}</div>)}</div>)}</div>
+    {dirty && <div style={{ display: "flex", gap: 8, marginTop: 10 }}><button type="button" style={btn("primary")} disabled={busy} onClick={save}><CheckCircle2 size={14} /> {busy ? "Saving…" : "Save module switches"}</button>
+      <button type="button" style={btn("ghost")} onClick={() => setSel(current)}>Undo</button></div>}
+  </>;
 }
 
 // Sandbox (no license file): switch modules on and off for a demo. Saved on the server; everyone sees the change on their next page load.

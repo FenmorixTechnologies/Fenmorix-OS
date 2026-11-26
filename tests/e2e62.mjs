@@ -177,5 +177,22 @@ check("second account signed in", ap.status === 200 && li.status === 200, JSON.s
 check("others can't open the books", (await api2("/api/books")).status === 403);
 check("others can't open receipts", (await api2(`/api/books/receipts/${rid}`)).status === 403);
 check("others can't add expenses", (await api2("/api/books/expenses", { day: `${Y}-01-01`, category: "office", amount: 5 })).status === 403);
+// ---- Module switches (System page): off without a new license, back on as it was ----
+const lic0 = (await api("/api/system/license")).body;
+check("license lists modules as licensed", lic0.modules.find(m => m.key === "forms")?.licensed && lic0.modules.find(m => m.key === "forms")?.on, JSON.stringify(lic0.modules.find(m => m.key === "forms")));
+const off1 = await api("/api/system/modules-off", { off: ["forms"] });
+const fm = off1.body.modules.find(m => m.key === "forms");
+check("forms switched off", off1.status === 200 && !fm.on && fm.switchedOff && fm.licensed, JSON.stringify(fm));
+check("its API is locked", (await api("/api/forms")).status === 404);
+check("dependents go off too", off1.body.modules.filter(m => m.needs.includes("forms") && m.licensed).every(m => !m.on));
+await page.goto(BASE); await page.waitForTimeout(2000);
+check("tile hidden", !(await page.getByRole("navigation").first().innerText()).includes("Forms"));
+await page.locator("nav button", { hasText: "User Management" }).first().click(); await page.waitForTimeout(800);
+await page.locator("nav button", { hasText: "System" }).first().click(); await page.waitForTimeout(1500);
+await page.getByLabel("Forms & Case Management: off").check(); await page.getByRole("button", { name: "Save module switches" }).click(); await page.waitForTimeout(1200);
+check("switched back on from the page", (await api("/api/system/license")).body.modules.find(m => m.key === "forms")?.on === true);
+check("unlicensed modules can't be switched", (await api("/api/system/modules-off", { off: [] })).body.modules.every(m => m.licensed || !m.on));
+check("switches audited", Number(psql("SELECT count(*) FROM audit_log WHERE action = 'Switched modules on or off'")) === 3, psql("SELECT count(*) FROM audit_log WHERE action = 'Switched modules on or off'"));
+
 check("no page errors", !errors.length, errors.join(" | "));
 await browser.close(); done();

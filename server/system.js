@@ -353,6 +353,16 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     await changeDivision(user, b);
     return send(res, 200, { ...(await orgState()), saved: true });
   }
+  // Switch licensed modules off (and back on) for this server. Nothing is deleted: the data stays and comes back when it's switched on.
+  if (what === "modules-off") {
+    const { setOffModules, licenseSummary, licenseState, offModules } = await import("./license.js");
+    const before = new Set(offModules());
+    const off = setOffModules(b.off);
+    const added = off.filter(k => !before.has(k)), back = [...before].filter(k => !off.includes(k));
+    await audit(user, "Switched modules on or off", `${added.length ? `off: ${added.join(", ")}` : ""}${added.length && back.length ? " · " : ""}${back.length ? `back on: ${back.join(", ")}` : ""}` || "no change");
+    if (licenseState().modules.has("spot")) (await import("./spot.js")).startSpot();
+    return send(res, 200, { ...(await withSeats(licenseSummary())), saved: true });
+  }
   // Sandbox only: which modules the demo shows (no license file on a sandbox; see license.js demoModules)
   if (what === "demo-modules") {
     const { setDemoModules, licenseSummary, licenseState } = await import("./license.js");
