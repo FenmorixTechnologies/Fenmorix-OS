@@ -25,10 +25,11 @@ import { REQUIRE_LICENSE, ALLOW_DEV_LICENSE } from "./buildFlags.js";
 // Public keys allowed to sign licenses (SPKI DER, base64). Add the vendor's production key here; never a private key.
 const KEYS = {
   dev: "MCowBQYDK2VwAyEA6GPmavsVknpZisTrLE8wfaYTGp+bTbTF85rDGfruaQU=",
+  dev2: "MCowBQYDK2VwAyEAwtIJ89dSXd2WMS0mb00WKmGKkxx7o2dlZac6M4mA034=",   // second test key (tests/keys/dev2-private.pem, not in git)
   // Fenmorix Technologies, LLC production signing key (made 11/2026; the private half stays on Michael's computer)
   "key-2026-11": "MCowBQYDK2VwAyEAJzTcCqFQdHe04zOvY3mzJXdldLur3QDgzFpkqRJf9z0=",
 };
-const DEV_KEYS = new Set(["dev"]);
+const DEV_KEYS = new Set(["dev", "dev2"]);
 
 const APP_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const licenseFile = () => process.env.LICENSE_FILE || path.join(path.resolve(process.env.SYSTEM_DIR || path.join(APP_DIR, "..")), "license", "nexus.lic");
@@ -94,6 +95,22 @@ export function checkLicense(text) {
     if (hosts.length && host && !hosts.some(h => hostMatches(h, host))) return { ok: false, error: `This license is for ${hosts.join(", ")}, not ${host}.` };
     return { ok: true, payload };
   } catch (e) { return { ok: false, error: `The license file couldn't be read (${e.message}).` }; }
+}
+
+// Signed releases (broadcast updates): the vendor signs "fenmorix-release:v1\n<package>\n<version>\n<sha256>" with the same key as
+// licenses (License Manager: sign-release). A server installs a downloaded update only when this checks out.
+export const releaseMessage = (pkg, version, sha256) => `fenmorix-release:v1\n${pkg}\n${version}\n${sha256}`;
+export function verifyRelease({ kid, sig, package: pkg, version, sha256 } = {}) {
+  try {
+    const pub = KEYS[kid];
+    if (!pub) return { ok: false, error: `Signed with a key this version doesn't know (${String(kid).slice(0, 30)}).` };
+    const host = hostOf();
+    if (DEV_KEYS.has(kid) && ((REQUIRE_LICENSE && !ALLOW_DEV_LICENSE) || (host && !/^(localhost|127\.0\.0\.1)$/.test(host)))) return { ok: false, error: "Signed with the development key: not accepted on a real server." };
+    const key = crypto.createPublicKey({ key: Buffer.from(pub, "base64"), format: "der", type: "spki" });
+    if (!/^[0-9a-f]{64}$/.test(String(sha256)) || !crypto.verify(null, Buffer.from(releaseMessage(pkg, version, sha256), "utf8"), key, b64u(String(sig || ""))))
+      return { ok: false, error: "The signature doesn't match this file." };
+    return { ok: true };
+  } catch (e) { return { ok: false, error: `The signature couldn't be checked (${e.message}).` }; }
 }
 
 let cache = { at: 0 };

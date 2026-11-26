@@ -9,6 +9,7 @@
 //        --hosts ops.acmelogistics.com,test.acmelogistics.com --env production,test --seats 150 --expires 2027-12-31
 //   node nexus-license.mjs new-customer           a new customer's kit for Avexon: license + name/colors + logo + install steps
 //   node nexus-license.mjs show <file.lic>        what a license says (and whether the signature checks out)
+//   node nexus-license.mjs sign-release <zip> [<zip> ...]   sign update zips for the update service: writes <zip>.sig next to each
 //
 // Options for issue: --key <private-key.pem> (default ./private-key.pem)  --kid <key name> (default from key-info.json)
 //   --product "<product name>"  --grace <days, default 30>  --notes "..."  --out <file>   Modules: "all" = every module.
@@ -17,6 +18,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline/promises";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
 import { MODULES, MODULE_KEYS, moduleByKey, withNeeds } from "./modules.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -24,6 +27,47 @@ const args = process.argv.slice(2), cmd = args[0];
 const opt = name => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : undefined; };
 const b64u = b => Buffer.from(b).toString("base64url");
 const die = m => { console.error(`\n${m}\n`); process.exit(1); };
+
+// ---- Signing release zips (broadcast updates) ----
+// The message matches server/license.js releaseMessage(): "fenmorix-release:v1\n<package>\n<version>\n<sha256>"
+function readZipEntry(buf, want) {
+  const zlib = require("node:zlib");
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 65557); i--) if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error("not a zip file");
+  let p = buf.readUInt32LE(eocd + 16); const n = buf.readUInt16LE(eocd + 10);
+  for (let k = 0; k < n; k++) {
+    const method = buf.readUInt16LE(p + 10), csize = buf.readUInt32LE(p + 20), nl = buf.readUInt16LE(p + 28), xl = buf.readUInt16LE(p + 30), cl = buf.readUInt16LE(p + 32), off = buf.readUInt32LE(p + 42);
+    const name = buf.slice(p + 46, p + 46 + nl).toString("utf8");
+    if (name === want) {
+      const start = off + 30 + buf.readUInt16LE(off + 26) + buf.readUInt16LE(off + 28), data = buf.slice(start, start + csize);
+      return method === 8 ? zlib.inflateRawSync(data) : data;
+    }
+    p += 46 + nl + xl + cl;
+  }
+  return null;
+}
+if (cmd === "sign-release") {
+  const zips = args.slice(1).filter(a => !a.startsWith("--") && /\.zip$/i.test(a));
+  if (!zips.length) die("Give the release zip(s): node nexus-license.mjs sign-release fenmorix-os-lgc-2026.11.26.5.zip");
+  const { keyFile, kid } = signingKey();
+  const priv = crypto.createPrivateKey(fs.readFileSync(keyFile));
+  for (const z of zips) {
+    if (/-TEST\.zip$/i.test(z)) die(`${z} is a test build. Never sign or send a -TEST zip.`);
+    const buf = fs.readFileSync(z);
+    const vj = readZipEntry(buf, "app/VERSION.json");
+    if (!vj) die(`${z} has no app/VERSION.json (make it with packaging/build-package.mjs).`);
+    const ver = JSON.parse(vj.toString("utf8"));
+    if (!ver.package || !ver.version) die(`${z}: VERSION.json doesn't name its package and version.`);
+    const sha256 = crypto.createHash("sha256").update(buf).digest("hex");
+    const message = `fenmorix-release:v1\n${ver.package}\n${ver.version}\n${sha256}`;
+    const sig = crypto.sign(null, Buffer.from(message, "utf8"), priv).toString("base64url");
+    fs.writeFileSync(`${z}.sig`, JSON.stringify({ v: 1, kid, package: ver.package, version: ver.version, sha256, sig }, null, 1) + "\n");
+    console.log(`Signed ${path.basename(z)}  (${ver.package} ${ver.version})  ->  ${path.basename(z)}.sig`);
+  }
+  console.log("\nUpload each zip together with its .sig on your office portal: Clients & Quotes › Releases.\n");
+  process.exit(0);
+}
 
 if (cmd === "keygen") {
   const priv = path.join(HERE, "private-key.pem");

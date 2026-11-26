@@ -120,6 +120,8 @@ export default function SystemPanel({ toast }) {
       </div>
     </section>
 
+    <UpdatesCard toast={toast} reload={() => call("").then(setS)} />
+
     <section style={cardStyle} aria-label="Install an update">
       <div style={{ fontWeight: 800, color: INK }}>Install an update</div>
       <div style={{ fontSize: 13, color: INK_SOFT, margin: "2px 0 10px" }}>Pick the update zip made for this server ({s.packageName ? <b>{s.packageName}-&lt;version&gt;.zip</b> : "the zip sent for this install"}), exactly as it was sent; a zip made for another install is refused. It's checked here first; installing backs up the database, keeps the current version for rollback, and puts it back by itself if the new one doesn't start.</div>
@@ -162,6 +164,46 @@ export default function SystemPanel({ toast }) {
 }
 
 // The license: who it's for, which modules are on, expiry and users; a new license file from the vendor replaces it (code needed)
+// Automatic updates: this server checks in with the vendor's update service (server/updates.js) and downloads signed releases for its
+// own download. Installing still asks for a code here, unless night installs are on.
+function UpdatesCard({ toast, reload }) {
+  const [u, setU] = useState(null), [edit, setEdit] = useState(null), [ask, setAsk] = useState(null), [busy, setBusy] = useState("");
+  const load = () => call("/updates").then(setU, e => toast(e.message));
+  useEffect(() => { load(); }, []);   // eslint-disable-line react-hooks/exhaustive-deps
+  if (!u) return null;
+  const a = u.available;
+  const go = async (what, msg) => { setBusy(what); try { setU(await call(`/updates/${what}`, {})); if (what === "download") { await reload(); toast("Downloaded and checked (signature and contents). Install it below."); } else toast(msg); } catch (e) { toast(e.message); } finally { setBusy(""); } };
+  const save = () => setAsk({ title: "Save update settings", note: edit.key ? "This server will check in with the update service using the key." : "Change how updates arrive.", run: () => call("/updates/settings", edit) });
+  return <section style={cardStyle} aria-label="Automatic updates">
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div><div style={{ fontWeight: 800, color: INK }}>Automatic updates</div>
+        <div style={{ fontSize: 13, color: INK_SOFT }}>{u.configured ? `Checks in with ${u.url.replace(/^https?:\/\//, "")} every 6 hours · last ${u.lastCheck ? when(u.lastCheck) : "not yet"}${u.auto ? ` · installs by itself at ${u.autoAt}` : " · you click Install"}` : "Not set up: updates come as zips you upload below."}</div></div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {u.configured && <button type="button" style={btn("outline")} disabled={!!busy} onClick={() => go("check", "Checked.")}><RotateCw size={14} /> {busy === "check" ? "Checking…" : "Check now"}</button>}
+        {!edit && <button type="button" style={btn("ghost")} onClick={() => setEdit({ url: u.url || "https://office.fenmorix.com", key: "", auto: u.auto, autoAt: u.autoAt })}>{u.configured ? "Settings" : "Set up"}</button>}</div></div>
+    {u.lastError && <div role="alert" style={{ color: BRICK, fontSize: 13.5, marginTop: 8 }}><AlertTriangle size={14} style={{ verticalAlign: -2 }} /> {u.lastError}</div>}
+    {u.hold && <div style={{ color: AMBER, fontSize: 13.5, marginTop: 8 }}>Updates for this server are on hold at the update service.</div>}
+    {a && !a.bad && <div style={{ border: `1px solid ${LINE}`, borderRadius: 8, padding: 12, marginTop: 10, background: "#FFF8F1" }}>
+      <div style={{ fontWeight: 800, color: INK }}>Version {a.version} is available <span style={{ fontWeight: 500, color: INK_SOFT }}>(this server: {u.current || "not stamped"})</span></div>
+      {a.notes?.length > 0 && <ul style={{ margin: "6px 0", paddingLeft: 18, fontSize: 13, color: INK }}>{a.notes.slice(0, 10).map((n, i) => <li key={i}>{n}</li>)}</ul>}
+      {u.downloaded === a.version ? <div style={{ fontSize: 13, color: SAGE, fontWeight: 700 }}><CheckCircle2 size={14} style={{ verticalAlign: -2 }} /> Downloaded: install it below.</div>
+        : <button type="button" style={btn("primary")} disabled={!!busy} onClick={() => go("download")}><UploadCloud size={14} /> {busy === "download" ? "Downloading…" : "Download and check it"}</button>}</div>}
+    {a?.bad && <div role="alert" style={{ color: BRICK, fontSize: 13.5, marginTop: 8 }}>Version {a.version} was offered but its signature didn't check out ({a.bad}). It won't be installed.</div>}
+    {u.configured && !a && u.lastCheck && !u.lastError && <div style={{ fontSize: 13, color: SAGE, marginTop: 8 }}><CheckCircle2 size={14} style={{ verticalAlign: -2 }} /> Up to date ({u.current || "not stamped"}).</div>}
+    {edit && <div style={{ border: `1px solid ${LINE}`, borderRadius: 8, padding: 12, marginTop: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
+        <label style={{ fontSize: 13 }}>Update service<input aria-label="Update service address" style={{ ...inputStyle, marginTop: 3 }} value={edit.url} onChange={e => setEdit({ ...edit, url: e.target.value })} /></label>
+        <label style={{ fontSize: 13 }}>Update key {u.configured && <span style={{ color: INK_SOFT }}>(blank = keep)</span>}<input aria-label="Update key" style={{ ...inputStyle, marginTop: 3 }} value={edit.key} onChange={e => setEdit({ ...edit, key: e.target.value })} placeholder="fxu_…" /></label>
+        <label style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center", marginTop: 18 }}><input type="checkbox" checked={edit.auto} onChange={e => setEdit({ ...edit, auto: e.target.checked })} /> Install new versions by itself at night</label>
+        {edit.auto && <label style={{ fontSize: 13 }}>Starting at<input aria-label="Night install time" type="time" style={{ ...inputStyle, marginTop: 3 }} value={edit.autoAt} onChange={e => setEdit({ ...edit, autoAt: e.target.value })} /></label>}
+      </div>
+      <div style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 6 }}>Only versions signed by Fenmorix Technologies install, and only the download made for this server. A backup is taken first and the old version comes back by itself if the new one doesn't start.</div>
+      <div style={{ display: "flex", gap: 8, marginTop: 10 }}><button type="button" style={btn("primary")} onClick={save}>Save</button><button type="button" style={btn("ghost")} onClick={() => setEdit(null)}>Cancel</button>
+        {u.configured && <button type="button" style={btn("ghost")} onClick={() => setAsk({ title: "Stop checking for updates", note: "Removes the update key from this server.", run: () => call("/updates/forget", {}) })}>Stop checking</button>}</div></div>}
+    {ask && <CodeDialog title={ask.title} note={ask.note} run={ask.run} onCancel={() => setAsk(null)} onDone={x => { setAsk(null); setEdit(null); setU(x); toast("Saved."); }} />}
+  </section>;
+}
+
 function LicenseCard({ toast, restart, busy }) {
   const [l, setL] = useState(null), [ask, setAsk] = useState(null), [installed, setInstalled] = useState(false);
   const fileRef = useRef(null);

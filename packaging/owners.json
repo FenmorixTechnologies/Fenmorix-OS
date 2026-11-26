@@ -244,5 +244,11 @@
  ],
  "src/booksShared.js": [
   "sales"
+ ],
+ "server/hub.js": [
+  "sales"
+ ],
+ "src/HubAdmin.jsx": [
+  "sales"
  ]
 }

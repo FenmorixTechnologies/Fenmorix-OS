@@ -105,6 +105,7 @@ export const PhoneOff = mk("PhoneOff", [["path", {"d": "M10.68 13.31a16 16 0 0 0
 export const PieChart = mk("PieChart", [["path", {"d": "M21.21 15.89A10 10 0 1 1 8 2.83"}], ["path", {"d": "M22 12A10 10 0 0 0 12 2v10z"}]]);
 export const Pin = mk("Pin", [["line", {"x1": "12", "x2": "12", "y1": "17", "y2": "22"}], ["path", {"d": "M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"}]]);
 export const Plane = mk("Plane", [["path", {"d": "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"}]]);
+export const Pause = mk("Pause", [["rect", {"x": "6", "y": "4", "width": "4", "height": "16"}], ["rect", {"x": "14", "y": "4", "width": "4", "height": "16"}]]);
 export const Play = mk("Play", [["polygon", {"points": "5 3 19 12 5 21 5 3"}]]);
 export const Plus = mk("Plus", [["path", {"d": "M5 12h14"}], ["path", {"d": "M12 5v14"}]]);
 export const Power = mk("Power", [["path", {"d": "M18.36 6.64a9 9 0 1 1-12.73 0"}], ["line", {"x1": "12", "x2": "12", "y1": "2", "y2": "12"}]]);

@@ -110,6 +110,13 @@ async function handleApi(req, res, url) {
   // TV display screens sign in with their own cookie (no user session); admin routes there check the user themselves
   if (parts[1] === "display") { const { handleDisplay } = await import("./display.js"); return handleDisplay(req, res, parts, user, send, r => jsonBody(r, user ? MAX_BODY : SMALL)); }
 
+  // Update service (vendor office only): customers' servers check in with an update key, no session
+  if (parts[1] === "hub" && parts[2] === "client") {
+    const { apiAllowed } = await import("./license.js");
+    if (!apiAllowed("hub")) return send(res, 404, { error: "Not found" });
+    const { handleHubClient } = await import("./hub.js"); return handleHubClient(req, res, parts, send, (r, max) => jsonBody(r, Math.min(max || SMALL, SMALL)));
+  }
+
   // Everything else requires a signed-in, approved person
   if (!user) return send(res, 401, { error: "Please sign in again." });
 
@@ -162,6 +169,7 @@ async function handleApi(req, res, url) {
   if (parts[1] === "schedule") { const { handleSchedule } = await import("./schedule.js"); return handleSchedule(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "offwork") { const { handleOffwork } = await import("./offwork.js"); return handleOffwork(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "spot") { const { handleSpot } = await import("./spot.js"); return handleSpot(req, res, parts, user, send, url); }
+  if (parts[1] === "hub") { const { handleHub } = await import("./hub.js"); return handleHub(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "books") { const { handleBooks } = await import("./books.js"); return handleBooks(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "sales") { const { handleSales } = await import("./sales.js"); return handleSales(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "links") { const { handleLinks } = await import("./links.js"); return handleLinks(req, res, parts, user, send, jsonBody); }
@@ -341,6 +349,7 @@ startAladtec();
 if (startOn("activecalls") || startOn("callalerts") || startOn("command")) startCad();
 if (startOn("stats") || startOn("board") || startOn("pial")) startCadStats().catch(e => console.warn(`[Comms statistics] ${e.message}`));
 startDeliveries();   // next-shift delivery also carries other modules' notices
+(await import("./updates.js")).startUpdateChecks();   // broadcast updates: check in with the vendor's update service when set up
 if (startOn("recordings") || startOn("evals")) import("./transcribe.js").then(m => m.startTranscripts());
 if (startOn("spot")) import("./spot.js").then(m => m.startSpot());
 

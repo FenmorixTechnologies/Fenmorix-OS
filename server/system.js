@@ -91,6 +91,49 @@ export function checkRelease(buf) {
     migrations, packageChanged: null, pkg };
 }
 
+// Keep a checked release zip in updates/incoming (one at a time). Used by the upload button and by broadcast updates (updates.js).
+export async function stageRelease(buf, fileName, actor, extra = {}) {
+  const byName = actor.name;
+  if (buf.length > MAX_ZIP) throw err(413, "That zip is too big for a release.");
+  const info = checkRelease(buf);
+  const dir = path.join(UPD(), "incoming");
+  await fs.mkdir(dir, { recursive: true });
+  const sha = crypto.createHash("sha256").update(buf).digest("hex");
+  await fs.writeFile(path.join(dir, "release.zip"), buf);
+  const meta = { fileName: String(fileName || "release.zip").slice(0, 120), sha256: sha, size: buf.length, files: info.files, version: info.version, notes: info.notes,
+    migrations: info.migrations, uploadedAt: new Date().toISOString(), uploadedBy: byName, ...extra };
+  await fs.writeFile(path.join(dir, "release.json"), JSON.stringify(meta, null, 1));
+  const { ROLE_LABEL } = await import("./collections.js");
+  await pool.query(`INSERT INTO audit_log (actor_id, actor_name, actor_role, module, action, detail) VALUES ($1, $2, $3, 'System', $4, $5)`,
+    [actor.id || null, byName, ROLE_LABEL[actor.role] || actor.role || "", extra.signed ? "Downloaded an update" : "Uploaded an update", `${meta.fileName} ${info.version || ""} sha256 ${sha.slice(0, 12)}`]);
+  return meta;
+}
+// Hand an action to the updater (install / restart / rollback / backup). user = the person, or { name: "Automatic update" }.
+export async function queueAction(action, user) {
+  const ready = await updaterReady();
+  if (!ready.ready) throw err(409, ready.why);
+  const pending = await readJson(path.join(UPD(), "pending.json"));
+  if (pending && Date.now() - new Date(pending.at) < 15 * 60e3) throw err(409, `The updater is already working on: ${pending.action} (started ${new Date(pending.at).toLocaleTimeString()}).`);
+  const job = { action, at: new Date().toISOString(), by: user.name, id: crypto.randomUUID() };
+  if (action === "install") {
+    const meta = await readJson(path.join(UPD(), "incoming", "release.json"));
+    if (!meta) throw err(400, "Upload the release zip first.");
+    const buf = await fs.readFile(path.join(UPD(), "incoming", "release.zip")).catch(() => null);
+    if (!buf || crypto.createHash("sha256").update(buf).digest("hex") !== meta.sha256) throw err(409, "The uploaded zip changed or is missing. Upload it again.");
+    Object.assign(job, { zip: path.join(UPD(), "incoming", "release.zip"), sha256: meta.sha256, version: meta.version, fileName: meta.fileName });
+  }
+  if (action === "rollback" && !fss.existsSync(path.join(UPD(), "previous", "app", "package.json"))) throw err(409, "There's no earlier version kept to go back to.");
+  await fs.mkdir(UPD(), { recursive: true });
+  await fs.writeFile(path.join(UPD(), "pending.json"), JSON.stringify(job, null, 1));
+  const label = { install: "Installed an update", restart: "Restarted the service", rollback: "Rolled back to the previous version", backup: "Started a backup" }[action];
+  if (user.id) await audit(user, label, action === "install" ? `${job.fileName} ${job.version || ""}` : "");
+  else await pool.query(`INSERT INTO audit_log (actor_id, actor_name, actor_role, module, action, detail) VALUES (NULL, $1, '', 'System', $2, $3)`,
+    [user.name, label, action === "install" ? `${job.fileName} ${job.version || ""}` : ""]);
+  await startUpdater();
+  return job;
+}
+export const currentVersion = async () => (await readJson(path.join(APP_DIR, "VERSION.json"), {})).version || "";
+
 async function status() {
   const cur = await readJson(path.join(APP_DIR, "VERSION.json"), {});
   const applied = new Set((await pool.query("SELECT version FROM schema_migrations")).rows.map(r => r.version));
@@ -307,23 +350,22 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     if (!/^update-[\w-]+\.log$/.test(name)) throw err(404, "Not found.");
     return send(res, 200, { text: await tail(path.join(LOGS(), name), 2000) });
   }
+  if (req.method === "GET" && what === "updates") {
+    const { handleUpdatesAdmin } = await import("./updates.js");
+    return send(res, 200, await handleUpdatesAdmin(user, "", {}, {}));
+  }
   if (req.method !== "POST") throw err(404, "Not found.");
   const b = await jsonBody(req);
 
   if (what === "upload") {
     const buf = Buffer.from(String(b.data || ""), "base64");
     if (!buf.length) throw err(400, "Choose the zip.");
-    if (buf.length > MAX_ZIP) throw err(413, "That zip is too big for a release.");
-    const info = checkRelease(buf);
-    const dir = path.join(UPD(), "incoming");
-    await fs.mkdir(dir, { recursive: true });
-    const sha = crypto.createHash("sha256").update(buf).digest("hex");
-    await fs.writeFile(path.join(dir, "release.zip"), buf);
-    const meta = { fileName: String(b.fileName || "release.zip").slice(0, 120), sha256: sha, size: buf.length, files: info.files, version: info.version, notes: info.notes,
-      migrations: info.migrations, uploadedAt: new Date().toISOString(), uploadedBy: user.name };
-    await fs.writeFile(path.join(dir, "release.json"), JSON.stringify(meta, null, 1));
-    await audit(user, "Uploaded an update", `${meta.fileName} ${info.version || ""} sha256 ${sha.slice(0, 12)}`);
+    await stageRelease(buf, b.fileName, user);
     return send(res, 200, await status());
+  }
+  if (what === "updates") {
+    const { handleUpdatesAdmin } = await import("./updates.js");
+    return send(res, 200, await handleUpdatesAdmin(user, parts[3] || "", b, { freshCode: () => freshCode(user), audit: (a, d) => audit(user, a, d) }));
   }
   // A new license file from the vendor: checked (signature, host) before it replaces the current one
   if (what === "license") {
@@ -407,22 +449,7 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
     await freshCode(user);
     const ready = await updaterReady();
     if (!ready.ready) throw err(409, ready.why);
-    const pending = await readJson(path.join(UPD(), "pending.json"));
-    if (pending && Date.now() - new Date(pending.at) < 15 * 60e3) throw err(409, `The updater is already working on: ${pending.action} (started ${new Date(pending.at).toLocaleTimeString()}).`);
-    const job = { action, at: new Date().toISOString(), by: user.name, id: crypto.randomUUID() };
-    if (action === "install") {
-      const meta = await readJson(path.join(UPD(), "incoming", "release.json"));
-      if (!meta) throw err(400, "Upload the release zip first.");
-      const buf = await fs.readFile(path.join(UPD(), "incoming", "release.zip")).catch(() => null);
-      if (!buf || crypto.createHash("sha256").update(buf).digest("hex") !== meta.sha256) throw err(409, "The uploaded zip changed or is missing. Upload it again.");
-      Object.assign(job, { zip: path.join(UPD(), "incoming", "release.zip"), sha256: meta.sha256, version: meta.version, fileName: meta.fileName });
-    }
-    if (action === "rollback" && !fss.existsSync(path.join(UPD(), "previous", "app", "package.json"))) throw err(409, "There's no earlier version kept to go back to.");
-    await fs.mkdir(UPD(), { recursive: true });
-    await fs.writeFile(path.join(UPD(), "pending.json"), JSON.stringify(job, null, 1));
-    await audit(user, { install: "Installed an update", restart: "Restarted the service", rollback: "Rolled back to the previous version", backup: "Started a backup" }[action],
-      action === "install" ? `${job.fileName} ${job.version || ""}` : "");
-    await startUpdater();
+    const job = await queueAction(action, user);
     return send(res, 200, { ok: true, job, down: action !== "backup" });
   }
   throw err(404, "Not found.");

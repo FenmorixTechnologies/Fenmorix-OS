@@ -9,6 +9,7 @@ import { cardStyle, btn } from "./App.jsx";
 import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine } from "./pricing.js";
 import { MODULES } from "./modules.js";
 import { quoteHtml, specHtml, printHtml, specPrices } from "./SalesPrint.js";
+import { Installations, Releases } from "./HubAdmin.jsx";
 
 const INK = "#13233F", SOFT = "#4B5565", LINE = "#DDE2EA", ORANGE = "#C94D00", GREEN = "#1F8A4C", RED = "#B42318";
 const lbl = { fontSize: 12, fontWeight: 700, color: SOFT, display: "block", marginBottom: 3 };
@@ -593,7 +594,8 @@ export default function SalesModule({ onBack }) {
   const open = (page, id, init) => { setClientEdit(null); setView({ page, id, init, t: Date.now() }); window.scrollTo?.(0, 0); };
   const nav = [{ key: "overview", label: "Overview", icon: LayoutDashboard }, { key: "clients", label: "Clients", icon: Building2, badge: 0 },
     { key: "quotes", label: "Quotes", icon: FileText }, ...(d?.rights.canEdit ? [{ key: "new", label: "New quote", icon: FilePlus2 }] : []),
-    { key: "specs", label: "Spec sheets", icon: Printer, group: "Sales tools" }, { key: "book", label: "Price book", icon: BookOpen, group: "Sales tools" }];
+    { key: "specs", label: "Spec sheets", icon: Printer, group: "Sales tools" }, { key: "book", label: "Price book", icon: BookOpen, group: "Sales tools" },
+    ...(d?.rights.canManage ? [{ key: "installs", label: "Installations", icon: Server, group: "Updates" }, { key: "releases", label: "Releases", icon: Send, group: "Updates" }] : [])];
   const active = view.page === "client" ? "clients" : view.page === "quote" ? "quotes" : view.page;
   return <AppShell section="Clients & Quotes" nav={nav} active={active} onNav={k => open(k)} onHome={onBack}>
     {msg && <div role="status" style={{ position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", background: INK, color: "#fff", padding: "8px 16px", borderRadius: 8, zIndex: 60 }}>{msg}</div>}
@@ -606,6 +608,8 @@ export default function SalesModule({ onBack }) {
       {view.page === "quotes" && <QuotesPage d={d} open={open} />}
       {(view.page === "new" || view.page === "quote") && <QuoteBuilder key={view.t} quoteId={view.page === "quote" ? view.id : null} init={view.init} d={d} book={book} toast={toast} open={open} reloadAll={load} />}
       {view.page === "specs" && <SpecSheets book={book} />}
+      {view.page === "installs" && <Installations clients={d.clients} toast={toast} />}
+      {view.page === "releases" && <Releases toast={toast} />}
       {view.page === "book" && <BookEditor key={JSON.stringify(book).length} book={book} setBook={setBook} toast={toast} canManage={d.rights.canManage} />}
     </>}
   </AppShell>;

@@ -1189,3 +1189,28 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   (email one-time PIN, michael@fenmorix.com only, 24 h) + bypass app for /.well-known/acme-challenge so certbot renewals pass. A mid-session
   Access expiry shows as "Failed to fetch" on saves: reload. fenmorix.com Login button = Worker `fenmorix-site-login` (HTMLRewriter appends a
   fixed pill to <body>; routes fenmorix.com/* and www, fail-open) until BlakSheep's site has its own link, then remove the Worker.
+
+## Expenses & Deductions, module switches, broadcast updates (11/2026, migrations 058-059)
+- Expenses & Deductions (tile/api/section "books", part of vendor module "sales"; office only): `server/books.js`, `src/Books.jsx`, math in
+  `src/booksShared.js` (CATEGORIES with Schedule C line / 8829, `summarize()`: business % and 50% meals, vehicles standard rate (rate x business
+  miles + parking + interest x use%) or actual costs (x use% from odometer Jan 1/Dec 31), home office simplified $5 x <=300 sq ft x months/12 vs
+  actual (home bills x office share + office-only)). Tables biz_vehicles, biz_vehicle_years, biz_trips, biz_expenses, biz_receipts (bytea; jpeg/png/pdf
+  sniffed; the browser converts other photos to JPEG <= 2000 px), biz_recurring (monthly bills, posted once per month). Settings key 'biz_books'
+  {rates (IRS: 2026 0.725, 2025 0.70), home {year}, business}. Packet: GET export.pdf (pdf-lib; summary, notes, vehicles, home office, every
+  expense, mileage log, receipts each on a page; PDFs' pages copied) / export.csv. read-receipt = askClaude. Tests: e2e62 (run-office.sh).
+- Module switches: `<SYSTEM_DIR>/settings/modules-off.json` (license.js offModules/setOffModules; dependents go off too); licenseState keeps
+  `licensed` and `off`; licenseSummary modules carry licensed/switchedOff. POST /api/system/modules-off {off} (masters, audited). UI
+  SystemAdmin `ModuleSwitches` (unlicensed = "<name>: not licensed"). Background jobs follow at the next restart.
+- `src/netGuard.js` (imported first in main.jsx): wraps fetch; a failed same-origin request is diagnosed with /api/health redirect:manual ->
+  sign-in in front ended (Cloudflare Access) = red role=alert banner "Your secure sign-in has ended" + Reload; offline; server down. The error
+  the screen shows gets the same words.
+- Broadcast updates. Releases are signed on Michael's computer: License Manager `sign-release <zips>` -> <zip>.sig {v, kid, package, version,
+  sha256, sig over "fenmorix-release:v1\n<package>\n<version>\n<sha256>"} (license.js releaseMessage/verifyRelease; same KEYS; dev keys only on
+  localhost). Hub (office; vendor module "sales", api "hub"): `server/hub.js` + `src/HubAdmin.jsx` (Clients & Quotes › Updates: Installations,
+  Releases). hub_installs (enrollment key fxu_..., sha256 stored, hold), hub_releases (+ file in <SYSTEM_DIR>/releases/<pkg>/<ver>.zip; upload
+  needs the matching .sig; -TEST refused). Customer servers: POST /api/hub/client/checkin, GET /api/hub/client/download/:id with Bearer key,
+  mounted before the signed-in check (rate limited). Cloudflare Access on office.fenmorix.com needs a bypass for /api/hub/client.
+  Client side (core): `server/updates.js` (<SYSTEM_DIR>/hub/hub.json {url, key, auto, autoAt} 0600, state.json): check-in 90 s after start then
+  every UPDATE_CHECK_HOURS (6); download -> sha256 + signature -> system.js `stageRelease` (now exported, with `queueAction`, `currentVersion`)
+  -> Install as before with a code; auto = night install in [autoAt, +60 min) via queueAction as "Automatic update". UI SystemAdmin `UpdatesCard`.
+  Tests: e2e63 (run-hub.sh; dev2 test key tests/keys/dev2-private.pem, not in git). tests/make-sysdata.mjs remakes e2e51/53 zips.
