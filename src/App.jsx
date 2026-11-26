@@ -7,10 +7,11 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, Cell
 } from "recharts";
-import { Coins, Link2, CalendarClock, Briefcase } from "lucide-react";
+import { Coins, Link2, CalendarClock, Briefcase, Receipt } from "lucide-react";
 import { SpotPrices } from "./Spot.jsx";
 import QuickLinksModule from "./QuickLinks.jsx";
 import SalesModule from "./Sales.jsx";
+import BooksModule from "./Books.jsx";
 import {
   FileText, LayoutDashboard, ClipboardList, PieChart, Settings, Plus,
   CheckCircle2, XCircle, Clock, LogOut, Flame, ChevronDown, ChevronRight, Crosshair,
@@ -3425,6 +3426,7 @@ function SplashScreen({ onSelect }) {
     tiles.push({ key: "recordings", label: "Working Fire Recordings", icon: Headphones, desc: "Radio traffic from working fires, imported from NICE Inform" });
   }
   if (isMaster || day?.me?.access?.pial) tiles.push({ key: "pial", label: "PIAL Tracker", icon: Award, desc: "Live FSRS score, records by division, grader binder" });
+  if (isMaster || day?.me?.access?.books) tiles.push({ key: "books", label: "Expenses & Deductions", icon: Receipt, desc: "Business expenses, mileage, vehicles, home office and receipts; the accountant's packet at tax time" });
   if (isMaster || day?.me?.access?.sales) tiles.push({ key: "sales", label: "Clients & Quotes", icon: Briefcase, desc: "Clients, contacts and their server logins, quotes, spec sheets and the price book" });
   if (isMaster || day?.me?.access?.board) tiles.push({ key: "board", label: "Board Report", icon: Landmark, desc: "Operational report for Fire Board meetings: calls, response times, apparatus, fires, training and prevention, printable" });
   if (isMaster || day?.me?.access?.stats) tiles.push({ key: "stats", label: "Comms Statistics", icon: BarChart3, desc: "Call volume, hold times, call takers and dispatchers, printable reports" });
@@ -5771,6 +5773,7 @@ export default function App() {
   if (activeModule === "spot") return <AppShell section="Spot Prices" nav={[{ key: "prices", label: "Prices", icon: Coins }]} active="prices" onNav={() => {}} onHome={() => setActiveModule(null)}>
     <h1 style={{ margin: "0 0 10px", fontSize: 24, color: "#13233F" }}>{tileName("spot", "Spot Prices")}</h1><SpotPrices isMaster={sessionUser?.role === "master"} /></AppShell>;
   if (activeModule === "links") return <QuickLinksModule onBack={() => setActiveModule(null)} />;
+  if (activeModule === "books") return <BooksModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "sales") return <SalesModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "schedule") return <ScheduleModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "offwork") return <OffWorkModule onBack={() => setActiveModule(null)} initialView={openWith?.view} />;

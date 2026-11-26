@@ -75,7 +75,7 @@ export const MODULES = [
   { key: "links", name: "Quick Links & Shared Logins", group: "Workflow", tiles: ["links"], api: ["links"], collections: [], optIn: true,
     desc: "The websites the team uses every day, one click away; shared logins encrypted, shown only to the people chosen, every view logged." },
   // Vendor's own tools: only on Fenmorix Technologies' office install (a license naming "sales"); never in a customer package
-  { key: "sales", name: "Clients & Quotes", group: "Vendor tools", tiles: ["sales"], api: ["sales"], collections: [], optIn: true, vendor: true,
+  { key: "sales", name: "Clients & Quotes", group: "Vendor tools", tiles: ["sales", "books"], api: ["sales", "books"], collections: [], optIn: true, vendor: true,
     desc: "Client book with contacts and a secure vault for their server logins, price book, quote calculator, printable quotes and spec sheets, work log." },
 ];
 
@@ -111,5 +111,5 @@ export const TILE_LABELS = [
   { key: "pial", label: "PIAL Tracker" }, { key: "board", label: "Board Report" }, { key: "stats", label: "Comms Statistics" },
   { key: "sick", label: "Sick Leave" }, { key: "fireprev", label: "Fire Prevention" }, { key: "investigations", label: "Investigations" },
   { key: "audit", label: "Audit Log" }, { key: "users", label: "User Management" },
-  { key: "spot", label: "Spot Prices" }, { key: "links", label: "Quick Links" }, { key: "sales", label: "Clients & Quotes" },
+  { key: "spot", label: "Spot Prices" }, { key: "links", label: "Quick Links" }, { key: "sales", label: "Clients & Quotes" }, { key: "books", label: "Expenses & Deductions" },
 ];

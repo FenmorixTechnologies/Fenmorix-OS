@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import "./netGuard.js";
 import AuthGate from "./AuthGate.jsx";
 
 // No <React.StrictMode>: the app's loading code was written for the artifact

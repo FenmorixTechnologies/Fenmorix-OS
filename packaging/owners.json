@@ -235,5 +235,14 @@
  ],
  "src/SalesPrint.js": [
   "sales"
+ ],
+ "server/books.js": [
+  "sales"
+ ],
+ "src/Books.jsx": [
+  "sales"
+ ],
+ "src/booksShared.js": [
+  "sales"
  ]
 }
