@@ -180,6 +180,11 @@ const onScreen = await page.getByRole("region", { name: "Spec sheet prices" }).i
 check("prices on screen (public safety)", /\$20,000/.test(onScreen) && /\$4[57],000/.test(onScreen) && /\$85,000/.test(onScreen) && /\$7,500/.test(onScreen), onScreen);
 await page.getByRole("button", { name: "Print spec sheet" }).click(); await page.waitForTimeout(1200);
 const specP = await page.evaluate(() => document.getElementById("sales-print-frame")?.contentDocument?.documentElement?.outerHTML || "");
+const rowOf = (html, name) => (html.split(name)[1] || "").split("</tr>")[0];
+check("support, environments and add-ons priced at each size", /Avexon quote/.test(rowOf(specP, "High availability")) && /(\$6,750|\$7,050)[\s\S]*\$12,750|\$12,750/.test(rowOf(specP, "Priority")) && /\$11,250|\$11,750/.test(rowOf(specP, "24/7 Critical"))
+  && /Included/.test(rowOf(specP, "Production + training<")) && /\$5,000/.test(rowOf(specP, "Investigations (CJIS)")) && /CAD connection, new CAD vendor/.test(specP) && /Per user, per month/.test(specP),
+  [rowOf(specP, "Priority"), rowOf(specP, "Production + training<")].join(" | ").replace(/<[^>]+>/g, " ").slice(0, 300));
+check("preview on the page", /Backup and disaster recovery/i.test(await page.frameLocator("iframe[title='Spec sheet preview']").locator("body").innerText()));
 check("printed spec sheet has the price table", /<h2>Pricing<\/h2>/.test(specP) && /\$4[57],000/.test(specP) && /Mid-size \(up to 100 users\)/.test(specP));
 await page.getByLabel("Market", { exact: true }).selectOption("biz"); await page.waitForTimeout(300);
 check("prices on screen (business)", /\$12/.test(await page.getByRole("region", { name: "Spec sheet prices" }).innerText()));

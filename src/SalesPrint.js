@@ -42,6 +42,7 @@ const CSS = `
   .note { background: #fff7ef; border: 1px solid #ffd9b8; border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
   .muted { color: #6b7480; } .foot { margin-top: 18px; font-size: 9.5px; color: #8a929c; text-align: center; border-top: 1px solid #e3e6ea; padding-top: 6px; }
   .pb { break-before: page; }
+  .d { display: block; color: #6b7480; font-size: 10px; font-weight: 400; margin-top: 1px; }
 `;
 // The Fenmorix logo, embedded so a saved PDF or HTML copy carries it (loadLogo() fills it before the first print)
 let LOGO = "/api/sales/logo";
@@ -171,34 +172,69 @@ export function specPrices(book, segKey, edKey) {
 export function specHtml(book, segKey, edKey, { prices = false } = {}) {
   useSeller(book);
   const seg = book.segments[segKey], ed = seg.editions.find(e => e.key === edKey) || seg.editions[0];
+  const biz = segKey === "biz";
   const addons = book.addons.filter(a => a.segments.includes(segKey) && !(a.module && ed.modules.includes(a.module)));
-  const pr = specPrices(book, segKey, edKey);
-  const priceLine = !prices ? "" : `<h2>Pricing</h2><table><thead><tr>${pr.head.map((h, i) => `<th${i ? ' class="n"' : ""}>${esc(h)}</th>`).join("")}</tr></thead>
-    <tbody>${pr.rows.map(r => `<tr>${r.map((c, i) => `<td${i ? ' class="n"' : ""}>${i ? c : `<b>${esc(c)}</b>`}</td>`).join("")}</tr>`).join("")}</tbody></table>
-    <p class="muted" style="margin:0">${esc(pr.note)}</p>`;
+  const sizes = seg.sizes;
+  const round = n => Math.round(n);
+  // Yearly software price at each size: public safety = the size's price; business = per user at the size's top, or the minimum
+  const base = z => biz ? Math.max(ed.perUserMonth * 12 * z.upTo, ed.minYear) : ed.prices[z.key];
+  const sizeHead = sizes.map(z => biz ? `${z.label} (${z.upTo} users)` : `${z.label} (up to ${z.upTo} users)`);
+  const th = (cols, extra = []) => `<thead><tr>${cols.map((h, i) => `<th${i >= cols.length - extra.length ? ' class="n"' : ""}>${esc(h)}</th>`).join("")}</tr></thead>`;
+  const n = v => `<td class="n">${v}</td>`;
+  const pctCells = pct => sizes.map(z => n(pct ? `${money(round(base(z) * pct))}<span class="muted">/yr</span>` : "Included")).join("");
+  const envPct = e => { const tr = (book.environments.find(x => x.key === "training") || {}).pct || 0;
+    return ed.includesTraining ? (e.key === "training" ? 0 : e.key === "both" ? Math.max(0, e.pct - tr) : e.pct) : e.pct; };
+  const partner = esc(SELLER.partner);
+
+  const pricing = !prices ? "" : `<h2>Pricing</h2>
+    <table>${th(["", ...sizeHead], sizeHead)}<tbody>
+      <tr><td><b>${esc(ed.label)} software, per year</b>${biz ? `<span class="d">${money(ed.perUserMonth)} per user per month, billed yearly; yearly minimum ${money(ed.minYear)}</span>` : `<span class="d">One price per agency at each size</span>`}</td>${sizes.map(z => n(`<b>${money(base(z))}</b>`)).join("")}</tr>
+      <tr><td>Per user, per month${biz ? "" : " (at the size's top)"}</td>${sizes.map(z => n(money(base(z) / z.upTo / 12, true))).join("")}</tr>
+      <tr><td>One-time implementation<span class="d">Setup, branding, roles and permissions, staff training</span></td>${sizes.map(z => n(money(seg.implementation[z.key]))).join("")}</tr>
+      <tr><td>Hosting and compute<span class="d">Sized to your users, data and recovery tier</span></td>${sizes.map(() => n(`Quoted by ${partner}`)).join("")}</tr>
+    </tbody></table>
+    <p class="muted" style="margin:0">${biz ? "" : `Above ${seg.quoteAbove} users, quoted. `}Prices in U.S. dollars, before term discounts. Hosting is billed by ${partner}.</p>`;
+
+  const addonRows = addons.map(a => `<tr><td><b>${esc(a.label)}</b><span class="d">${esc(a.note || "")}</span></td>${prices
+    ? sizes.map(z => n(`${money(a.prices[z.key])}<span class="muted">/yr${a.perUnit ? " each" : ""}</span>`)).join("") : ""}</tr>`).join("");
+  const drRows = book.dr.map(d => `<tr><td><b>${esc(d.label)}</b><span class="d">${esc(d.backups)}. Back within ${esc(d.rto)}; at most ${esc(d.rpo)} of data lost.</span></td>${prices ? (d.pct || d.key === book.dr[0].key ? pctCells(d.pct) : sizes.map(() => n(`Hosting cost:<br><span class="muted">${partner} quote</span>`)).join("")) : ""}</tr>`).join("");
+  const supRows = book.support.map(d => `<tr><td><b>${esc(d.label)}</b><span class="d">${esc(d.hours)}. Critical issues: ${esc(d.critical)}. Everything else: ${esc(d.normal)}.</span></td>${prices ? pctCells(d.pct) : ""}</tr>`).join("");
+  const envRows = book.environments.map(e => `<tr><td><b>${esc(e.label)}</b><span class="d">${esc(e.note || (e.key === "none" ? "Your live system." : "Separate copies for training and for trying updates before they reach production."))}${ed.includesTraining && e.key === "training" ? ` Included with ${esc(ed.label)}.` : ""}</span></td>${prices ? pctCells(envPct(e)) : ""}</tr>`).join("");
+  const cols = prices ? th(["", ...sizeHead], sizeHead) : "";
+  const c = { existing: 2500, new: book.oneTime.cadIntegration ?? 7500, includedViews: 2, extraView: 1500, ...(book.oneTime.cad || {}) };
+  const oneTime = !prices ? "" : `<h2>One-time services</h2><table>${th(["Service", "Price"], ["Price"])}<tbody>
+    ${[["Implementation", sizes.map(z => `${z.label} ${money(seg.implementation[z.key])}`).join(" · ")],
+      ["CAD connection, views already exist", `${money(c.existing)} per CAD`], ["CAD connection, new CAD vendor", `${money(c.new)} per CAD`],
+      [`More standard CAD views (beyond the ${c.includedViews} included)`, `${money(c.extraView)} each`], ["Custom CAD views and queries", `${money(book.hourly.custom)}/hour`],
+      ["Data migration from current systems", `${money(book.oneTime.migrationHourly)}/hour`], ["On-site training (plus travel)", `${money(book.oneTime.trainingDay)}/day`],
+      ["Custom work: forms, workflows, reports, integrations", `${money(book.hourly.custom)}/hour`],
+      [`Prepaid block of ${book.hourly.prepaidHours} hours`, `${money(book.hourly.prepaidHours * book.hourly.prepaidRate)} (${money(book.hourly.prepaidRate)}/hour)`],
+    ].map(([a, b]) => `<tr><td>${esc(a)}</td>${n(b)}</tr>`).join("")}</tbody></table>
+    <h2>Terms</h2><table>${th(["Term", "Discount", "Price lock", "Yearly increase after"], ["Discount", "Price lock", "Yearly increase after"])}<tbody>
+    ${book.terms.map(t => `<tr><td><b>${esc(t.label)}</b></td>${n(t.discount ? `${Math.round(t.discount * 100)}%` : "—")}${n(`${t.lockYears} year${t.lockYears === 1 ? "" : "s"}`)}${n(`${Math.round(t.escalator * 100)}%`)}</tr>`).join("")}</tbody></table>
+    <p class="muted" style="margin:0">${esc(book.founding.label)}: ${Math.round(book.founding.pct * 100)}% off for the first ${book.founding.years} years. ${esc(book.paymentTerms)}</p>`;
+
   const body = `
   ${header("SPEC SHEET", `Fenmorix OS ${esc(ed.label)} · ${esc(seg.label)}<br>${longDate()}`)}
   <h2 style="margin-top:18px">Fenmorix OS ${esc(ed.label)}</h2>
-  <p style="margin:0 0 6px;font-size:13px">${esc(ed.blurb || "")}</p>${priceLine}
+  <p style="margin:0 0 6px;font-size:13px">${esc(ed.blurb || "")}</p>${pricing}
   <h2>Modules included</h2>${modulesHtml(ed.modules)}
-  ${addons.length ? `<h2>Add-ons</h2><table><tbody>${addons.map(a => `<tr><td style="width:32%"><b>${esc(a.label)}</b></td><td>${esc(a.note || "")}${prices ? ` <span class="muted">(${money(a.prices.s)}${a.prices.l !== a.prices.s ? `–${money(a.prices.l)}` : ""}/year)</span>` : ""}</td></tr>`).join("")}</tbody></table>` : ""}
-  <h2>Service options</h2>
-  <table><thead><tr><th>Disaster recovery</th><th>Backups</th><th>Back within</th><th>Data loss at most</th></tr></thead><tbody>
-    ${book.dr.map(d => `<tr><td><b>${esc(d.label)}</b></td><td>${esc(d.backups)}</td><td>${esc(d.rto)}</td><td>${esc(d.rpo)}</td></tr>`).join("")}</tbody></table>
-  <table><thead><tr><th>Support</th><th>Hours</th><th>Critical response</th><th>Everything else</th></tr></thead><tbody>
-    ${book.support.map(d => `<tr><td><b>${esc(d.label)}</b></td><td>${esc(d.hours)}</td><td>${esc(d.critical)}</td><td>${esc(d.normal)}</td></tr>`).join("")}</tbody></table>
-  <table><thead><tr><th>Environments</th><th></th></tr></thead><tbody>
-    ${book.environments.filter(e => e.key !== "none").map(e => `<tr><td style="width:32%"><b>${esc(e.label)}</b></td><td>${esc(e.note || "Separate copies for training and for trying updates before they reach production.")}</td></tr>`).join("")}</tbody></table>
+  ${addons.length ? `<h2>Add-ons</h2><table>${cols}<tbody>${addonRows}</tbody></table>` : ""}
+  <h2>Backup and disaster recovery</h2><table>${cols}<tbody>${drRows}</tbody></table>
+  ${prices ? `<p class="muted" style="margin:-4px 0 8px">The servers, second region and standby behind each tier are part of ${partner}'s hosting quote; higher tiers cost more to host.</p>` : ""}
+  <h2>Support</h2><table>${cols}<tbody>${supRows}</tbody></table>
+  <h2>Environments</h2><table>${cols}<tbody>${envRows}</tbody></table>
+  ${oneTime}
   <h2>Platform</h2>
   <table><tbody>
-    <tr><td class="lab" style="width:30%">Hosting</td><td>Hosted by our partner ${esc(SELLER.partner)}, or on your own servers (Linux or Windows). Hosting and compute are quoted separately by ${esc(SELLER.partner)}, sized to your users, data and recovery tier.</td></tr>
+    <tr><td class="lab" style="width:30%">Hosting</td><td>Hosted by our partner ${partner}, or on your own servers (Linux or Windows). Hosting and compute are quoted separately by ${partner}, sized to your users, data and recovery tier.</td></tr>
     <tr><td class="lab">Security</td><td>Encrypted connections, sensitive fields encrypted at rest, two-step sign-in for administrators, role- and group-based permissions, an audit log that can't be edited.</td></tr>
     <tr><td class="lab">Your brand</td><td>Your name, logo, colors and menu names; your own web address.</td></tr>
     <tr><td class="lab">Works on</td><td>Any current browser on desktops, tablets and phones; installs as an app; push notifications; TV display screens.</td></tr>
     <tr><td class="lab">Made to fit</td><td>Modules can be added at any time; custom forms, workflows, reports and integrations are built for you.</td></tr>
-    ${book.group ? `<tr><td class="lab">Groups</td><td>Several ${segKey === "ps" ? "agencies" : "companies"} on one system: each keeps its own data, with shared sign-in, messaging and combined reports.</td></tr>` : ""}
+    ${book.group ? `<tr><td class="lab">Groups</td><td>Several ${biz ? "companies" : "agencies"} on one system: each keeps its own data, with shared sign-in, messaging and combined reports.</td></tr>` : ""}
   </tbody></table>
-  ${footer("Contact us for a quote")}`;
+  ${footer(prices ? "Prices good for " + book.quoteValidDays + " days" : "Contact us for a quote")}`;
   return doc(`Fenmorix OS ${ed.label} spec sheet`, body);
 }
 

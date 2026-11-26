@@ -482,9 +482,8 @@ function SpecSheets({ book }) {
         <table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr>{pr.head.map((h, i) => <th key={i} style={{ ...th, textAlign: i ? "right" : "left" }}>{h}</th>)}</tr></thead>
           <tbody>{pr.rows.map((r, k) => <tr key={k}>{r.map((c, i) => <td key={i} style={i ? tdn : td}>{i ? c : <b>{c}</b>}</td>)}</tr>)}</tbody></table>
         <div style={{ fontSize: 12, color: SOFT, marginTop: 4 }}>{pr.note}</div></div>; })()}
-      <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 6 }}>
-        {(s.editions.find(e => e.key === ed) || s.editions[0]).modules.map(k => { const m = MODULES.find(x => x.key === k); return m && <div key={k} style={{ fontSize: 13, border: `1px solid ${LINE}`, borderRadius: 8, padding: 8 }}><b>{m.name}</b><div style={{ color: SOFT, fontSize: 12 }}>{m.desc}</div></div>; })}
-      </div>
+      <div style={{ ...lbl, marginTop: 16 }}>Preview: exactly what prints</div>
+      <iframe title="Spec sheet preview" srcDoc={specHtml(book, seg, ed, { prices })} style={{ width: "100%", maxWidth: 860, height: 1100, border: `1px solid ${LINE}`, borderRadius: 8, background: "#fff" }} />
     </Card></>;
 }
 
