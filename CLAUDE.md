@@ -1183,3 +1183,9 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   Jotform, Active911, IamResponding, Everbridge, Tablet Command, FirstWatch, ClearGov, Procurify, Otter, Slack, Deputy, Power BI), with sources;
   `marketLine(rate, users, size)`; builder "Add a typical cost…" adds a Software-it-replaces line; Price book › Typical competitor costs.
   Tests e2e61 (42).
+- Office server (11/2026): AWS Lightsail `fenmorix-office` (Ohio, Ubuntu 24.04, 2 GB, static IP 52.15.58.152, snapshots on), office.fenmorix.com
+  (Cloudflare proxied), installed from packaging customers.json `office` (every module + sales) with --no-sandbox; license from Michael's
+  production key (currently procurement, reimbursements, messaging, meetings, links, timeclock, sales). Cloudflare Access app "Fenmorix Office"
+  (email one-time PIN, michael@fenmorix.com only, 24 h) + bypass app for /.well-known/acme-challenge so certbot renewals pass. A mid-session
+  Access expiry shows as "Failed to fetch" on saves: reload. fenmorix.com Login button = Worker `fenmorix-site-login` (HTMLRewriter appends a
+  fixed pill to <body>; routes fenmorix.com/* and www, fail-open) until BlakSheep's site has its own link, then remove the Worker.
