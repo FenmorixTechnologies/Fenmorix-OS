@@ -1,15 +1,80 @@
 {
-  "_note": "One entry per customer download. modules: \"standard\" (every standard module), \"all\" (every module incl. add-ons; the sandbox switches them in System › Demo modules) or a list of module keys (needs are added). sgfdContent: St. George's own forms, evaluation programs, PIAL grading, seal and art. Never shipped to customers: this folder.",
-  "sgfd": {
-    "name": "sgfd-nexus", "customer": "St. George Fire Protection District", "product": "nexus",
-    "modules": "standard", "sgfdContent": true, "requireLicense": false, "keepNotes": true, "sandboxScripts": false
-  },
-  "lgc": {
-    "name": "fenmorix-os-lgc", "customer": "Louisiana Gold & Coins", "product": "fenmorix",
-    "modules": ["timeclock", "offwork", "sick", "messaging", "spot", "links"], "sgfdContent": false, "requireLicense": true, "keepNotes": false, "sandboxScripts": false
-  },
-  "sandbox": {
-    "name": "fenmorix-os-sandbox", "customer": "Fenmorix OS demo sandbox", "product": "fenmorix",
-    "modules": "all", "sgfdContent": false, "requireLicense": false, "keepNotes": false, "sandboxScripts": true
-  }
+ "_note": "One entry per customer download. modules: \"standard\" (every standard module), \"all\" (every module incl. add-ons; the sandbox switches them in System \u203a Demo modules) or a list of module keys (needs are added). sgfdContent: St. George's own forms, evaluation programs, PIAL grading, seal and art. Never shipped to customers: this folder.",
+ "sgfd": {
+  "name": "sgfd-nexus",
+  "customer": "St. George Fire Protection District",
+  "product": "nexus",
+  "modules": "standard",
+  "sgfdContent": true,
+  "requireLicense": false,
+  "keepNotes": true,
+  "sandboxScripts": false
+ },
+ "lgc": {
+  "name": "fenmorix-os-lgc",
+  "customer": "Louisiana Gold & Coins",
+  "product": "fenmorix",
+  "modules": [
+   "timeclock",
+   "offwork",
+   "sick",
+   "messaging",
+   "spot",
+   "links"
+  ],
+  "sgfdContent": false,
+  "requireLicense": true,
+  "keepNotes": false,
+  "sandboxScripts": false
+ },
+ "sandbox": {
+  "name": "fenmorix-os-sandbox",
+  "customer": "Fenmorix OS demo sandbox",
+  "product": "fenmorix",
+  "modules": "all",
+  "sgfdContent": false,
+  "requireLicense": false,
+  "keepNotes": false,
+  "sandboxScripts": true
+ },
+ "office": {
+  "name": "fenmorix-office",
+  "customer": "Fenmorix Technologies, LLC",
+  "product": "fenmorix",
+  "modules": [
+   "messaging",
+   "procurement",
+   "reimbursements",
+   "forms",
+   "helpdesk",
+   "gear",
+   "meetings",
+   "timeclock",
+   "callout",
+   "offwork",
+   "sick",
+   "leave",
+   "forceback",
+   "training",
+   "evals",
+   "recall",
+   "imt",
+   "activecalls",
+   "command",
+   "callalerts",
+   "recordings",
+   "investigations",
+   "stats",
+   "board",
+   "pial",
+   "fireprev",
+   "spot",
+   "links",
+   "sales"
+  ],
+  "sgfdContent": false,
+  "requireLicense": true,
+  "keepNotes": false,
+  "sandboxScripts": false
+ }
 }
