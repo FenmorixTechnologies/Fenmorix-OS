@@ -1154,3 +1154,20 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
 - Demo sandbox (11/2026): AWS Lightsail `fenmorix-sandbox` (Ohio us-east-2, Ubuntu 24.04, 2 GB, static IP 3.19.183.152), installed with
   install-ubuntu.sh --domain sandbox.fenmorix.com --sandbox (Let's Encrypt; Cloudflare record proxied, Always Use HTTPS off so renewals pass).
   Michael's own server for demos and private work; LGC still on his PC tunnel (lgc.fenmorix.com) until it moves to its own Lightsail box.
+
+## Clients & Quotes: vendor sales tool (11/2026, migration 057)
+- Module `sales` (src/modules.js, optIn + `vendor: true`): never in "all"/"*", never in sandbox demo switching (license.js filters vendor
+  modules), never in a customer package (packaging/owners.json: server/sales.js, src/Sales.jsx, src/pricing.js, src/SalesPrint.js; build-package
+  "all" skips vendor modules). Runs on Fenmorix Technologies' own office install with a license naming it (test: tests/keys/office.lic = all,sales).
+- `src/pricing.js` = DEFAULT_BOOK (editions per segment ps flat by size / biz per user with yearly minimum, add-ons, environment / DR / support %,
+  one-time fees, group + family-of-companies pricing, terms with discount/price lock/escalator, founding, on-prem license × + maintenance %,
+  hourly, seller, payment terms, termsSections = DRAFT contract language for an attorney) and `calculate(inputs, book)`. Book in settings
+  'sales_pricebook' (mergeBook over defaults).
+- `server/sales.js` `/api/sales` (routes in the header): sales_clients (contacts, current_spend, instance_url, license_id, modules, renewal),
+  sales_vault (forms.js encrypt; reveal = sales manage, 30/hour, audited "Revealed a vault login"), sales_quotes (Q-YYYY-NNNN under an advisory
+  lock; server recomputes result from inputs and stores the book snapshot; non-draft = locked, copy to revise; accepted -> client active +
+  modules; sent past valid_until -> expired on list), sales_activity (work log, hours, billable). `/api/sales/logo` = vendor-logo.png for prints.
+  Access section `sales` (view/edit/manage). Audit module "Clients & Quotes".
+- UI `src/Sales.jsx` (Overview, Clients, ClientView with vault + work log, QuoteBuilder with live Summary, Quotes, Spec sheets, BookEditor) and
+  `src/SalesPrint.js` (quoteHtml / specHtml / printHtml, logo embedded as a data URL). Own input style (App.jsx exports aren't ready at load).
+  Tests: tests/e2e61.mjs via run-office.sh (34).

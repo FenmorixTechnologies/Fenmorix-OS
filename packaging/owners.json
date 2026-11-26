@@ -223,5 +223,17 @@
  ],
  "src/Schedule.jsx": [
   "timeclock"
+ ],
+ "server/sales.js": [
+  "sales"
+ ],
+ "src/Sales.jsx": [
+  "sales"
+ ],
+ "src/pricing.js": [
+  "sales"
+ ],
+ "src/SalesPrint.js": [
+  "sales"
  ]
 }

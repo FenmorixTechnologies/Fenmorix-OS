@@ -38,11 +38,11 @@ const isSandbox = () => /^(1|on|true|yes)$/i.test(String(process.env.SANDBOX || 
 export const demoModulesFile = () => path.join(path.dirname(path.dirname(licenseFile())), "sandbox", "modules.json");
 export function demoModules() {
   if (!isSandbox()) return null;
-  try { const j = JSON.parse(fs.readFileSync(demoModulesFile(), "utf8")); return Array.isArray(j.modules) ? j.modules.filter(k => moduleByKey[k]) : null; }
+  try { const j = JSON.parse(fs.readFileSync(demoModulesFile(), "utf8")); return Array.isArray(j.modules) ? j.modules.filter(k => moduleByKey[k] && !moduleByKey[k].vendor) : null; }
   catch { return null; }
 }
 export function setDemoModules(keys) {
-  const list = withNeeds([...new Set((Array.isArray(keys) ? keys : []).filter(k => moduleByKey[k]))]);
+  const list = withNeeds([...new Set((Array.isArray(keys) ? keys : []).filter(k => moduleByKey[k] && !moduleByKey[k].vendor))]);
   const f = demoModulesFile();
   fs.mkdirSync(path.dirname(f), { recursive: true });
   fs.writeFileSync(f, JSON.stringify({ modules: list, at: new Date().toISOString() }, null, 1) + "\n");
@@ -124,7 +124,7 @@ export function licenseSummary() {
     mode: s.mode, demo: isSandbox() && !p, demoSaved: !!s.demo, error: s.error || "", warning: s.warning || "", requireLicense: REQUIRE_LICENSE, file: licenseFile(),
     license: p ? { id: p.id, customer: p.customer, product: p.product || "", issued: p.issued, expires: p.expires || null, seats: p.seats || 0,
       environments: p.environments || [], hosts: p.hosts || [], kid: p.kid, notes: p.notes || "" } : null,
-    modules: MODULE_KEYS.map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k), optIn: !!moduleByKey[k].optIn, desc: moduleByKey[k].desc || "", needs: moduleByKey[k].needs || [] })),
+    modules: MODULE_KEYS.filter(k => !moduleByKey[k].vendor || s.modules.has(k)).map(k => ({ key: k, name: moduleByKey[k].name, group: moduleByKey[k].group, on: s.modules.has(k), optIn: !!moduleByKey[k].optIn, desc: moduleByKey[k].desc || "", needs: moduleByKey[k].needs || [] })),
     core: CORE.tiles,
   };
 }

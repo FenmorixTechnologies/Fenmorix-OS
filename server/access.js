@@ -56,6 +56,9 @@ export const SECTIONS = [
     levels: { view: "See every Off Work entry, whoever it was shared with", edit: "Also post and change days off for people in these divisions",
       manage: "Also settings (who sees sick call-outs) and decide who else can post for others" }, profiles: { chief: "view", division: "view" } },
   // Opt-in module (src/modules.js): listed only when that module is licensed (`module`)
+  { key: "sales", label: "Clients & Quotes", module: "sales", tile: "access", everyone: "",
+    levels: { view: "See clients, contacts, quotes and the work log", edit: "Add and change clients and quotes, log work",
+      manage: "Also reveal and change vault logins, edit the price book, and decide who else can" } },
   { key: "links", label: "Quick Links", module: "links", tile: "everyone", everyone: "Open the links shared with them, and reveal the logins they're allowed",
     levels: { edit: "Add and change links and shared logins, and choose who sees each one", manage: "Also decide who else can" } },
   { key: "callalerts", label: "Call alerts", tile: "everyone", everyone: "Set up their own call alerts and turn off department alerts sent to them",

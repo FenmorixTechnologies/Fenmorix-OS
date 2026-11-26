@@ -162,6 +162,7 @@ async function handleApi(req, res, url) {
   if (parts[1] === "schedule") { const { handleSchedule } = await import("./schedule.js"); return handleSchedule(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "offwork") { const { handleOffwork } = await import("./offwork.js"); return handleOffwork(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "spot") { const { handleSpot } = await import("./spot.js"); return handleSpot(req, res, parts, user, send, url); }
+  if (parts[1] === "sales") { const { handleSales } = await import("./sales.js"); return handleSales(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "links") { const { handleLinks } = await import("./links.js"); return handleLinks(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "fireprev") { const { handleFireprev } = await import("./fireprev.js"); return handleFireprev(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "imt") { const { handleImt } = await import("./imt.js"); return handleImt(req, res, parts, user, send, jsonBody, url); }
