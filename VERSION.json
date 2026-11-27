@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.26.7",
+  "version": "2026.11.26.8",
   "notes": [
+    "Updates \u203a Installations: pick the server from a list (St. George, Louisiana Gold & Coins, demo sandbox, this office); client is optional.",
     "Office Your Day: client support requests widget.",
     "Fixes and improvements.",
     "Client portal support (used only by Fenmorix Technologies' own server).",

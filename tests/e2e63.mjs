@@ -13,7 +13,9 @@ const check = (name, ok, extra = "") => results.push(`${ok ? "PASS" : "FAIL"}  $
 const done = () => { console.log(results.join("\n")); console.log(`\n${results.filter(r => r.startsWith("PASS")).length}/${results.length} passed`); };
 for (const ev of ["unhandledRejection", "uncaughtException"]) process.on(ev, e => { done(); console.log("ERR", e.stack); process.exit(1); });
 const psql = sql => execSync(`psql -h /home/pgtest -p 5498 -U sgfd_app -d sgfd -Atc "${sql}"`).toString().trim();
-const code = async secret => hotp(secret, stepNow());
+// A code is accepted once per 30-second step (no replay), so each new one waits for a step that hasn't been used yet
+let lastStep = 0;
+const code = async secret => { while (stepNow() <= lastStep) await new Promise(r => setTimeout(r, 500)); lastStep = stepNow(); return hotp(secret, lastStep); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // Release zips (just enough for the release checks) + signatures from the License Manager
@@ -55,7 +57,7 @@ await api("/api/auth/mfa-confirm", { code: await code(secret) });
 await page.locator("nav button", { hasText: "Clients & Quotes" }).first().click(); await page.waitForTimeout(1500);
 await page.locator("nav button", { hasText: "Installations" }).first().click(); await page.waitForTimeout(800);
 await page.getByRole("button", { name: "Add an installation" }).click();
-await page.getByLabel("Installation name").fill("St. George test server"); await page.getByLabel("Package").fill("sgfd");
+await page.getByLabel("Installation name").fill("St. George test server"); await page.getByLabel("Package").selectOption("sgfd");
 await page.getByRole("button", { name: "Add and show the key" }).click(); await page.waitForTimeout(1000);
 const key = (await page.getByRole("alert").innerText()).match(/fxu_[A-Za-z0-9_-]+/)?.[0];
 check("installation added, key shown once", !!key && !JSON.stringify((await api("/api/hub")).body).includes(key), key);

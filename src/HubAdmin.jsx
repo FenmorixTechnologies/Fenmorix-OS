@@ -43,13 +43,14 @@ export function Installations({ clients, toast }) {
         <button type="button" style={btn("ghost")} onClick={() => setShown(null)}>Done</button></div></section>}
     <Card title={`${d.installs.length} server${d.installs.length === 1 ? "" : "s"}${behind ? ` · ${behind} behind` : ""}`} actions={<>
       <button type="button" style={btn("ghost")} onClick={load}><RefreshCw size={14} /> Refresh</button>
-      {!add && <button type="button" style={btn("primary")} onClick={() => setAdd({ name: "", package: "lgc", clientId: "" })}><Plus size={14} /> Add an installation</button>}</>}>
+      {!add && <button type="button" style={btn("primary")} onClick={() => setAdd({ name: KNOWN[0][1], package: KNOWN[0][0], clientId: "" })}><Plus size={14} /> Add an installation</button>}</>}>
       {add && <div style={{ border: `1px solid ${LINE}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
-          <label><span style={lbl}>Name</span><input aria-label="Installation name" style={inp} value={add.name} onChange={e => setAdd({ ...add, name: e.target.value })} placeholder="Louisiana Gold & Coins" /></label>
-          <label><span style={lbl}>Download it runs</span><input aria-label="Package" list="hub-pkgs" style={inp} value={add.package} onChange={e => setAdd({ ...add, package: e.target.value })} />
-            <datalist id="hub-pkgs">{[...new Set([...KNOWN.map(k => k[0]), ...d.packages])].map(p => <option key={p} value={p}>{KNOWN.find(k => k[0] === p)?.[1] || p}</option>)}</datalist></label>
-          <label><span style={lbl}>Client</span><select aria-label="Installation client" style={inp} value={add.clientId} onChange={e => setAdd({ ...add, clientId: e.target.value })}><option value="">(none)</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+          <label><span style={lbl}>Server (the download it runs)</span><select aria-label="Package" style={inp} value={add.package}
+            onChange={e => { const p = e.target.value, k = KNOWN.find(x => x[0] === p); setAdd({ ...add, package: p, name: !add.name || KNOWN.some(x => x[1] === add.name) ? (k?.[1] || add.name) : add.name }); }}>
+            {[...new Set([...KNOWN.map(k => k[0]), ...d.packages])].map(p => <option key={p} value={p}>{KNOWN.find(k => k[0] === p)?.[1] || p} ({p})</option>)}</select></label>
+          <label><span style={lbl}>Name</span><input aria-label="Installation name" style={inp} value={add.name} onChange={e => setAdd({ ...add, name: e.target.value })} /></label>
+          <label><span style={lbl}>Paying client (optional)</span><select aria-label="Installation client" style={inp} value={add.clientId} onChange={e => setAdd({ ...add, clientId: e.target.value })}><option value="">None (our own server)</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 10 }}><button type="button" style={btn("primary")} onClick={save}><KeyRound size={14} /> Add and show the key</button><button type="button" style={btn("ghost")} onClick={() => setAdd(null)}>Cancel</button></div></div>}
       {!d.installs.length ? <div style={{ color: SOFT }}>No servers yet. Add one for each install (St. George, Louisiana Gold & Coins, the sandbox, this office), then paste its key on that server's System page.</div> :
