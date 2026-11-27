@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.27.1",
+  "version": "2026.11.27.2",
   "notes": [
+    "A database restart (an Ubuntu update of PostgreSQL, a restore) no longer stops the app; it reconnects by itself.",
     "Client portal: accounts more than 12 hours old could not sign in (\"Something went wrong saving to the database\"). Fixed.",
     "Automatic updates: when the update service can't be reached, the message says why (DNS, firewall, certificate...) and IPv4 is tried again.",
     "Updates \u203a Installations: pick the server from a list (St. George, Louisiana Gold & Coins, demo sandbox, this office); client is optional.",

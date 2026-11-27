@@ -9,6 +9,9 @@ pg.types.setTypeParser(1700, v => (v === null ? null : parseFloat(v))); // numer
 pg.types.setTypeParser(1082, v => v);                                     // date
 
 export const pool = new pg.Pool({ max: 10 });
+// An idle connection that Postgres closes (a restart, an update of PostgreSQL, a restore) must not take the whole app down:
+// without this listener pg-pool's "error" event is unhandled and Node exits. The pool drops that connection and opens a new one.
+if (typeof pool.on === "function") pool.on("error", e => console.warn(`[db] an idle database connection was closed (${e.code || e.message}); a new one will be opened.`));
 
 // Run fn(client) inside one transaction; roll back on any error.
 export async function tx(fn) {
