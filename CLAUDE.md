@@ -1311,4 +1311,4 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   subject, by class, CSV, print); School setup / Classes & teachers / Import rosters / Family sign-ins. Your Day `GradebookWidget` (id
   "gradebook": teacher's classes + posted work past due not graded). Pricing: MODULE_PRICES.gradebook + edu add-on. Sandbox demo preset "School".
 - Tests: tests/e2e66.mjs via run-school.sh (63; license tests/keys/school.lic = all + gradebook, signed with dev2).
-- Website: Gradebook no longer "Coming next" (parts + index.html + worker.js updated locally; deploy worker.js through the Cloudflare MCP).
+- Website: Gradebook no longer "Coming next"; deployed 11/27/2026 (worker.js sha256 fd705ca0…, edited in place on the deployed script, secrets kept).
