@@ -154,5 +154,25 @@ await api(`/api/clientportal/users/${uid}/disable`, {});
 check("turned off: signed out", (await papi("/api/portal/overview")).status === 401);
 check("turned off: can't sign in", (await papi("/api/portal/login", { email: "dana@riverbend.example", password: CPW })).status === 401);
 check("portal actions audited", Number(psql("SELECT count(*) FROM audit_log WHERE module = 'Client portal'")) >= 5);
+// ---- A feature idea from the website (the Worker forwards it with the shared secret) ----
+const site = (secret, body) => page.evaluate(async ([s, b]) => { const r = await fetch("/api/hub/client/request", { method: "POST", headers: { "content-type": "application/json", "x-sgfd": "1", "x-fenmorix-site": s }, body: JSON.stringify(b) }); return { s: r.status, j: await r.json().catch(() => null) }; }, [secret, body]);
+const idea = { name: "Pat Lee", org: "Lakeside Middle School", email: "pat@lakeside.example", phone: "(225) 555-0142", idea: "A bus-line board for afternoon dismissal.\nParents see which bus is loading.",
+  build: { sector: "Education", modules: ["Messaging & chat", "Forms & cases"] } };
+check("website idea without the secret is refused", (await site("wrong-secret-wrong-secret-xx", idea)).s === 401);
+check("website idea missing the phone is refused", (await site("test-website-secret-0123456789abcdef", { ...idea, phone: "" })).s === 400);
+const sent = await site("test-website-secret-0123456789abcdef", idea);
+check("website idea accepted", sent.s === 200 && sent.j?.number > 0, JSON.stringify(sent));
+const list = (await api("/api/clientportal")).body;
+const w = list.open.find(t => t.source === "website");
+check("listed as a request from the website", !!w && w.clientId === null && /Lakeside Middle School \(website\)/.test(w.clientName) && /bus-line board/.test(w.subject) && w.unread, JSON.stringify(w));
+await page.goto(OFFICE); await page.waitForTimeout(2500);
+t = await page.locator("body").innerText();
+check("Your Day widget shows the website idea", /Lakeside Middle School \(website\)/.test(t));
+await page.getByRole("button", { name: /Feature idea: A bus-line board/ }).first().click(); await page.waitForTimeout(1500);
+t = await main(page);
+check("opens on the Overview with the contact details", /pat@lakeside\.example/.test(t) && /\(225\) 555-0142/.test(t) && /Parents see which bus/.test(t) && /Forms & cases/.test(t), t.slice(0, 600));
+await page.getByLabel("Reply to the client").fill("Thanks Pat, we'll call you this week.");
+await page.getByRole("button", { name: "Send reply" }).click(); await page.waitForTimeout(1000);
+check("note saved on the website request", psql("SELECT count(*) FROM portal_posts p JOIN portal_tickets t ON t.id = p.ticket_id WHERE t.source = 'website' AND p.author = 'vendor'") === "1");
 check("no page errors", !errors.length, errors.join(" | "));
 await browser.close(); done();

@@ -22,15 +22,19 @@ const Card = ({ title, actions, children }) => <section style={{ ...cardStyle, m
   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}><h2 style={{ margin: 0, fontSize: 16, color: INK }}>{title}</h2><span style={{ flex: 1 }} />{actions}</div>{children}</section>;
 
 // Overview: requests waiting for the vendor across every client
-export function PortalRequests({ open }) {
-  const [d, setD] = useState(null);
-  useEffect(() => { api("").then(setD, () => setD({ open: [] })); }, []);
-  if (!d || !d.open.length) return null;
+export function PortalRequests({ open, openTicket }) {
+  const [d, setD] = useState(null), [shown, setShown] = useState(openTicket || null), [msg, setMsg] = useState("");
+  const load = () => api("").then(setD, () => setD({ open: [] }));
+  useEffect(() => { load(); }, []);   // eslint-disable-line react-hooks/exhaustive-deps
+  if (!d || (!d.open.length && !shown)) return null;
   return <Card title={`Client portal: ${d.open.length} request${d.open.length === 1 ? "" : "s"} to look at`}>
-    {d.open.map(t => <div key={t.id} style={{ display: "flex", gap: 10, alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${LINE}`, flexWrap: "wrap" }}>
-      <button type="button" style={{ ...btn("ghost"), padding: 0, border: 0, fontWeight: 700 }} onClick={() => open("client", t.clientId, { ticket: t.id })}>{t.clientName}: #{t.number} {t.subject}</button>
+    {msg && <div role="status" style={{ fontSize: 13, color: INK, background: "#FFF6EE", borderRadius: 6, padding: "6px 10px", marginBottom: 8 }}>{msg}</div>}
+    {d.open.map(t => <div key={t.id} style={{ padding: "6px 0", borderBottom: `1px solid ${LINE}` }}><div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+      <button type="button" style={{ ...btn("ghost"), padding: 0, border: 0, fontWeight: 700 }} onClick={() => (t.clientId ? open("client", t.clientId, { ticket: t.id }) : setShown(shown === t.id ? null : t.id))}>{t.clientName}: #{t.number} {t.subject}</button>
+      {t.source === "website" && <Pill color="#2F5E9E">Website</Pill>}
       {t.unread && <span style={{ color: ORANGE, fontWeight: 800, fontSize: 12 }}>NEW</span>}<span style={{ flex: 1 }} />
-      <Pill color={T_COLOR[t.status]}>{T_LABEL[t.status]}</Pill><span style={{ fontSize: 12, color: SOFT }}>{when(t.updatedAt)}</span></div>)}
+      <Pill color={T_COLOR[t.status]}>{T_LABEL[t.status]}</Pill><span style={{ fontSize: 12, color: SOFT }}>{when(t.updatedAt)}</span></div>
+      {shown === t.id && <TicketThread id={t.id} toast={setMsg} onClose={() => setShown(null)} reload={load} />}</div>)}
   </Card>;
 }
 
@@ -39,15 +43,20 @@ function TicketThread({ id, toast, onClose, reload }) {
   const load = () => api(`/tickets/${id}`).then(setT, e => toast(e.message));
   useEffect(() => { load(); }, [id]);   // eslint-disable-line react-hooks/exhaustive-deps
   if (!t) return <div style={{ color: SOFT }}>Loading…</div>;
-  const send = async () => { setBusy(true); try { await api(`/tickets/${id}/reply`, { body: reply, status }); setReply(""); await load(); reload(); toast("Reply sent. They'll see it in the portal."); } catch (e) { toast(e.message); } finally { setBusy(false); } };
+  const send = async () => { setBusy(true); try { await api(`/tickets/${id}/reply`, { body: reply, status }); setReply(""); await load(); reload(); toast(t.ticket.contact ? (t.ticket.canEmail ? "Reply saved and emailed." : "Saved. Email or call them yourself.") : "Reply sent. They'll see it in the portal."); } catch (e) { toast(e.message); } finally { setBusy(false); } };
   const setSt = async s => { try { await api(`/tickets/${id}/status`, { status: s }); await load(); reload(); } catch (e) { toast(e.message); } };
   return <div style={{ border: `1px solid ${LINE}`, borderRadius: 8, padding: 12, marginTop: 8 }}>
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}><b style={{ color: INK }}>#{t.ticket.number} {t.ticket.subject}</b><Pill color={T_COLOR[t.ticket.status]}>{T_LABEL[t.ticket.status]}</Pill>
       <span style={{ fontSize: 12, color: SOFT }}>{t.ticket.priority} priority · opened by {t.ticket.openedBy}</span><span style={{ flex: 1 }} />
       <button type="button" aria-label="Close thread" style={{ ...btn("ghost"), padding: "2px 6px" }} onClick={onClose}><X size={14} /></button></div>
+    {t.ticket.contact && <div style={{ margin: "8px 0", padding: 10, borderRadius: 8, border: `1px dashed ${LINE}`, fontSize: 13.5, color: INK, display: "flex", gap: 14, flexWrap: "wrap" }}>
+      <span><b>{t.ticket.contact.name}</b>, {t.ticket.contact.org}</span>
+      <a href={`mailto:${t.ticket.contact.email}?subject=${encodeURIComponent(`Re: ${t.ticket.subject} (#${t.ticket.number})`)}`}>{t.ticket.contact.email}</a>
+      <a href={`tel:${t.ticket.contact.phone}`}>{t.ticket.contact.phone}</a>
+      {t.ticket.contact.sector && <span style={{ color: SOFT }}>From the website ({t.ticket.contact.sector})</span>}</div>}
     {t.posts.map((p, i) => <div key={i} style={{ margin: "8px 0", padding: 10, borderRadius: 8, background: p.from === "vendor" ? "#FFF6EE" : "#F6F8FB" }}>
       <div style={{ fontSize: 12, color: SOFT }}><b style={{ color: INK }}>{p.name}</b> · {when(p.at)}</div><div style={{ whiteSpace: "pre-wrap", fontSize: 14, color: INK }}>{p.body}</div></div>)}
-    <textarea aria-label="Reply to the client" rows={3} style={{ ...inp, resize: "vertical" }} value={reply} onChange={e => setReply(e.target.value)} placeholder="Reply (they see it in the portal)" />
+    <textarea aria-label="Reply to the client" rows={3} style={{ ...inp, resize: "vertical" }} value={reply} onChange={e => setReply(e.target.value)} placeholder={t.ticket.contact ? (t.ticket.canEmail ? "Reply (emailed to them)" : "Note for the record (email or call them yourself: mail isn't set up)") : "Reply (they see it in the portal)"} />
     <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap", alignItems: "center" }}>
       <select aria-label="Status after reply" style={{ ...inp, width: 200 }} value={status} onChange={e => setStatus(e.target.value)}><option value="answered">Answered</option><option value="waiting">Waiting on them</option><option value="open">Still open</option><option value="closed">Closed</option></select>
       <button type="button" style={btn("primary")} disabled={busy || !reply.trim()} onClick={send}><Send size={14} /> Send reply</button>

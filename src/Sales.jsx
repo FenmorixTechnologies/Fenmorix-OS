@@ -47,7 +47,7 @@ const td = { padding: "7px 8px", borderBottom: `1px solid ${LINE}`, fontSize: 13
 const tdn = { ...td, textAlign: "right", whiteSpace: "nowrap" };
 
 // ---------------------------------------------------------------- Overview
-function Overview({ d, open }) {
+function Overview({ d, open, openTicket }) {
   const t = d.totals;
   const soon = d.clients.filter(c => c.status === "active" && c.renewalDate && new Date(c.renewalDate) - Date.now() < 90 * 864e5).sort((a, b) => a.renewalDate.localeCompare(b.renewalDate));
   return <>
@@ -59,7 +59,7 @@ function Overview({ d, open }) {
       <Kpi label="Hours this month" value={t.hoursThisMonth} sub={`${t.billableThisMonth} billable`} />
       <Kpi label="Renewals in 90 days" value={t.renewalsSoon} color={t.renewalsSoon ? ORANGE : INK} />
     </div>
-    <PortalRequests open={open} />
+    <PortalRequests open={open} openTicket={openTicket} />
     <Card title="Recent quotes" actions={<button type="button" style={btn("primary")} onClick={() => open("new")}><FilePlus2 size={14} /> New quote</button>}>
       <QuoteTable quotes={d.quotes.slice(0, 10)} open={open} />
     </Card>
@@ -590,7 +590,7 @@ function BookEditor({ toast, book, setBook, canManage }) {
 // ---------------------------------------------------------------- Module
 export default function SalesModule({ onBack, initial }) {
   const [d, setD] = useState(null), [book, setBook] = useState(null), [msg, setMsg] = useState("");
-  const [view, setView] = useState(() => initial?.clientId ? { page: "client", id: initial.clientId, init: { ticket: initial.ticket }, t: Date.now() } : { page: "overview" }), [clientEdit, setClientEdit] = useState(null);
+  const [view, setView] = useState(() => initial?.clientId ? { page: "client", id: initial.clientId, init: { ticket: initial.ticket }, t: Date.now() } : { page: "overview", init: initial?.ticket ? { ticket: initial.ticket } : null }), [clientEdit, setClientEdit] = useState(null);
   const toast = m => { setMsg(m); setTimeout(() => setMsg(""), 3500); };
   const load = () => api("").then(setD, e => toast(e.message));
   useEffect(() => { load(); api("/book").then(r => setBook(r.book), e => toast(e.message)); }, []);
@@ -605,7 +605,7 @@ export default function SalesModule({ onBack, initial }) {
     {(!d || !book) && <div style={{ color: SOFT }}>Loading…</div>}
     {d && book && clientEdit && <ClientEditor client={clientEdit.id ? clientEdit : null} toast={toast} onCancel={() => setClientEdit(null)} onDone={(id, m) => { setClientEdit(null); toast(m); load(); open("client", id); }} />}
     {d && book && !clientEdit && <>
-      {view.page === "overview" && <Overview d={d} open={open} />}
+      {view.page === "overview" && <Overview d={d} open={open} openTicket={view.init?.ticket} />}
       {view.page === "clients" && <ClientsPage d={d} open={open} edit={setClientEdit} />}
       {view.page === "client" && <ClientView id={view.id} init={view.init} rights={d.rights} toast={toast} open={open} reloadAll={load} />}
       {view.page === "quotes" && <QuotesPage d={d} open={open} />}

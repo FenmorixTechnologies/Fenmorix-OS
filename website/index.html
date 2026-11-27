@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fenmorix OS | One system for fire departments, government and business</title>
-<meta name="description" content="Fenmorix OS puts scheduling, purchasing, training, emergency recall, command boards, dispatch analytics and paperwork in one secure system. Pay only for the modules you switch on. Fenmorix Technologies, LLC, Baton Rouge, Louisiana.">
+<title>Fenmorix OS | One system for public safety, government, business and schools</title>
+<meta name="description" content="Fenmorix OS puts messaging, schedules, purchasing, forms, training, emergency notification and reporting in one secure system for public safety agencies, governments, businesses and schools. Pay only for the modules you switch on. Fenmorix Technologies, LLC, Baton Rouge, Louisiana.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <meta property="og:title" content="Fenmorix OS">
-<meta property="og:description" content="One system for the work between the calls. Pay only for the modules you switch on.">
+<meta property="og:description" content="Run the whole organization in one system. Build yours and see it before you ask for a demo.">
 <meta name="theme-color" content="#08131D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 :root {
   --navy: #08131D; --navy-2: #0F2234; --steel: #1B3147; --orange: #FF7900; --burnt: #C94D00; --arctic: #55CFFF;
@@ -45,23 +46,75 @@ p { margin: 0 0 1em; max-width: 64ch; }
 .top nav .btn { padding: 11px 16px; font-size: 15px; }
 @media (max-width: 920px) { .top nav a.hide-sm { display: none; } }
 
-/* Hero */
-.hero { background: radial-gradient(900px 520px at 78% 18%, #FF790026, transparent 62%), linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color: var(--white); padding: 130px 0 84px; overflow: hidden; }
-.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start; }
-.hero h1 { font-size: clamp(56px, 8.4vw, 112px); font-weight: 800; text-transform: none; line-height: .9; }
+/* Hero + configurator: the one bold thing. Pick a sector, switch modules on, see the system change. */
+.hero { background: radial-gradient(900px 520px at 80% 10%, #FF790022, transparent 62%), linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color: var(--white); padding: 122px 0 80px; overflow: hidden; }
+.hero-top { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: end; margin-bottom: 40px; }
+.hero h1 { font-size: clamp(48px, 6.2vw, 90px); font-weight: 800; line-height: .9; }
 .hero h1 span { display: block; color: var(--silver); font-weight: 600; }
-.hero .lede { font-size: 21px; color: #D9DEE4; margin: 26px 0 32px; max-width: 34ch; }
+.hero .lede { font-size: 21px; color: #D9DEE4; margin: 24px 0 28px; max-width: 40ch; }
 .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero .made { margin-top: 34px; color: #8C99A8; font-size: 15px; }
+.hero .made { margin: 26px 0 0; color: #8C99A8; font-size: 15px; }
+.sector-pick h2 { font: 600 16px var(--body); color: #AEB8C3; margin-bottom: 10px; letter-spacing: 0; }
+.sectors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sectors button { text-align: left; font: 700 19px/1.1 var(--cond); color: var(--silver); background: #0B1A28; border: 1px solid #23394F; border-radius: 10px; padding: 14px 14px 12px; cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+.sectors button small { display: block; font: 500 13.5px/1.35 var(--body); color: #8C99A8; margin-top: 4px; }
+.sectors button:hover { border-color: #4A6684; }
+.sectors button[aria-pressed="true"] { color: var(--white); border-color: var(--orange); background: #FF790017; }
+.sectors button[aria-pressed="true"] small { color: #D9DEE4; }
+@media (max-width: 960px) { .hero-top { grid-template-columns: 1fr; gap: 28px; } .hero { padding-top: 104px; } }
 
-/* The switchboard: the one bold thing */
-.board { background: #0B1A28; border: 1px solid #23394F; border-radius: 14px; padding: 22px 22px 18px; box-shadow: 0 30px 80px #00000066, inset 0 1px 0 #ffffff10; }
-.board-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.board-head h2 { font-size: 28px; font-weight: 700; color: var(--white); }
-.presets { display: flex; gap: 6px; margin-left: auto; }
-.presets button { font: 600 14px var(--body); color: var(--silver); background: none; border: 1px solid #2C4560; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
-.presets button[aria-pressed="true"] { background: var(--steel); color: var(--white); border-color: #4A6684; }
-.group { margin-top: 12px; }
+.config { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 1020px) { .config { grid-template-columns: 1fr; } }
+.config-title { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.config-title h2 { font-size: 34px; color: var(--white); }
+.config-title p { margin: 0; color: #AEB8C3; font-size: 16px; }
+
+/* The picture: a small working likeness of the product */
+.pv-wrap { position: sticky; top: 16px; }
+.pv { --acc: #FF7900; --side: #08131D; border-radius: 12px; overflow: hidden; background: #F2F4F7; box-shadow: 0 30px 80px #00000073, 0 0 0 1px #ffffff14; color: #1B2733; }
+.pv-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: #E3E7EC; border-bottom: 1px solid #D2D8DF; }
+.pv-bar i { width: 10px; height: 10px; border-radius: 50%; background: #C4CBD3; display: block; }
+.pv-bar span { margin-left: 10px; flex: 1; font: 500 12.5px var(--body); color: #5B6775; background: #fff; border-radius: 6px; padding: 3px 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pv-body { display: grid; grid-template-columns: 200px 1fr; min-height: 430px; }
+.pv-side { background: linear-gradient(180deg, color-mix(in srgb, var(--side) 92%, var(--acc)) 0%, var(--side) 60%); color: #C9D1DA; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
+.pv-brand { display: flex; gap: 9px; align-items: center; padding: 2px 6px 12px; border-bottom: 2px solid var(--acc); margin-bottom: 8px; }
+.pv-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--acc); color: #fff; display: grid; place-items: center; font: 800 18px var(--cond); flex: none; }
+.pv-brand b { display: block; color: #fff; font: 700 15px/1.1 var(--cond); }
+.pv-brand small { font-size: 11px; color: #8C99A8; }
+.pv-nav { font: 600 13px var(--body); padding: 6px 9px; border-radius: 7px; display: flex; align-items: center; gap: 8px; color: #C9D1DA; }
+.pv-nav::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: currentColor; opacity: .55; flex: none; }
+.pv-nav.on { background: var(--acc); color: #fff; }
+.pv-nav.on::before { opacity: 1; }
+.pv-nav.new { animation: pvin .5s ease; }
+@keyframes pvin { from { background: color-mix(in srgb, var(--acc) 45%, transparent); } }
+.pv-grp { font: 700 10.5px var(--body); color: color-mix(in srgb, var(--acc) 70%, #fff); letter-spacing: .04em; margin: 9px 9px 2px; text-transform: none; }
+.pv-more { font-size: 12px; color: #8C99A8; padding: 4px 9px; }
+.pv-main { padding: 18px 18px 20px; min-width: 0; }
+.pv-hello { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.pv-hello b { font: 700 22px var(--cond); color: #12202E; }
+.pv-hello span { font-size: 12.5px; color: #6B7785; }
+.pv-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pv-card { background: #fff; border: 1px solid #E1E6EC; border-top: 3px solid var(--acc); border-radius: 9px; padding: 10px 12px; font-size: 12.5px; min-width: 0; }
+.pv-card h4 { margin: 0 0 6px; font: 700 13.5px var(--body); color: #12202E; }
+.pv-card p { margin: 0; color: #4D5A68; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: none; }
+.pv-card p b { color: #12202E; }
+.pv-card.new { animation: cardin .45s ease; }
+@keyframes cardin { from { transform: translateY(6px); opacity: 0; } }
+.pv-empty { grid-column: 1 / -1; padding: 40px 10px; text-align: center; color: #6B7785; font-size: 14px; }
+@media (max-width: 560px) { .pv-body { grid-template-columns: 1fr; } .pv-side { flex-direction: row; flex-wrap: wrap; } .pv-grp, .pv-more { display: none; } .pv-brand { width: 100%; } .pv-cards { grid-template-columns: 1fr; } }
+
+.paint { margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.paint > span { font: 600 14px var(--body); color: #AEB8C3; margin-right: 2px; }
+.swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #ffffff30; cursor: pointer; padding: 0; background: linear-gradient(135deg, var(--a) 0 50%, var(--s) 50% 100%); }
+.swatch[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 3px #ffffff40; }
+.paint label { display: inline-flex; gap: 8px; align-items: center; font: 600 14px var(--body); color: #AEB8C3; cursor: pointer; }
+.paint input[type=color] { width: 34px; height: 34px; border: 2px solid #ffffff30; border-radius: 50%; padding: 0; background: none; cursor: pointer; }
+.paint input[type=text] { font: 500 15px var(--body); background: #0B1A28; color: #fff; border: 1px solid #2C4560; border-radius: 8px; padding: 7px 10px; width: min(240px, 100%); }
+
+/* The options */
+.board { background: #0B1A28; border: 1px solid #23394F; border-radius: 14px; padding: 18px 18px 16px; }
+.group { margin-top: 10px; }
+.group:first-child { margin-top: 0; }
 .group h3 { font: 600 14px var(--body); color: #8C99A8; margin-bottom: 6px; letter-spacing: 0; }
 .switches { display: flex; flex-wrap: wrap; gap: 6px; }
 .sw { display: inline-flex; align-items: center; gap: 8px; font: 600 15px var(--body); color: #AEB8C3; background: #0F2234; border: 1px solid #23394F; border-radius: 8px; padding: 7px 11px 7px 8px; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
@@ -69,10 +122,20 @@ p { margin: 0 0 1em; max-width: 64ch; }
   background-image: radial-gradient(circle at 7.5px 50%, #8C99A8 5.5px, transparent 6px); transition: background .15s; }
 .sw[aria-pressed="true"] { color: var(--white); border-color: #FF790080; background: #FF790014; }
 .sw[aria-pressed="true"]::before { background-color: var(--orange); box-shadow: inset 0 0 0 2px var(--orange); background-image: radial-gradient(circle at 18.5px 50%, #fff 5.5px, transparent 6px); }
-.tally { margin-top: 18px; padding-top: 14px; border-top: 1px solid #23394F; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.sw.focus { outline: 2px solid var(--arctic); outline-offset: 2px; }
+.sw em { font: 600 11px var(--body); font-style: normal; color: #0B1A28; background: var(--arctic); border-radius: 99px; padding: 1px 7px; }
+.about { margin-top: 14px; background: #0F2234; border: 1px solid #23394F; border-left: 3px solid var(--orange); border-radius: 10px; padding: 16px 18px; min-height: 196px; }
+.about h3 { font-size: 26px; color: var(--white); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.about h3 span { font: 600 13px var(--body); color: #8C99A8; }
+.about p { color: #C9D1DA; font-size: 16px; margin: 8px 0 10px; }
+.about ul { margin: 0 0 10px; padding-left: 18px; color: #AEB8C3; font-size: 15px; }
+.about li { margin-bottom: 3px; }
+.about .use { background: #FF790012; border-radius: 8px; padding: 10px 12px; color: #E6EAEE; font-size: 15.5px; margin: 0; }
+.about .use b { color: var(--orange); }
+.tally { margin-top: 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .tally b { font: 800 44px/1 var(--cond); color: var(--orange); }
-.tally p { margin: 0; color: #AEB8C3; font-size: 15px; max-width: 40ch; }
-@media (max-width: 960px) { .hero .wrap { grid-template-columns: 1fr; } .hero { padding-top: 110px; } }
+.tally p { margin: 0; color: #AEB8C3; font-size: 15px; max-width: 44ch; flex: 1; }
+.tally .btn { padding: 12px 16px; font-size: 15px; }
 
 /* Shift vignettes */
 section.block { padding: 96px 0; }
@@ -172,6 +235,25 @@ footer a:hover { color: var(--white); }
 .partner .btn-green { background: #24CE7B; color: #04140B; border-color: #24CE7B; }
 @media (max-width: 640px) { .lockup { flex-direction: column; gap: 14px; } .cross { width: 42px; height: 42px; } .lockup .fx, .lockup .av { --from: 0px; } }
 @media (prefers-reduced-motion: reduce) { .cross line { stroke-dashoffset: 0; } .lockup .fx, .lockup .av { opacity: 1; transform: none; } }
+/* Feature ideas form */
+.ideas { background: var(--white); border-top: 1px solid var(--line); }
+.ideas-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: start; }
+.ideas-grid h2 { font-size: clamp(34px, 4.4vw, 52px); }
+.ideas-grid > div p { color: var(--soft); font-size: 19px; margin-top: 16px; }
+#idea-form { display: grid; gap: 14px; }
+#idea-form .f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+#idea-form label { display: grid; gap: 6px; font: 600 15px var(--body); color: var(--ink); }
+#idea-form input, #idea-form textarea { font: 400 17px var(--body); color: var(--ink); background: var(--frost); border: 1px solid #C3CBD4; border-radius: 8px; padding: 11px 12px; width: 100%; }
+#idea-form textarea { resize: vertical; min-height: 130px; }
+#idea-form input:focus, #idea-form textarea:focus { outline: 3px solid var(--arctic); outline-offset: 1px; border-color: transparent; }
+#idea-form [aria-invalid="true"] { border-color: #B3261E; background: #FFF4F3; }
+#idea-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+#idea-form .send { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+#idea-form .send p { margin: 0; font-size: 16px; color: var(--soft); flex: 1; min-width: 200px; }
+#idea-form .send p.ok { color: #17643A; font-weight: 600; }
+#idea-form .send p.bad { color: #B3261E; font-weight: 600; }
+@media (max-width: 860px) { .ideas-grid { grid-template-columns: 1fr; gap: 24px; } }
+@media (max-width: 560px) { #idea-form .f2 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -179,8 +261,8 @@ footer a:hover { color: var(--white); }
   <div class="wrap">
     <a href="#top"><img src="assets/logo.png" alt="Fenmorix Technologies"></a>
     <nav aria-label="Main">
-      <a class="hide-sm" href="#shift">Public safety</a>
-      <a class="hide-sm" href="#business">Business &amp; government</a>
+      <a class="hide-sm" href="#public-safety">Public safety</a>
+      <a class="hide-sm" href="#sectors">Government, business &amp; schools</a>
       <a class="hide-sm" href="#security">Security</a>
       <a class="hide-sm" href="#pricing">Pricing</a>
       <a href="https://portal.fenmorix.com">Client login</a>
@@ -190,33 +272,64 @@ footer a:hover { color: var(--white); }
 </header>
 
 <main id="top">
-<section class="hero">
+<section class="hero" id="build">
   <div class="wrap">
-    <div>
-      <h1>The work between the calls. <span>In one system.</span></h1>
-      <p class="lede">Fenmorix OS puts scheduling, purchasing, training, emergency recall, command boards and paperwork in one secure place. You pay only for the modules you switch on.</p>
-      <div class="ctas"><a class="btn btn-fire" href="#contact">Request a demo</a><a class="btn btn-line" href="#shift">See a shift in it</a></div>
-      <p class="made">Built in Baton Rouge, Louisiana, with the people who use it every shift.</p>
-    </div>
-    <div class="board" aria-labelledby="board-title">
-      <div class="board-head">
-        <h2 id="board-title">Build your system</h2>
-        <div class="presets" role="group" aria-label="Start from">
-          <button type="button" data-preset="fire" aria-pressed="true">Fire department</button>
-          <button type="button" data-preset="biz" aria-pressed="false">Business</button>
+    <div class="hero-top">
+      <div>
+        <h1>Run the whole organization. <span>In one system.</span></h1>
+        <p class="lede">Messaging, schedules, purchasing, forms, training and safety tools for public safety agencies, governments, businesses and schools. You pay only for the modules you switch on.</p>
+        <div class="ctas"><a class="btn btn-fire" href="#contact">Request a demo</a><a class="btn btn-line" href="#sectors">See how it fits you</a></div>
+        <p class="made">Built in Baton Rouge, Louisiana, by the people who use it every day.</p>
+      </div>
+      <div class="sector-pick">
+        <h2 id="sector-h">Build your system for</h2>
+        <div class="sectors" role="group" aria-labelledby="sector-h">
+          <button type="button" data-sector="ps" aria-pressed="true">Public safety<small>Fire, EMS, law enforcement and 911 centers</small></button>
+          <button type="button" data-sector="gov" aria-pressed="false">Government<small>Cities, parishes, counties and utilities</small></button>
+          <button type="button" data-sector="biz" aria-pressed="false">Business<small>Shops, offices and service companies</small></button>
+          <button type="button" data-sector="edu" aria-pressed="false">Education<small>Schools, districts and colleges</small></button>
         </div>
       </div>
-      <div id="groups"></div>
-      <div class="tally" aria-live="polite"><b id="count">0</b><p id="tally-text">modules on.</p></div>
+    </div>
+
+    <div class="config-title"><h2>Build your system</h2><p>Switch modules on and watch the picture change. Tap any module to read what it does.</p></div>
+    <div class="config">
+      <div class="pv-wrap">
+        <div class="pv" id="pv" role="img" aria-label="Preview of Fenmorix OS">
+          <div class="pv-bar" aria-hidden="true"><i></i><i></i><i></i><span id="pv-url">riverbend.fenmorix.com</span></div>
+          <div class="pv-body" aria-hidden="true">
+            <aside class="pv-side">
+              <div class="pv-brand"><div class="pv-mark" id="pv-mark">R</div><div><b id="pv-org">Riverbend Fire District</b><small>Fenmorix OS</small></div></div>
+              <div id="pv-nav"></div>
+            </aside>
+            <div class="pv-main">
+              <div class="pv-hello"><b id="pv-hello">Good morning</b><span id="pv-date"></span></div>
+              <div class="pv-cards" id="pv-cards"></div>
+            </div>
+          </div>
+        </div>
+        <div class="paint">
+          <span>Colors</span><div id="swatches" style="display:flex;gap:8px;flex-wrap:wrap" role="group" aria-label="Color schemes"></div>
+          <label>Your own<input type="color" id="pv-color" value="#ff7900" aria-label="Pick your own accent color"></label>
+        </div>
+        <div class="paint"><label for="pv-name">Your name on it</label><input type="text" id="pv-name" maxlength="40" autocomplete="organization"></div>
+      </div>
+      <div>
+        <div class="board">
+          <div id="groups"></div>
+          <div class="about" id="about" aria-live="polite"></div>
+          <div class="tally"><b id="count">0</b><p id="tally-text">modules on.</p><a class="btn btn-fire" id="build-mail" href="mailto:michael@fenmorix.com">Request a demo of this</a></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="block" id="shift">
+<section class="block" id="public-safety">
   <div class="wrap">
     <div class="intro">
-      <h2>One shift, start to finish</h2>
-      <p>Most departments run on a scheduling site, a purchasing spreadsheet, a group text for recalls and a binder for the ISO grader. Here's what the same day looks like when it's all one system, on the same accounts, phones and audit log.</p>
+      <h2>Public safety, start to finish</h2>
+      <p>Many agencies run on a scheduling site, a purchasing spreadsheet, a group text for recalls and a binder for the ISO grader. Here is the same day when it is all one system, on the same accounts, phones and audit log.</p>
     </div>
     <div class="shift">
       <article class="moment">
@@ -244,16 +357,16 @@ footer a:hover { color: var(--white); }
   </div>
 </section>
 
-<section class="block biz" id="business">
+<section class="block biz" id="sectors">
   <div class="wrap">
     <div class="intro">
-      <h2>Not a fire department? Same system, your words.</h2>
-      <p>Cities, parishes, utilities and small businesses use the same core with different modules switched on. Menus, job roles, pay periods and wording change to fit the organization, without a custom build.</p>
+      <h2>Not a public safety agency? Same system, your words.</h2>
+      <p>Cities, parishes, businesses and schools use the same core with different modules switched on. Menus, job roles, pay periods and wording change to fit the organization, without a custom build.</p>
     </div>
     <div class="cols">
-      <div><h3>Staff and time</h3><p>Time clock, work schedule, who's out today, sick-day patterns, on-call lists and fair overtime rotation, all from one roster.</p></div>
-      <div><h3>Money and requests</h3><p>Purchase requests with approval routing, expense reimbursements with receipts, a help desk and forms that route to the right people.</p></div>
-      <div><h3>Your shop's own tools</h3><p>Shared logins only the right people can reveal, live spot prices for a coin shop, TV screens for the front counter. Modules are added as customers need them.</p></div>
+      <div><h3>Government</h3><p>Requisitions with the signatures auditors expect, staff schedules and time, who's out, help desk and equipment across buildings, emergency notifications for storms and outages, and reports for the council or commission.</p></div>
+      <div><h3>Business</h3><p>Time clock and schedules, who's in today, purchase requests and expense claims with receipts, a help desk, shared logins only the right people can reveal, and screens for the front counter.</p></div>
+      <div><h3>Education</h3><p>Campus alerts to faculty and students, permission slips and sports forms signed online, who's out before roll call, classroom purchasing, teacher certifications, parent conferences, and reports for the school board. A gradebook is coming next.</p></div>
     </div>
   </div>
 </section>
@@ -262,7 +375,7 @@ footer a:hover { color: var(--white); }
   <div class="wrap">
     <div class="intro">
       <h2>Security your IT department can sign off on</h2>
-      <p>Public safety data has rules. These are built in, not bolted on later.</p>
+      <p>Public safety, government and school records have rules. These are built in, not bolted on later.</p>
     </div>
     <div class="locks">
       <div><h3>Two-step sign-in</h3><p>Administrators confirm with an authenticator app. Passwords follow a written rule and expire on schedule.</p></div>
@@ -279,10 +392,10 @@ footer a:hover { color: var(--white); }
   <div class="wrap">
     <div class="intro"><h2>From first call to go-live</h2><p>A clear path with no surprises, and your existing records come with you.</p></div>
     <ol class="steps">
-      <li><h3>Talk</h3><p>We learn how your department works today and which tools you'd like to retire.</p></li>
+      <li><h3>Talk</h3><p>We learn how your organization works today and which tools you'd like to retire.</p></li>
       <li><h3>Quote</h3><p>A written quote by module and size, with what you'll save next to it.</p></li>
-      <li><h3>Install</h3><p>Hosted by our partner Avexon, or on your own servers. CAD and scheduling connected.</p></li>
-      <li><h3>Train</h3><p>Hands-on training for admins and crews, plus a test copy to practice on.</p></li>
+      <li><h3>Install</h3><p>Hosted by our partner Avexon, or on your own servers, connected to the systems you already use.</p></li>
+      <li><h3>Train</h3><p>Hands-on training for administrators and staff, plus a test copy to practice on.</p></li>
       <li><h3>Keep improving</h3><p>Updates arrive on their own, and your client portal shows every version and request.</p></li>
     </ol>
   </div>
@@ -290,10 +403,31 @@ footer a:hover { color: var(--white); }
 
 <section class="block" id="pricing" style="padding-top:0">
   <div class="wrap terms">
-    <div><h2>Priced by module and size</h2><p style="margin-top:14px">You choose the modules. For fire departments the price follows the size of the department; for businesses it's per user.</p>
-      <ul><li>Discounts for multi-year terms and for agencies that join together</li><li>Lower setup cost when your CAD already shares data with us</li><li>Training and data moves quoted up front</li></ul></div>
+    <div><h2>Priced by module and size</h2><p style="margin-top:14px">Start from a ready-made bundle for your kind of organization, or build your own from any modules you like. Agencies, governments and schools pay by size, with per-user options; businesses pay per user.</p>
+      <ul><li>Bundles cost less than the same modules picked one by one</li><li>Schools can add students at a fraction of the staff rate</li><li>Discounts for multi-year terms and for organizations that join together</li><li>Training and data moves quoted up front</li></ul></div>
     <div><h2>Hosted for you, or on your servers</h2><p style="margin-top:14px">Our hosting partner Avexon sizes and quotes the servers, backups and recovery level you need, separately from the software.</p>
-      <ul><li>Off-site backups and a recovery plan</li><li>On-premises licenses for agencies that require it</li><li>Test and training copies available</li></ul></div>
+      <ul><li>Off-site backups and a recovery plan</li><li>On-premises licenses for organizations that require it</li><li>Test and training copies available</li></ul></div>
+  </div>
+</section>
+
+<section class="block ideas" id="ideas">
+  <div class="wrap ideas-grid">
+    <div>
+      <h2>Is there a feature you'd like to have, but don't see it?</h2>
+      <p>Let us know about it! Every idea comes straight to our team, and features that help everyone are added at no charge.</p>
+    </div>
+    <form id="idea-form" novalidate>
+      <div class="f2">
+        <label>Your name<input name="name" required maxlength="120" autocomplete="name"></label>
+        <label>Organization<input name="org" required maxlength="160" autocomplete="organization"></label>
+        <label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+        <label>Phone<input name="phone" type="tel" required maxlength="40" autocomplete="tel"></label>
+      </div>
+      <label>Your idea<textarea name="idea" required maxlength="4000" rows="5" placeholder="What would you like it to do, and how would your team use it?"></textarea></label>
+      <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+      <div class="cf-turnstile" data-sitekey="__TURNSTILE_SITEKEY__" data-theme="light"></div>
+      <div class="send"><button class="btn btn-fire" type="submit">Send my idea</button><p id="idea-status" role="status"></p></div>
+    </form>
   </div>
 </section>
 
@@ -313,7 +447,7 @@ footer a:hover { color: var(--white); }
 
 <section class="close" id="contact">
   <div class="wrap">
-    <h2>See it with your own department in it</h2>
+    <h2>See it with your own organization in it</h2>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a class="btn btn-dark" id="demo-mail" href="mailto:michael@fenmorix.com?subject=Fenmorix%20OS%20demo">Request a demo</a>
       <a class="btn btn-ghost" href="https://portal.fenmorix.com">Client login</a>
@@ -331,48 +465,374 @@ footer a:hover { color: var(--white); }
 </footer>
 
 <script>
+// What a visitor can switch on, and what each module means in each kind of organization.
+// sectors: where the module is offered (default: all four). w = the card it adds to the preview's home page (per sector when it differs).
+const SECTORS = {
+  ps:  { label: "Public safety", noun: "your agency", people: "members", in: "In public safety" },
+  gov: { label: "Government", noun: "your office", people: "employees", in: "In government" },
+  biz: { label: "Business", noun: "your company", people: "staff", in: "In a business" },
+  edu: { label: "Education", noun: "your school", people: "faculty and students", in: "In a school" },
+};
+const GROUPS = ["Communication", "People & time", "Money & workflow", "Training & reporting", "Public safety & emergencies"];
 const MODULES = [
-  ["Communication", [["messaging", "Messaging & chat"]]],
-  ["Public safety", [["recall", "Emergency recall"], ["command", "Command board"], ["activecalls", "Live CAD feed"], ["callalerts", "Dispatch alerts"], ["imt", "Incident action plans"], ["recordings", "Radio transcripts"], ["investigations", "Investigations (CJIS)"]]],
-  ["Workforce", [["timeclock", "Time clock & schedule"], ["offwork", "Who's out"], ["callout", "On-call"], ["sick", "Absence analytics"], ["leave", "Leave bidding"], ["forceback", "Overtime rotation"]]],
-  ["Money & workflow", [["procurement", "Purchasing"], ["reimbursements", "Reimbursements"], ["forms", "Forms & cases"], ["helpdesk", "Help desk"], ["gear", "Equipment"], ["meetings", "Meetings"], ["links", "Shared logins"]]],
-  ["Training & analytics", [["training", "Training hours"], ["evals", "Evaluations & simulations"], ["stats", "Dispatch analytics"], ["board", "Board reports"], ["pial", "ISO / PIAL tracker"], ["fireprev", "Inspections"]]],
+  // ---- Communication
+  { key: "messaging", label: "Messaging & chat", group: "Communication",
+    desc: "Messages, group sends, one-to-one chat and phone alerts in one inbox, with read receipts.",
+    feats: ["Send to one person, a group, or everyone", "Important messages ring through on phones", "Away and busy status with automatic replies"],
+    use: { ps: "Reach a whole shift or one station, and hold messages until the next crew comes on.",
+      gov: "Notices to a department or the whole staff, without another email chain.",
+      biz: "Team chat and announcements that stay with the company, not someone's personal phone.",
+      edu: "Alert faculty and students at once about a lockdown, a hazmat issue or a closure near campus, and message one class or one family." },
+    w: { t: "Messages", l: ["<b>3 unread</b> · 1 important", "Ops: schedule change for Friday"] },
+    wEdu: { t: "Messages", l: ["<b>Campus alert</b> sent to 1,240 people", "Room 214: field trip reminder"] } },
+  { key: "recall", label: "Emergency notification & recall", group: "Communication",
+    desc: "Call people in during an emergency and see who is coming, when, and who can't.",
+    feats: ["Push and message to everyone needed", "Live board of answers and arrival times", "Roll call and an after-action record"],
+    use: { ps: "Recall off-duty members for a major incident and staff units as they arrive.",
+      gov: "Activate emergency operations staff for a storm or outage and know who is reachable.",
+      biz: "Call in a weekend crew for an outage or a big order.",
+      edu: "Account for staff during a lockdown or evacuation: who is safe, where, and who still hasn't answered." },
+    w: { t: "Emergency recall", l: ["<b>24 coming</b> · 5 can't", "Board open since 2:14 a.m."] },
+    wEdu: { t: "Safety check-in", l: ["<b>118 of 126</b> staff checked in", "8 waiting · evacuation drill"] } },
+  { key: "callalerts", label: "Dispatch alerts", group: "Communication", sectors: ["ps", "gov"],
+    desc: "Phone alerts when a call matches what you care about: a unit, a call type, an area.",
+    feats: ["Personal alerts anyone can set", "Department rules for groups", "Address shown only when you allow it"],
+    use: { ps: "Chiefs get structure fires; a station gets every call its units are assigned to.",
+      gov: "Public works or utilities hear about calls that need them, such as water main breaks." },
+    w: { t: "Dispatch alerts", l: ["<b>Structure fire</b> · 2 min ago", "EG613, LD618 assigned"] } },
+
+  // ---- People & time
+  { key: "timeclock", label: "Time clock & schedule", group: "People & time",
+    desc: "Punch in and out, weekly schedules, rotations and pay periods.",
+    feats: ["Clock in from a phone or a shared screen", "Week schedules you can copy forward", "Hours by pay period, ready for payroll"],
+    use: { ps: "24-hour and 12-hour rotations, trades and hours for every crew.",
+      gov: "Office hours, field crews and part-timers on one clock.",
+      biz: "Shifts, breaks and who's working right now, on a TV at the counter if you like.",
+      edu: "Faculty hours plus duties such as carpool line, games and conferences, and class schedules for students during orientation." },
+    w: { t: "Time clock", l: ["<b>Clocked in</b> 7:02 a.m.", "32.5 of 40 hours this period"] },
+    wEdu: { t: "Today's schedule", l: ["<b>7:15</b> Carpool duty · <b>3:30</b> JV game", "Periods 1, 2, 4, 6 · Room 214"] } },
+  { key: "offwork", label: "Who's out", group: "People & time",
+    desc: "Days off, trainings, off-site meetings and leaving early, visible to the right people.",
+    feats: ["Out today and the next 7 days", "Part-day outings with an estimated return", "Sick days shown as \"out\", never the reason"],
+    use: { ps: "See who is off before building tomorrow's roster.",
+      gov: "Know who is at a conference or out before booking a meeting.",
+      biz: "One glance at who is in today.",
+      edu: "Teachers see which students are out or leaving early before class starts, so roll call is mostly done." },
+    w: { t: "Out today", l: ["<b>3 people</b> out · 1 leaving at 1:00", "J. Ramos back Monday"] },
+    wEdu: { t: "Out today", l: ["<b>4 students</b> in your classes", "1 leaving at 11:30 (dentist)"] } },
+  { key: "callout", label: "On-call lists", group: "People & time",
+    desc: "Who is on call this week, how to reach them, and the next person if they don't answer.",
+    feats: ["Rotations by week or day", "Tap to call or text", "Swaps without a phone tree"],
+    use: { ps: "Mechanics, IT and chiefs on call.", gov: "After-hours contacts for every department.",
+      biz: "Who to call when the alarm goes off at night.", edu: "Facilities and administrators on call for after-hours events." },
+    w: { t: "On call", l: ["<b>IT:</b> D. Chen", "<b>Facilities:</b> M. Ortiz"] } },
+  { key: "sick", label: "Absence analytics", group: "People & time",
+    desc: "Sick-day records with patterns worth a second look: Mondays, holidays, days next to leave.",
+    feats: ["Absence calendar per person", "Pattern scores, not accusations", "Protected leave kept out of the analysis"],
+    use: { ps: "Spot staffing trouble before it costs overtime.", gov: "Fair, consistent attendance records across departments.",
+      biz: "See who covers for whom and where call-outs cluster.",
+      edu: "A student who misses the same day every week gets a teacher's attention, and administration sees staff call-out trends." },
+    w: { t: "Absences", l: ["<b>2 patterns</b> worth a look", "Monday call-outs up this month"] } },
+  { key: "leave", label: "Leave bidding", group: "People & time", sectors: ["ps", "gov"],
+    desc: "Yearly vacation picks in seniority order, with the rules enforced and turns announced.",
+    feats: ["Each person told when it's their turn", "Daily caps and blocked dates", "Reports ready for payroll"],
+    use: { ps: "Annual leave picks by shift without a paper sign-up sheet.", gov: "Seniority-based vacation picks for unions and crews." },
+    w: { t: "Leave picks", l: ["<b>Your turn</b> to pick (round 2)", "12 days left in the window"] } },
+  { key: "forceback", label: "Overtime rotation", group: "People & time", sectors: ["ps", "gov"],
+    desc: "A fair, recorded order for who gets held over or called in next.",
+    feats: ["Top of the list is the person due next", "Every hold-over logged", "Message sent to the person automatically"],
+    use: { ps: "Mandatory overtime in dispatch or the field, fair and on record.", gov: "Overtime offers for crews in order, with a history." },
+    w: { t: "Overtime rotation", l: ["<b>Next up:</b> A. Price", "Last held: Tue 7 p.m."] } },
+
+  // ---- Money & workflow
+  { key: "procurement", label: "Purchasing", group: "Money & workflow",
+    desc: "Purchase requests routed to the right signers, signed on screen, then sent to accounting.",
+    feats: ["Approval routes by division and amount", "Quotes and vendors kept together", "Budget reports any time"],
+    use: { ps: "Station supplies to apparatus parts, signed off without chasing anyone.",
+      gov: "Requisitions with the signatures auditors expect.",
+      biz: "Know what's on order and who approved it.",
+      edu: "Classroom and athletic purchases approved by the right principal or department head." },
+    w: { t: "Purchasing", l: ["<b>1 request</b> waiting for you", "$1,284.50 · Office supplies"] } },
+  { key: "reimbursements", label: "Reimbursements", group: "Money & workflow",
+    desc: "Expense claims with receipts, approvals and paid dates.",
+    feats: ["Photo of the receipt is enough", "Mileage at the current rate", "Status the person can see"],
+    use: { ps: "Training trips and certification fees paid back quickly.", gov: "Travel and per diem with a clean paper trail.",
+      biz: "Employee expenses without a spreadsheet.", edu: "Teachers reimbursed for classroom supplies and conference travel." },
+    w: { t: "Reimbursements", l: ["<b>2 to approve</b>", "Paid this month: $640"] } },
+  { key: "forms", label: "Forms & cases", group: "Money & workflow",
+    desc: "Build forms, send them to the right people, and keep each answer on file.",
+    feats: ["Drag-and-drop form builder", "Signatures, files and step-by-step reviews", "Answers filed with the person's record"],
+    use: { ps: "Injury reports, ride-alongs and requests that route themselves.",
+      gov: "Permits, requests and internal approvals without printing.",
+      biz: "Onboarding, incident reports and requests in one place.",
+      edu: "Permission slips, sports physicals and coach paperwork sent to students and families, signed online and returned straight to the teacher, then kept with the student's file." },
+    w: { t: "Forms", l: ["<b>4 to review</b>", "Injury report · Station 2"] },
+    wEdu: { t: "Forms", l: ["<b>Permission slips:</b> 18 of 24 back", "Sports physicals due Friday"] } },
+  { key: "helpdesk", label: "Help desk", group: "Money & workflow",
+    desc: "Tickets for IT, facilities or anything else, with status updates the requester can follow.",
+    feats: ["Send to a team or a person", "Status timeline and comments", "Due dates and assignments"],
+    use: { ps: "Radio, computer and station repairs tracked.", gov: "IT and facilities requests across buildings.",
+      biz: "Requests to the office manager or IT in one queue.", edu: "Classroom tech and building repairs from every room." },
+    w: { t: "Help desk", l: ["<b>5 open</b> · 1 new", "Projector in Room 12"] } },
+  { key: "gear", label: "Equipment", group: "Money & workflow",
+    desc: "Who has what, its condition, inspections and replacement dates.",
+    feats: ["Issue and return items to people", "Inspection and expiry reminders", "Repair tickets for gear"],
+    use: { ps: "Turnout gear, SCBA and radios by member.", gov: "Vehicles, laptops and field equipment.",
+      biz: "Company devices, tools and keys.", edu: "Classroom kits, laptops, instruments and athletic equipment." },
+    w: { t: "Equipment", l: ["<b>3 due</b> for inspection", "12 laptops checked out"] } },
+  { key: "meetings", label: "Meetings", group: "Money & workflow",
+    desc: "Meetings with agendas, notes and follow-up items.",
+    feats: ["Agenda and notes in one place", "Action items with owners", "Shown on each person's day"],
+    use: { ps: "Officer meetings and safety committees.", gov: "Staff meetings and committee work.",
+      biz: "Team meetings that actually produce follow-ups.", edu: "Parent-teacher conferences and student meetings, with notes kept." },
+    w: { t: "Meetings today", l: ["<b>10:00</b> Staff meeting", "<b>2:30</b> Budget review"] },
+    wEdu: { t: "Meetings today", l: ["<b>3:45</b> Parent conference · Avery P.", "<b>4:30</b> Grade-level team"] } },
+  { key: "links", label: "Shared logins", group: "Money & workflow",
+    desc: "The websites your team uses, with logins only the right people can reveal.",
+    feats: ["One page of links for everyone", "Passwords encrypted; each reveal recorded", "Visible only to who you choose"],
+    use: { ps: "Vendor portals and state systems.", gov: "State and vendor portals your staff share.",
+      biz: "Supplier sites and accounts, without a sticky note.", edu: "District systems and vendor sites." },
+    w: { t: "Quick links", l: ["<b>8 links</b>", "Payroll portal · Vendor site"] } },
+  { key: "spot", label: "Live metals prices", group: "Money & workflow", sectors: ["biz"],
+    desc: "Gold, silver, platinum and palladium prices on every page and the showroom TV.",
+    feats: ["Ticker across the top", "Day, week and month charts", "Big-screen view for customers"],
+    use: { biz: "For precious-metals and coin dealers: today's prices in front of staff and customers." },
+    w: { t: "Spot prices", l: ["<b>Gold</b> $2,318.40 ▲", "<b>Silver</b> $27.11 ▼"] } },
+
+  // ---- Training & reporting
+  { key: "training", label: "Training & certifications", group: "Training & reporting",
+    desc: "Hours, certifications and expiry dates for everyone, with what's still needed this year.",
+    feats: ["Requirements by role", "Imports from the records you already keep", "Reminders before things expire"],
+    use: { ps: "ISO, state and EMS hours tracked by member.", gov: "Required trainings and licenses by job.",
+      biz: "Safety and job certifications, renewed on time.", edu: "Teacher certifications and continuing-education hours in one place." },
+    w: { t: "Training", l: ["<b>14 of 24</b> hours done", "CPR expires in 30 days"] } },
+  { key: "evals", label: "Evaluations & simulations", group: "Training & reporting",
+    desc: "Scored evaluations, task books and AI role-play practice with a written debrief.",
+    feats: ["Your own scoring forms", "Signatures and review dates", "Practice scenarios that talk back"],
+    use: { ps: "Probation task books and officer development.", gov: "Annual reviews on a consistent form.",
+      biz: "Performance reviews and skills checks.", edu: "Teacher observations and staff reviews." },
+    w: { t: "Evaluations", l: ["<b>2 reviews</b> due this month", "Practice score: 86%"] } },
+  { key: "board", label: "Board & leadership reports", group: "Training & reporting",
+    desc: "Monthly, quarterly and yearly reports built from what's already in the system, ready to print.",
+    feats: ["Templates you can rearrange", "Comments beside each chart", "Compared with last year"],
+    use: { ps: "Calls, response times, training and rating for the fire board.", gov: "Department activity for the council or commission.",
+      biz: "A one-page monthly picture for the owners.", edu: "Attendance, staffing and purchasing summaries for the school board." },
+    w: { t: "Reports", l: ["<b>November report</b> ready", "Board meeting Dec 9"] } },
+  { key: "gradebook", label: "Gradebook", group: "Training & reporting", sectors: ["edu"], soon: true,
+    desc: "Grades, assignments and comments that students and teachers can both see.",
+    feats: ["Graded work attached to each grade", "Comments on any grade", "Reports by grade, subject and class"],
+    use: { edu: "Teachers keep grades and attach the graded work; students see them with comments; reports such as \"4th grade social studies\" go to administration and the board. Coming next." },
+    w: { t: "Gradebook", l: ["<b>12 to grade</b> · Unit 4 quiz", "Class average 84%"] } },
+
+  // ---- Public safety & emergencies
+  { key: "activecalls", label: "Live dispatch feed", group: "Public safety & emergencies", sectors: ["ps", "gov"],
+    desc: "Open 911 calls from your CAD with units and their status, on every screen.",
+    feats: ["Units and status as they change", "Map location and cross streets", "Station TVs follow along"],
+    use: { ps: "Every station sees what's running without asking dispatch.", gov: "Emergency management sees the calls that matter to it." },
+    w: { t: "Active calls", l: ["<b>3 open</b> · 1 fire", "MD687 on scene"] } },
+  { key: "command", label: "Incident command board", group: "Public safety & emergencies", sectors: ["ps", "gov", "edu"],
+    desc: "Crews, assignments, accountability checks and the timeline of an incident, on a tablet.",
+    feats: ["Units come in from dispatch", "Timed accountability (PAR) checks", "A permanent record when it closes"],
+    use: { ps: "Run the fireground: crews, sides, benchmarks and a MAYDAY on the record.",
+      gov: "Coordinate a multi-department response from one board.",
+      edu: "A crisis team tracks who is assigned where and checks everyone in during an emergency." },
+    w: { t: "Command board", l: ["<b>Next check</b> in 3:12", "5 crews · offensive"] } },
+  { key: "imt", label: "Incident action plans", group: "Public safety & emergencies", sectors: ["ps", "gov", "edu"],
+    desc: "ICS forms for planned events and long incidents, filled in together and printed as one plan.",
+    feats: ["Every standard ICS form", "Weather and hospitals filled in", "Approved with a signature"],
+    use: { ps: "Parades, storms and multi-day incidents.", gov: "Emergency operations plans for events and disasters.",
+      edu: "Plans for graduations, big games and emergency drills." },
+    w: { t: "Action plans", l: ["<b>Festival</b> · period 2", "Approved 6:40 a.m."] } },
+  { key: "recordings", label: "Radio recordings & transcripts", group: "Public safety & emergencies", sectors: ["ps", "gov"],
+    desc: "Radio recordings imported, played and turned into searchable text.",
+    feats: ["Clips by talkgroup and time", "Automatic transcripts", "Linked to the incident"],
+    use: { ps: "Review a working fire's radio traffic for training.", gov: "Keep and review radio records for operations." },
+    w: { t: "Recordings", l: ["<b>Working fire</b> · 42 clips", "Transcript ready"] } },
+  { key: "investigations", label: "Investigations (CJIS)", group: "Public safety & emergencies", sectors: ["ps", "gov"],
+    desc: "Case files kept under CJIS controls: authenticator sign-in, need-to-know access, an access log.",
+    feats: ["Encrypted case files", "Every view logged", "Dissemination records"],
+    use: { ps: "Fire and arson investigation cases.", gov: "Code enforcement and internal investigations that need strict access." },
+    w: { t: "Investigations", l: ["<b>2 open cases</b>", "Weekly review due"] } },
+  { key: "stats", label: "Dispatch analytics", group: "Public safety & emergencies", sectors: ["ps", "gov"],
+    desc: "Call volume, answer and processing times, and each call taker's numbers, from your CAD.",
+    feats: ["Charts with a table and export", "Same dates last year", "Reports you save and print"],
+    use: { ps: "Show how fast calls are answered and dispatched.", gov: "911 center performance for the board or council." },
+    w: { t: "Dispatch analytics", l: ["<b>9 in 10</b> answered in 10 s", "Calls up 4% on last year"] } },
+  { key: "pial", label: "ISO rating tracker", group: "Public safety & emergencies", sectors: ["ps"],
+    desc: "A live estimate of your ISO / PIAL score from training, hydrant tests, inspections and dispatch times.",
+    feats: ["Score and class as records come in", "What each item is worth", "A binder ready for the grader"],
+    use: { ps: "Know your rating before the grader does." },
+    w: { t: "ISO rating", l: ["<b>88.6</b> projected · Class 2", "Training: 1.4 points available"] } },
+  { key: "fireprev", label: "Inspections", group: "Public safety & emergencies", sectors: ["ps", "gov"],
+    desc: "Properties, inspection history and coverage across your area.",
+    feats: ["Import from your current records", "Coverage by area and station", "Feeds the ISO tracker"],
+    use: { ps: "Fire inspections and pre-incident coverage.", gov: "Code and permit inspections by property." },
+    w: { t: "Inspections", l: ["<b>88%</b> inspected this year", "142 left in District 3"] } },
 ];
 const PRESETS = {
-  fire: ["messaging", "recall", "command", "activecalls", "timeclock", "offwork", "procurement", "training", "pial"],
+  ps: ["messaging", "recall", "callalerts", "timeclock", "offwork", "callout", "procurement", "forms", "training", "activecalls", "command", "pial"],
+  gov: ["messaging", "recall", "timeclock", "offwork", "sick", "procurement", "reimbursements", "forms", "helpdesk", "gear", "meetings", "training", "board"],
   biz: ["messaging", "timeclock", "offwork", "sick", "procurement", "reimbursements", "helpdesk", "links"],
+  edu: ["messaging", "recall", "timeclock", "offwork", "sick", "procurement", "reimbursements", "forms", "helpdesk", "gear", "meetings", "training", "board"],
 };
-const on = new Set(PRESETS.fire);
-const groups = document.getElementById("groups");
-for (const [title, list] of MODULES) {
-  const g = document.createElement("div"); g.className = "group";
-  g.innerHTML = `<h3>${title}</h3><div class="switches"></div>`;
-  for (const [key, label] of list) {
-    const b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.dataset.key = key; b.textContent = label;
-    b.addEventListener("click", () => { on.has(key) ? on.delete(key) : on.add(key); paint(); document.querySelectorAll(".presets button").forEach(p => p.setAttribute("aria-pressed", "false")); });
-    g.querySelector(".switches").appendChild(b);
-  }
-  groups.appendChild(g);
-}
-function paint() {
-  document.querySelectorAll(".sw").forEach(b => b.setAttribute("aria-pressed", on.has(b.dataset.key) ? "true" : "false"));
-  document.getElementById("count").textContent = on.size;
-  document.getElementById("tally-text").textContent = on.size === 0 ? "modules on. Pick what your organization needs."
-    : `module${on.size === 1 ? "" : "s"} on. Each one shares the same sign-in, people, permissions and phone alerts, and more can be switched on later.`;
-}
-document.querySelectorAll(".presets button").forEach(p => p.addEventListener("click", () => {
-  on.clear(); PRESETS[p.dataset.preset].forEach(k => on.add(k)); paint();
-  document.querySelectorAll(".presets button").forEach(x => x.setAttribute("aria-pressed", x === p ? "true" : "false"));
-}));
-paint();
-// The demo email lists the modules picked above
-document.getElementById("demo-mail").addEventListener("click", e => {
-  const names = [...document.querySelectorAll(".sw[aria-pressed=true]")].map(b => b.textContent).join(", ");
-  e.currentTarget.href = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo") + "&body=" + encodeURIComponent(`Our organization:\nOur size (people):\nBest time to talk:\n\nModules we're interested in: ${names}\n`);
-});
-document.getElementById("yr").textContent = new Date().getFullYear();
+const PAINTS = [
+  { name: "Fenmorix orange", a: "#FF7900", s: "#08131D" },
+  { name: "Navy and gold", a: "#C9A227", s: "#06234A" },
+  { name: "Crimson", a: "#C8102E", s: "#1A1D24" },
+  { name: "Forest green", a: "#2E8B57", s: "#0F2419" },
+  { name: "Royal blue", a: "#2F6FED", s: "#0E1B3D" },
+  { name: "Purple", a: "#7B3FE4", s: "#1B1233" },
+];
+
 </script>
 <script>
+// The configurator: sector -> preset modules; switches -> the picture and the "about" panel; colors and name -> the picture.
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const NAMES = { ps: "Riverbend Fire District", gov: "City of Riverbend", biz: "Riverbend Supply Co.", edu: "Riverbend Elementary" };
+  const HELLO = { ps: "Good morning, Captain Reyes", gov: "Good morning, Dana", biz: "Good morning, Jordan", edu: "Good morning, Ms. Avery" };
+  let sector = "ps", on = new Set(PRESETS.ps), focus = null, fresh = null, nameTouched = false;
+  const paint = { a: PAINTS[0].a, s: PAINTS[0].s };
+  const offered = m => !m.sectors || m.sectors.includes(sector);
+  const mod = k => MODULES.find(m => m.key === k);
+
+  // Sector buttons
+  document.querySelectorAll("[data-sector]").forEach(b => b.addEventListener("click", () => setSector(b.dataset.sector)));
+  function setSector(s) {
+    sector = s;
+    document.querySelectorAll("[data-sector]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sector === s ? "true" : "false"));
+    on = new Set(PRESETS[s]); focus = null; fresh = null;
+    if (!nameTouched) $("pv-name").value = NAMES[s];
+    buildSwitches(); render();
+    document.dispatchEvent(new CustomEvent("fx-sector", { detail: s }));
+  }
+
+  // Module switches, grouped
+  function buildSwitches() {
+    const box = $("groups"); box.innerHTML = "";
+    for (const g of GROUPS) {
+      const list = MODULES.filter(m => m.group === g && offered(m)); if (!list.length) continue;
+      const d = document.createElement("div"); d.className = "group";
+      d.innerHTML = `<h3>${esc(g)}</h3><div class="switches"></div>`;
+      for (const m of list) {
+        const b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.dataset.key = m.key;
+        b.innerHTML = esc(m.label) + (m.soon ? " <em>Coming next</em>" : "");
+        b.addEventListener("click", () => {
+          if (on.has(m.key)) { on.delete(m.key); fresh = null; } else { on.add(m.key); fresh = m.key; }
+          focus = m.key; render();
+        });
+        d.querySelector(".switches").appendChild(b);
+      }
+      box.appendChild(d);
+    }
+  }
+
+  function render() {
+    document.querySelectorAll(".sw").forEach(b => { b.setAttribute("aria-pressed", on.has(b.dataset.key) ? "true" : "false"); b.classList.toggle("focus", b.dataset.key === focus); });
+    // About panel
+    const S = SECTORS[sector], m = focus && mod(focus);
+    $("about").innerHTML = m
+      ? `<h3>${esc(m.label)} <span>${on.has(m.key) ? "On" : "Off"}${m.soon ? " · coming next" : ""}</span></h3><p>${esc(m.desc)}</p>
+         <ul>${m.feats.map(f => `<li>${esc(f)}</li>`).join("")}</ul><p class="use"><b>${esc(S.in)}:</b> ${esc(m.use[sector] || "")}</p>`
+      : `<h3>Built for ${esc(S.label.toLowerCase())}</h3><p>We switched on a starting set for ${esc(S.noun)}. Turn modules on or off and the picture changes; tap any module to read what it does and how ${esc(S.noun)} would use it.</p>
+         <p class="use"><b>Every module shares</b> the same sign-in, people, permissions and phone alerts, so adding one later takes minutes, not a new system.</p>`;
+    // Tally
+    const n = on.size;
+    $("count").textContent = n;
+    $("tally-text").textContent = n === 0 ? "modules on. Pick what your organization needs." : `module${n === 1 ? "" : "s"} on. Ready-made bundles cost less than modules picked one by one, and we'll show you both.`;
+    drawPreview();
+  }
+
+  // The picture
+  function drawPreview() {
+    const pv = $("pv"); pv.style.setProperty("--acc", paint.a); pv.style.setProperty("--side", paint.s);
+    const name = $("pv-name").value.trim() || NAMES[sector];
+    $("pv-mark").textContent = name.replace(/^(the|city of|town of)\s+/i, "").charAt(0).toUpperCase() || "Y";
+    $("pv-org").textContent = name;
+    $("pv-url").textContent = (name.toLowerCase().replace(/^(the|city of|town of)\s+/, "").split(/[^a-z0-9]+/)[0] || "yourorg") + ".fenmorix.com";
+    $("pv-hello").textContent = HELLO[sector];
+    // Side bar: Home, then each group's switched-on modules
+    const side = $("pv-nav"); side.innerHTML = `<div class="pv-nav on">Home</div>`;
+    let shown = 0, extra = 0;
+    for (const g of GROUPS) {
+      const list = MODULES.filter(m => m.group === g && offered(m) && on.has(m.key)); if (!list.length) continue;
+      if (shown >= 11) { extra += list.length; continue; }
+      side.insertAdjacentHTML("beforeend", `<div class="pv-grp">${esc(g)}</div>`);
+      for (const m of list) {
+        if (shown >= 11) { extra++; continue; }
+        side.insertAdjacentHTML("beforeend", `<div class="pv-nav${m.key === fresh ? " new" : ""}">${esc(m.label)}</div>`); shown++;
+      }
+    }
+    if (extra) side.insertAdjacentHTML("beforeend", `<div class="pv-more">+${extra} more</div>`);
+    // Home page cards: the newest switched on first
+    const keys = [...on].reverse().slice(0, 6), cards = $("pv-cards");
+    cards.innerHTML = keys.length ? keys.map(k => {
+      const m = mod(k), w = (sector === "edu" && m.wEdu) || m.w;
+      return `<div class="pv-card${k === fresh ? " new" : ""}"><h4>${esc(w.t)}</h4>${w.l.map(x => `<p>${x}</p>`).join("")}</div>`;
+    }).join("") : `<div class="pv-empty">Switch on a module to see it here.</div>`;
+    pv.setAttribute("aria-label", `Preview of Fenmorix OS for ${name}, in ${PAINTS.find(p => p.a === paint.a)?.name || "your color"}, with ${on.size} modules: ${[...on].map(k => mod(k).label).join(", ") || "none"}.`);
+    // Demo email carries the build
+    const body = `Our organization: ${name}\nType: ${SECTORS[sector].label}\nOur size (people):\nBest time to talk:\n\nModules we're interested in: ${[...on].map(k => mod(k).label).join(", ")}\nColor: ${paint.a}\n`;
+    $("build-mail").href = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo: " + name) + "&body=" + encodeURIComponent(body);
+    window.fxBuild = { sector, modules: [...on].map(k => mod(k).label), name, color: paint.a };
+  }
+
+  // Colors and name
+  const sw = $("swatches");
+  PAINTS.forEach((p, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.style.setProperty("--a", p.a); b.style.setProperty("--s", p.s);
+    b.setAttribute("aria-label", p.name); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.title = p.name;
+    b.addEventListener("click", () => { paint.a = p.a; paint.s = p.s; $("pv-color").value = p.a; mark(b); drawPreview(); });
+    sw.appendChild(b);
+  });
+  const mark = b => sw.querySelectorAll(".swatch").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+  $("pv-color").addEventListener("input", e => { paint.a = e.target.value; mark(null); drawPreview(); });
+  $("pv-name").addEventListener("input", () => { nameTouched = true; drawPreview(); });
+
+  $("pv-date").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  setSector("ps");
+})();
+
+</script>
+<script>
+// Feature ideas: checked here, then sent to /api/idea (the website Worker forwards it to Fenmorix's office as a support request).
+(() => {
+  const f = document.getElementById("idea-form"), st = document.getElementById("idea-status");
+  const say = (t, cls) => { st.textContent = t; st.className = cls || ""; };
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    const v = Object.fromEntries(new FormData(f));
+    const bad = [];
+    for (const [k, label] of [["name", "your name"], ["org", "your organization"], ["email", "your email"], ["phone", "your phone number"], ["idea", "your idea"]]) {
+      const el = f.elements[k], val = String(v[k] || "").trim();
+      const wrong = !val || (k === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) || (k === "phone" && val.replace(/\D/g, "").length < 7);
+      el.setAttribute("aria-invalid", wrong ? "true" : "false");
+      if (wrong) bad.push(label);
+    }
+    if (bad.length) { say("Please fill in " + bad.join(", ").replace(/, ([^,]*)$/, " and $1") + ".", "bad"); f.querySelector('[aria-invalid="true"]').focus(); return; }
+    const token = (f.querySelector('[name="cf-turnstile-response"]') || {}).value || "";
+    const btn = f.querySelector("button[type=submit]"); btn.disabled = true; say("Sending…");
+    try {
+      const r = await fetch("/api/idea", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: v.name, org: v.org, email: v.email, phone: v.phone, idea: v.idea, website: v.website, token, build: window.fxBuild || null }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "It didn't go through.");
+      f.reset(); f.querySelectorAll("[aria-invalid]").forEach(x => x.removeAttribute("aria-invalid"));
+      say("Thank you! Your idea reached our team. We'll be in touch at the email you gave.", "ok");
+    } catch (err) {
+      say(err.message + " You can also email michael@fenmorix.com.", "bad");
+    } finally { btn.disabled = false; if (window.turnstile) try { window.turnstile.reset(); } catch {} }
+  });
+})();
+
+</script>
+<script>
+document.getElementById("demo-mail").addEventListener("click", e => {
+  const b = window.fxBuild; if (!b) return;
+  e.currentTarget.href = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo") + "&body=" + encodeURIComponent(`Our organization: ${b.name}\nType: ${b.sector}\nOur size (people):\nBest time to talk:\n\nModules we're interested in: ${b.modules.join(", ")}\n`);
+});
+document.getElementById("yr").textContent = new Date().getFullYear();
 (() => { const pt = document.getElementById("partner"); if (!pt) return;
   if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) { pt.classList.add("on"); return; }
   const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { pt.classList.add("on"); io.disconnect(); } }, { threshold: .35 }); io.observe(pt); })();

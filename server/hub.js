@@ -50,6 +50,7 @@ async function latestFor(pkg) {
 export async function handleHubClient(req, res, parts, send, jsonBody) {
   const ip = clientIp(req);
   if (!allow(`hub:${ip}`, 60, 60e3)) throw err(429, "Too many requests. Try again in a minute.");
+  if (req.method === "POST" && parts[3] === "request") return websiteRequest(req, res, send, jsonBody);
   const m = /^Bearer (fxu_[A-Za-z0-9_-]{30,80})$/.exec(String(req.headers.authorization || ""));
   const inst = m && (await pool.query("SELECT * FROM hub_installs WHERE key_hash = $1", [hash(m[1])])).rows[0];
   if (!inst) { throw err(401, "This update key isn't known. Ask Fenmorix Technologies for a new one."); }
@@ -148,4 +149,28 @@ export async function handleHub(req, res, parts, user, send, jsonBody) {
     return send(res, 200, { ok: true });
   }
   throw err(404, "Not found");
+}
+
+// ---- Feature ideas from fenmorix.com ----
+// The website's Worker checks the visitor (Turnstile, required fields) and forwards here with the shared secret WEBSITE_FORM_SECRET
+// (same value as the Worker's secret). The idea becomes a support request with no client yet (source 'website'), shown with the others.
+async function websiteRequest(req, res, send, jsonBody) {
+  const secret = String(process.env.WEBSITE_FORM_SECRET || "");
+  const given = String(req.headers["x-fenmorix-site"] || "");
+  const a = Buffer.from(crypto.createHash("sha256").update(given).digest()), b = Buffer.from(crypto.createHash("sha256").update(secret).digest());
+  if (secret.length < 24 || !crypto.timingSafeEqual(a, b)) throw err(401, "Not accepted.");
+  if (!allow("hub:website", 120, 60 * 60e3)) throw err(429, "Too many ideas this hour. Try again later.");
+  const v = await jsonBody(req, 32 * 1024);
+  const name = line(v.name, 120), org = line(v.org, 160), email = line(v.email, 200), phone = line(v.phone, 40), idea = String(v.idea || "").trim().slice(0, 4000);
+  if (!name || !org || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.replace(/\D/g, "").length < 7 || !idea) throw err(400, "Name, organization, email, phone and the idea are all needed.");
+  const build = v.build && typeof v.build === "object" ? { sector: line(v.build.sector, 20), modules: (Array.isArray(v.build.modules) ? v.build.modules : []).slice(0, 40).map(x => line(x, 60)) } : null;
+  const contact = { name, org, email, phone, ip: line(v.ip, 60), sector: build?.sector || "", modules: build?.modules || [] };
+  const subject = `Feature idea: ${line(idea.split(/\n/)[0], 90)}`;
+  const t = (await pool.query("INSERT INTO portal_tickets (client_id, subject, priority, opened_by_name, source, contact) VALUES (NULL, $1, 'normal', $2, 'website', $3) RETURNING id, number",
+    [subject, `${name} (${org})`, JSON.stringify(contact)])).rows[0];
+  const extra = build?.modules?.length ? `\n\nBuilt on the website (${build.sector}): ${build.modules.join(", ")}` : "";
+  await pool.query("INSERT INTO portal_posts (ticket_id, author, author_name, body) VALUES ($1, 'client', $2, $3)", [t.id, `${name} (${org})`, idea + extra]);
+  await pool.query(`INSERT INTO audit_log (actor_id, actor_name, actor_role, module, action, detail) VALUES (NULL, $1, 'Website', 'Client portal', 'Feature idea from the website', $2)`,
+    [`${name} (${org})`, `#${t.number} ${email}`]);
+  return send(res, 200, { ok: true, number: t.number });
 }

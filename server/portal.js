@@ -249,18 +249,20 @@ export async function handlePortalAdmin(req, res, parts, user, send, jsonBody) {
     return token;
   };
   if (req.method === "GET" && !a) {
-    const open = (await pool.query(`SELECT t.id, t.number, t.subject, t.status, t.priority, t.updated_at, t.vendor_seen, c.id AS client_id, c.name AS client_name FROM portal_tickets t
-      JOIN sales_clients c ON c.id = t.client_id WHERE t.status IN ('open', 'waiting') OR NOT t.vendor_seen ORDER BY t.updated_at DESC LIMIT 50`)).rows;
-    return send(res, 200, { open: open.map(t => ({ id: t.id, number: t.number, subject: t.subject, status: t.status, priority: t.priority, updatedAt: t.updated_at, unread: !t.vendor_seen, clientId: t.client_id, clientName: t.client_name })),
+    const open = (await pool.query(`SELECT t.id, t.number, t.subject, t.status, t.priority, t.updated_at, t.vendor_seen, t.source, t.contact, c.id AS client_id, c.name AS client_name FROM portal_tickets t
+      LEFT JOIN sales_clients c ON c.id = t.client_id WHERE t.status IN ('open', 'waiting') OR NOT t.vendor_seen ORDER BY t.updated_at DESC LIMIT 50`)).rows;
+    return send(res, 200, { open: open.map(t => ({ id: t.id, number: t.number, subject: t.subject, status: t.status, priority: t.priority, updatedAt: t.updated_at, unread: !t.vendor_seen,
+      clientId: t.client_id, clientName: t.client_name || `${t.contact?.org || "Website"} (website)`, source: t.source })),
       portalUrl: portalUrl() });
   }
   if (a === "tickets" && isUuid(b)) {
-    const t = (await pool.query("SELECT t.*, c.name AS client_name FROM portal_tickets t JOIN sales_clients c ON c.id = t.client_id WHERE t.id = $1", [b])).rows[0];
+    const t = (await pool.query("SELECT t.*, c.name AS client_name FROM portal_tickets t LEFT JOIN sales_clients c ON c.id = t.client_id WHERE t.id = $1", [b])).rows[0];
     if (!t) throw err(404, "That request is gone.");
     if (req.method === "GET") {
       await pool.query("UPDATE portal_tickets SET vendor_seen = true WHERE id = $1", [t.id]);
       const posts = (await pool.query("SELECT author, author_name, body, created_at FROM portal_posts WHERE ticket_id = $1 ORDER BY created_at", [t.id])).rows;
-      return send(res, 200, { ticket: { id: t.id, number: t.number, subject: t.subject, status: t.status, priority: t.priority, openedBy: t.opened_by_name, createdAt: t.created_at, clientName: t.client_name },
+      return send(res, 200, { ticket: { id: t.id, number: t.number, subject: t.subject, status: t.status, priority: t.priority, openedBy: t.opened_by_name, createdAt: t.created_at,
+        clientName: t.client_name || `${t.contact?.org || "Website"} (website)`, source: t.source, contact: t.source === "website" ? t.contact : null, canEmail: t.source === "website" && (await import("./mail.js")).mailConfigured() },
         posts: posts.map(p => ({ from: p.author, name: p.author_name, body: p.body, at: p.created_at })) });
     }
     const body = await jsonBody(req);
@@ -269,8 +271,16 @@ export async function handlePortalAdmin(req, res, parts, user, send, jsonBody) {
       const msg = text(body.body, 10000); if (!msg) throw err(400, "Write a reply.");
       await pool.query("INSERT INTO portal_posts (ticket_id, author, author_name, body) VALUES ($1, 'vendor', $2, $3)", [t.id, `${user.name} (Fenmorix)`, msg]);
       await pool.query("UPDATE portal_tickets SET status = $2, client_seen = false, vendor_seen = true, updated_at = now() WHERE id = $1", [t.id, status || "answered"]);
-      await pool.query("INSERT INTO sales_activity (client_id, kind, body, by_name) VALUES ($1, 'support', $2, $3)", [t.client_id, `Answered support request #${t.number}: ${line(t.subject, 200)}`, user.name]);
-      return send(res, 200, { ok: true });
+      if (t.client_id) await pool.query("INSERT INTO sales_activity (client_id, kind, body, by_name) VALUES ($1, 'support', $2, $3)", [t.client_id, `Answered support request #${t.number}: ${line(t.subject, 200)}`, user.name]);
+      let emailed = false;
+      if (t.source === "website" && t.contact?.email) {   // no portal account to read it in: email the reply when mail is set up
+        const { mailConfigured, sendMail } = await import("./mail.js");
+        if (mailConfigured()) {
+          try { await sendMail({ to: t.contact.email, subject: `Re: ${t.subject} (#${t.number})`, text: `Hello ${t.contact.name},\n\n${msg}\n\n${user.name}\nFenmorix Technologies, LLC` }); emailed = true; }
+          catch (e) { throw err(502, `The reply was saved, but the email didn't send (${e.message}). Write to ${t.contact.email} yourself.`); }
+        }
+      }
+      return send(res, 200, { ok: true, emailed });
     }
     if (c2 === "status" && status) { await pool.query("UPDATE portal_tickets SET status = $2, updated_at = now() WHERE id = $1", [t.id, status]); return send(res, 200, { ok: true }); }
   }

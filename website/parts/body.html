@@ -1,0 +1,206 @@
+<header class="top">
+  <div class="wrap">
+    <a href="#top"><img src="assets/logo.png" alt="Fenmorix Technologies"></a>
+    <nav aria-label="Main">
+      <a class="hide-sm" href="#public-safety">Public safety</a>
+      <a class="hide-sm" href="#sectors">Government, business &amp; schools</a>
+      <a class="hide-sm" href="#security">Security</a>
+      <a class="hide-sm" href="#pricing">Pricing</a>
+      <a href="https://portal.fenmorix.com">Client login</a>
+      <a class="btn btn-fire" href="#contact">Request a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" id="build">
+  <div class="wrap">
+    <div class="hero-top">
+      <div>
+        <h1>Run the whole organization. <span>In one system.</span></h1>
+        <p class="lede">Messaging, schedules, purchasing, forms, training and safety tools for public safety agencies, governments, businesses and schools. You pay only for the modules you switch on.</p>
+        <div class="ctas"><a class="btn btn-fire" href="#contact">Request a demo</a><a class="btn btn-line" href="#sectors">See how it fits you</a></div>
+        <p class="made">Built in Baton Rouge, Louisiana, by the people who use it every day.</p>
+      </div>
+      <div class="sector-pick">
+        <h2 id="sector-h">Build your system for</h2>
+        <div class="sectors" role="group" aria-labelledby="sector-h">
+          <button type="button" data-sector="ps" aria-pressed="true">Public safety<small>Fire, EMS, law enforcement and 911 centers</small></button>
+          <button type="button" data-sector="gov" aria-pressed="false">Government<small>Cities, parishes, counties and utilities</small></button>
+          <button type="button" data-sector="biz" aria-pressed="false">Business<small>Shops, offices and service companies</small></button>
+          <button type="button" data-sector="edu" aria-pressed="false">Education<small>Schools, districts and colleges</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="config-title"><h2>Build your system</h2><p>Switch modules on and watch the picture change. Tap any module to read what it does.</p></div>
+    <div class="config">
+      <div class="pv-wrap">
+        <div class="pv" id="pv" role="img" aria-label="Preview of Fenmorix OS">
+          <div class="pv-bar" aria-hidden="true"><i></i><i></i><i></i><span id="pv-url">riverbend.fenmorix.com</span></div>
+          <div class="pv-body" aria-hidden="true">
+            <aside class="pv-side">
+              <div class="pv-brand"><div class="pv-mark" id="pv-mark">R</div><div><b id="pv-org">Riverbend Fire District</b><small>Fenmorix OS</small></div></div>
+              <div id="pv-nav"></div>
+            </aside>
+            <div class="pv-main">
+              <div class="pv-hello"><b id="pv-hello">Good morning</b><span id="pv-date"></span></div>
+              <div class="pv-cards" id="pv-cards"></div>
+            </div>
+          </div>
+        </div>
+        <div class="paint">
+          <span>Colors</span><div id="swatches" style="display:flex;gap:8px;flex-wrap:wrap" role="group" aria-label="Color schemes"></div>
+          <label>Your own<input type="color" id="pv-color" value="#ff7900" aria-label="Pick your own accent color"></label>
+        </div>
+        <div class="paint"><label for="pv-name">Your name on it</label><input type="text" id="pv-name" maxlength="40" autocomplete="organization"></div>
+      </div>
+      <div>
+        <div class="board">
+          <div id="groups"></div>
+          <div class="about" id="about" aria-live="polite"></div>
+          <div class="tally"><b id="count">0</b><p id="tally-text">modules on.</p><a class="btn btn-fire" id="build-mail" href="mailto:michael@fenmorix.com">Request a demo of this</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="public-safety">
+  <div class="wrap">
+    <div class="intro">
+      <h2>Public safety, start to finish</h2>
+      <p>Many agencies run on a scheduling site, a purchasing spreadsheet, a group text for recalls and a binder for the ISO grader. Here is the same day when it is all one system, on the same accounts, phones and audit log.</p>
+    </div>
+    <div class="shift">
+      <article class="moment">
+        <div><time>02:14</time><h3>Recall staff in minutes</h3><p>A chief starts an emergency recall from a phone. Everyone gets a push and a message; the board fills in who's coming, when, and who can't.</p></div>
+        <div class="frag" aria-label="Example recall board">
+          <div class="row"><span>Engine company, B shift</span><span class="tag ok">Coming, 18 min</span></div>
+          <div class="row"><span>Off-duty driver</span><span class="tag ok">Coming, 25 min</span></div>
+          <div class="row"><span>Lieutenant, A shift</span><span class="tag no">Can't respond</span></div>
+          <div class="row"><span>12 others</span><span class="tag idle">Waiting</span></div>
+        </div>
+      </article>
+      <article class="moment">
+        <div><time>03:02</time><h3>Track every crew on scene</h3><p>The command board pulls units from CAD, keeps crews and assignments, times PAR checks and puts strategy changes and a MAYDAY in the permanent record.</p></div>
+        <div class="frag par" aria-label="Example PAR timer"><strong>3:12</strong><div><b>Next PAR check</b><br>5 crews on scene, offensive strategy, primary search complete</div></div>
+      </article>
+      <article class="moment">
+        <div><time>10:30</time><h3>Purchases signed, not chased</h3><p>Requests route to the right signer for each division. Signatures are drawn on screen, the requester sees each step, accounting gets it when it's approved.</p></div>
+        <div class="frag chain" aria-label="Example approval chain"><span class="done">Requested</span><i></i><span class="done">Captain</span><i></i><span class="done">Chief</span><i></i><span>Accounting</span></div>
+      </article>
+      <article class="moment">
+        <div><time>14:00</time><h3>Know your rating before the grader does</h3><p>Training hours, hydrant tests, inspections and dispatch times feed a live ISO / PIAL score, with a binder ready to print for the grading.</p></div>
+        <div class="frag" aria-label="Example projected rating"><div class="score"><strong>88.6</strong><span>projected score, Class 2</span></div><div class="bar"><i></i></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block biz" id="sectors">
+  <div class="wrap">
+    <div class="intro">
+      <h2>Not a public safety agency? Same system, your words.</h2>
+      <p>Cities, parishes, businesses and schools use the same core with different modules switched on. Menus, job roles, pay periods and wording change to fit the organization, without a custom build.</p>
+    </div>
+    <div class="cols">
+      <div><h3>Government</h3><p>Requisitions with the signatures auditors expect, staff schedules and time, who's out, help desk and equipment across buildings, emergency notifications for storms and outages, and reports for the council or commission.</p></div>
+      <div><h3>Business</h3><p>Time clock and schedules, who's in today, purchase requests and expense claims with receipts, a help desk, shared logins only the right people can reveal, and screens for the front counter.</p></div>
+      <div><h3>Education</h3><p>Campus alerts to faculty and students, permission slips and sports forms signed online, who's out before roll call, classroom purchasing, teacher certifications, parent conferences, and reports for the school board. A gradebook is coming next.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block secure" id="security">
+  <div class="wrap">
+    <div class="intro">
+      <h2>Security your IT department can sign off on</h2>
+      <p>Public safety, government and school records have rules. These are built in, not bolted on later.</p>
+    </div>
+    <div class="locks">
+      <div><h3>Two-step sign-in</h3><p>Administrators confirm with an authenticator app. Passwords follow a written rule and expire on schedule.</p></div>
+      <div><h3>Every action logged</h3><p>Who saw, signed, changed or exported what, and when, in an audit log that can't be edited.</p></div>
+      <div><h3>Built for CJIS</h3><p>Investigations keep need-to-know access, an access log, encrypted case files and a dissemination record.</p></div>
+      <div><h3>Signed updates</h3><p>Each update is signed by Fenmorix and checked by your server before it installs, with a backup and automatic rollback.</p></div>
+      <div><h3>Only your build</h3><p>Your download contains the modules you bought and nothing from any other customer.</p></div>
+      <div><h3>Encrypted where it matters</h3><p>Sensitive form answers, shared logins and case files are encrypted in the database, not just on the wire.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="intro"><h2>From first call to go-live</h2><p>A clear path with no surprises, and your existing records come with you.</p></div>
+    <ol class="steps">
+      <li><h3>Talk</h3><p>We learn how your organization works today and which tools you'd like to retire.</p></li>
+      <li><h3>Quote</h3><p>A written quote by module and size, with what you'll save next to it.</p></li>
+      <li><h3>Install</h3><p>Hosted by our partner Avexon, or on your own servers, connected to the systems you already use.</p></li>
+      <li><h3>Train</h3><p>Hands-on training for administrators and staff, plus a test copy to practice on.</p></li>
+      <li><h3>Keep improving</h3><p>Updates arrive on their own, and your client portal shows every version and request.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="pricing" style="padding-top:0">
+  <div class="wrap terms">
+    <div><h2>Priced by module and size</h2><p style="margin-top:14px">Start from a ready-made bundle for your kind of organization, or build your own from any modules you like. Agencies, governments and schools pay by size, with per-user options; businesses pay per user.</p>
+      <ul><li>Bundles cost less than the same modules picked one by one</li><li>Schools can add students at a fraction of the staff rate</li><li>Discounts for multi-year terms and for organizations that join together</li><li>Training and data moves quoted up front</li></ul></div>
+    <div><h2>Hosted for you, or on your servers</h2><p style="margin-top:14px">Our hosting partner Avexon sizes and quotes the servers, backups and recovery level you need, separately from the software.</p>
+      <ul><li>Off-site backups and a recovery plan</li><li>On-premises licenses for organizations that require it</li><li>Test and training copies available</li></ul></div>
+  </div>
+</section>
+
+<section class="block ideas" id="ideas">
+  <div class="wrap ideas-grid">
+    <div>
+      <h2>Is there a feature you'd like to have, but don't see it?</h2>
+      <p>Let us know about it! Every idea comes straight to our team, and features that help everyone are added at no charge.</p>
+    </div>
+    <form id="idea-form" novalidate>
+      <div class="f2">
+        <label>Your name<input name="name" required maxlength="120" autocomplete="name"></label>
+        <label>Organization<input name="org" required maxlength="160" autocomplete="organization"></label>
+        <label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+        <label>Phone<input name="phone" type="tel" required maxlength="40" autocomplete="tel"></label>
+      </div>
+      <label>Your idea<textarea name="idea" required maxlength="4000" rows="5" placeholder="What would you like it to do, and how would your team use it?"></textarea></label>
+      <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+      <div class="cf-turnstile" data-sitekey="__TURNSTILE_SITEKEY__" data-theme="light"></div>
+      <div class="send"><button class="btn btn-fire" type="submit">Send my idea</button><p id="idea-status" role="status"></p></div>
+    </form>
+  </div>
+</section>
+
+<section class="partner" id="partner">
+  <div class="wrap">
+    <p class="with">In partnership with</p>
+    <div class="lockup">
+      <img class="fx" src="assets/fenmorix-wordmark.webp" width="900" height="204" alt="Fenmorix Technologies">
+      <div class="cross" aria-hidden="true"><svg viewBox="0 0 54 54"><line class="o" x1="6" y1="6" x2="48" y2="48"></line><line class="g" x1="48" y1="6" x2="6" y2="48"></line></svg></div>
+      <img class="av" src="assets/avexon.webp" width="660" height="96" alt="Avexon">
+    </div>
+    <h2>Built by <span class="o">Fenmorix</span>. Delivered with <span class="g">Avexon</span>.</h2>
+    <p class="say">Fenmorix Technologies builds the software. Avexon sets up, hosts and supports Fenmorix OS for organizations that want it run for them: servers, backups and the recovery level you need, quoted separately from the software.</p>
+    <a class="btn btn-green" href="mailto:solutions@avexon.com?subject=Hosting%20Fenmorix%20OS">Email Avexon: solutions@avexon.com</a>
+  </div>
+</section>
+
+<section class="close" id="contact">
+  <div class="wrap">
+    <h2>See it with your own organization in it</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a class="btn btn-dark" id="demo-mail" href="mailto:michael@fenmorix.com?subject=Fenmorix%20OS%20demo">Request a demo</a>
+      <a class="btn btn-ghost" href="https://portal.fenmorix.com">Client login</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/logo.png" alt="Fenmorix Technologies">
+    <span>© <span id="yr">2026</span> Fenmorix Technologies, LLC. Baton Rouge, Louisiana.</span>
+    <nav aria-label="Footer"><a href="mailto:michael@fenmorix.com">michael@fenmorix.com</a><a href="https://portal.fenmorix.com">Client login</a><a href="https://office.fenmorix.com">Staff</a></nav>
+  </div>
+</footer>
