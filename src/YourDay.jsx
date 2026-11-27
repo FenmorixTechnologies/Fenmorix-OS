@@ -4,7 +4,7 @@ import { BRAND } from "./brand.js";
 import { tileOn, moduleOn } from "./licensing.js";
 // Your Day widgets belong to the section their button opens (hidden when that module isn't licensed)
 const SHIFT_MODULES = ["leave", "forceback", "activecalls", "command", "recall", "training", "callout", "stats"];
-const WIDGET_TILE = { schedule: "schedule", spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
+const WIDGET_TILE = { clientportal: "sales", schedule: "schedule", spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
 import {
   cardStyle, btn, loadShared, money, reqAmount, waitingSummary, canMarkReqPaid, coversDivision,
 } from "./App.jsx";
@@ -415,6 +415,7 @@ export default function YourDayPanel({ data: d, onOpen }) {
           <OffWorkWidget onOpen={onOpen} />
           <SpotWidget onOpen={onOpen} />
           <LinksWidget onOpen={onOpen} />
+          <ClientRequestsWidget onOpen={onOpen} />
           <Widget id="meetings" icon={Calendar} tint={SAGE} title="Meetings today" action="Meetings" onAction={() => onOpen("meetings")}>
             {d.todaysMeetings.length === 0 && <Empty>No meetings today.</Empty>}
             {d.todaysMeetings.map(m => (
@@ -517,7 +518,7 @@ function OnDutyWidget({ onOpen }) {
 
 // ---- Widget layout: order + collapsed, saved to the person's profile (/api/prefs "yourDay") ----
 const WidgetLayout = createContext(null);
-const DEFAULT_ORDER = ["spot", "schedule", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
+const DEFAULT_ORDER = ["clientportal", "spot", "schedule", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
 function useWidgetLayout() {
   const [saved, setSaved] = useState({ order: [], collapsed: [] });
   const [editing, setEditing] = useState(false);
@@ -743,6 +744,41 @@ function LinksWidget({ onOpen }) {
         {list.slice(0, 8).map(l => <a key={l.id} href={l.url} target="_blank" rel="noopener noreferrer" style={{ display: "flex", gap: 5, alignItems: "center", padding: "5px 0", color: INK, fontWeight: 700, textDecoration: "none", minWidth: 0 }}>
           <ExternalLink size={12} style={{ flexShrink: 0 }} /><Ellipsis>{l.title}</Ellipsis></a>)}</div>}
       {list?.length > 8 && <More>+{list.length - 8} more</More>}
+    </Widget>
+  );
+}
+
+// Office install only (Clients & Quotes): open support requests from the client portal
+function ClientRequestsWidget({ onOpen }) { return tileOn("sales") ? <ClientRequestsBody onOpen={onOpen} /> : null; }
+const REQ_LABEL = { open: "Open", answered: "Answered", waiting: "Waiting on them", closed: "Closed" };
+function ClientRequestsBody({ onOpen }) {
+  const [d, setD] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    const load = () => fetch("/api/clientportal", { credentials: "same-origin", headers: { "X-SGFD-Background": "1" } })
+      .then(r => (r.ok ? r.json() : { open: [], hidden: true })).then(j => { if (alive) setD(j); }, () => {});
+    load();
+    const t = setInterval(load, 60_000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+  if (d?.hidden) return null;
+  const list = d?.open || [];
+  const unread = list.filter(t => t.unread).length;
+  return (
+    <Widget id="clientportal" icon={LifeBuoy} tint="#C94D00" title="Client support requests" action="Clients & Quotes" onAction={() => onOpen("sales")} count={unread || list.length}>
+      {!d && <Empty>Loading…</Empty>}
+      {d && !list.length && <Empty>No open requests from clients.</Empty>}
+      {list.slice(0, 6).map(t => (
+        <button type="button" key={t.id} onClick={() => onOpen("sales", { clientId: t.clientId, ticket: t.id })}
+          style={{ display: "flex", gap: 8, alignItems: "center", width: "100%", padding: "7px 0", border: 0, borderBottom: `1px solid ${LINE}`, background: "none", cursor: "pointer", textAlign: "left", font: "inherit", color: INK, minWidth: 0 }}>
+          {t.unread && <span style={{ background: "#C94D00", color: "#fff", fontWeight: 800, fontSize: 11, borderRadius: 4, padding: "2px 6px", flexShrink: 0 }}>NEW</span>}
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <Ellipsis style={{ display: "block", fontWeight: 700 }}>#{t.number} {t.subject}</Ellipsis>
+            <Ellipsis style={{ display: "block", fontSize: 12, color: INK_SOFT }}>{t.clientName} · {REQ_LABEL[t.status] || t.status}{t.priority === "high" || t.priority === "urgent" ? ` · ${t.priority} priority` : ""}</Ellipsis>
+          </span>
+        </button>
+      ))}
+      {list.length > 6 && <More>+{list.length - 6} more</More>}
     </Widget>
   );
 }

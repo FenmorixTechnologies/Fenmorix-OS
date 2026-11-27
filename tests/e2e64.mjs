@@ -114,6 +114,11 @@ await pp.getByRole("button", { name: "Send request" }).click(); await pp.waitFor
 check("request opened", /Schedule shows wrong shift/.test(await main(pp)) && psql("SELECT priority FROM portal_tickets") === "high");
 
 // ---- Office sees it on the Overview, answers ----
+await page.goto(OFFICE); await page.waitForTimeout(2500);
+t = await page.locator("body").innerText();
+check("Your Day widget shows the request", /Client support requests/.test(t) && /NEW\s*#\d+ Schedule shows wrong shift/.test(t) && /Riverbend/.test(t), t.slice(0, 600));
+await page.getByRole("button", { name: /#\d+ Schedule shows wrong shift/ }).first().click(); await page.waitForTimeout(1500);
+check("widget opens the client with the request", (await page.getByLabel("Reply to the client").count()) === 1);
 await page.goto(OFFICE); await page.waitForTimeout(2000);
 await page.locator("nav button", { hasText: "Clients & Quotes" }).first().click(); await page.waitForTimeout(1500);
 t = await main(page);

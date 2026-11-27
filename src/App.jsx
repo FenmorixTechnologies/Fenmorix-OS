@@ -5774,7 +5774,7 @@ export default function App() {
     <h1 style={{ margin: "0 0 10px", fontSize: 24, color: "#13233F" }}>{tileName("spot", "Spot Prices")}</h1><SpotPrices isMaster={sessionUser?.role === "master"} /></AppShell>;
   if (activeModule === "links") return <QuickLinksModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "books") return <BooksModule onBack={() => setActiveModule(null)} />;
-  if (activeModule === "sales") return <SalesModule onBack={() => setActiveModule(null)} />;
+  if (activeModule === "sales") return <SalesModule initial={openWith} onBack={() => setActiveModule(null)} />;
   if (activeModule === "schedule") return <ScheduleModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "offwork") return <OffWorkModule onBack={() => setActiveModule(null)} initialView={openWith?.view} />;
   if (activeModule === "fireprev") return <FirePreventionModule onBack={() => setActiveModule(null)} />;

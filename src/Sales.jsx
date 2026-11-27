@@ -588,9 +588,9 @@ function BookEditor({ toast, book, setBook, canManage }) {
 }
 
 // ---------------------------------------------------------------- Module
-export default function SalesModule({ onBack }) {
+export default function SalesModule({ onBack, initial }) {
   const [d, setD] = useState(null), [book, setBook] = useState(null), [msg, setMsg] = useState("");
-  const [view, setView] = useState({ page: "overview" }), [clientEdit, setClientEdit] = useState(null);
+  const [view, setView] = useState(() => initial?.clientId ? { page: "client", id: initial.clientId, init: { ticket: initial.ticket }, t: Date.now() } : { page: "overview" }), [clientEdit, setClientEdit] = useState(null);
   const toast = m => { setMsg(m); setTimeout(() => setMsg(""), 3500); };
   const load = () => api("").then(setD, e => toast(e.message));
   useEffect(() => { load(); api("/book").then(r => setBook(r.book), e => toast(e.message)); }, []);

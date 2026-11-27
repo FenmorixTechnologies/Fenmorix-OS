@@ -1242,4 +1242,9 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   opens soon" placeholder until 11/26/2026 evening). The portal is LIVE now: portal.fenmorix.com = A 52.15.58.152 (proxied, no Access), route removed.
   Rollback for the site: point the two routes back to `fenmorix-site-login` (old Pages site "fenmorix" + login pill). Deploy = upload the
   script through the Cloudflare MCP (paste content; check sha256 in the code before uploading). BlakSheep does SEO.
+- Partner band (11/26/2026, Michael: bring back the Fenmorix X Avexon lockup from the old Pages site): section#partner before Contact =
+  assets/fenmorix-wordmark.webp + animated orange/green X (draws when scrolled into view) + assets/avexon.webp, "Built by Fenmorix. Delivered
+  with Avexon.", button to solutions@avexon.com. worker.js serves both .webp files. worker.js in git = the deployed script byte for byte.
+- Office Your Day: `ClientRequestsWidget` (id "clientportal", WIDGET_TILE sales) lists open/unread portal requests from GET /api/clientportal
+  (60 s poll); a row opens Clients & Quotes on that client with the request open (SalesModule `initial` {clientId, ticket} via openWith).
 - packaging SHIP now includes portal.html (vite's third input: every package needs it or `vite build` fails).

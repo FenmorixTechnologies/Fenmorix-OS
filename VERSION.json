@@ -1,12 +1,13 @@
 {
- "version": "2026.11.26.6",
- "notes": [
-  "Fixes and improvements.",
-  "Client portal support (used only by Fenmorix Technologies' own server).",
-  "Automatic updates: this server can check in with its update service, download signed updates for itself, and (if you turn it on) install them at night.",
-  "System \u203a License: switch licensed modules off and back on, without a new license. Nothing is deleted.",
-  "When a secure sign-in in front of the app ends, a clear message with a Reload button replaces \"Failed to fetch\".",
-  "System page: the update box names this server's own update zip.",
-  "Linux: new restore script for moving an install to a new server."
- ]
+  "version": "2026.11.26.7",
+  "notes": [
+    "Office Your Day: client support requests widget.",
+    "Fixes and improvements.",
+    "Client portal support (used only by Fenmorix Technologies' own server).",
+    "Automatic updates: this server can check in with its update service, download signed updates for itself, and (if you turn it on) install them at night.",
+    "System \u203a License: switch licensed modules off and back on, without a new license. Nothing is deleted.",
+    "When a secure sign-in in front of the app ends, a clear message with a Reload button replaces \"Failed to fetch\".",
+    "System page: the update box names this server's own update zip.",
+    "Linux: new restore script for moving an install to a new server."
+  ]
 }
