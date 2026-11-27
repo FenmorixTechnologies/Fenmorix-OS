@@ -16,6 +16,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
+import dns from "node:dns";
 import { pool } from "./db.js";
 import { verifyRelease, licenseState } from "./license.js";
 import { PACKAGE, PACKAGE_NAME } from "./buildFlags.js";
@@ -39,9 +40,33 @@ async function conf() {
   const c = await readJson(CONF());
   return { url: c.url || process.env.UPDATE_HUB_URL || "", key: c.key || "", auto: !!c.auto, autoAt: /^\d{2}:\d{2}$/.test(c.autoAt || "") ? c.autoAt : "03:00" };
 }
+// "fetch failed" alone says nothing: name the real reason (DNS, refused, timed out, certificate, ...) so it can be fixed
+function netProblem(e, url) {
+  const c = e?.cause || {}, code = c.code || c.errno || "", host = (() => { try { return new URL(url).host; } catch { return url; } })();
+  const why = {
+    ENOTFOUND: `this server can't look up ${host} (DNS)`, EAI_AGAIN: `this server's DNS didn't answer for ${host}`,
+    ECONNREFUSED: `${host} refused the connection`, ECONNRESET: `the connection to ${host} was cut off (a firewall or proxy may be in the way)`,
+    ETIMEDOUT: `no answer from ${host} (outbound HTTPS may be blocked by a firewall)`, UND_ERR_CONNECT_TIMEOUT: `no answer from ${host} (outbound HTTPS may be blocked by a firewall)`,
+    ENETUNREACH: `this server has no network route to ${host}`, EHOSTUNREACH: `this server has no network route to ${host}`,
+    UNABLE_TO_GET_ISSUER_CERT_LOCALLY: `the certificate for ${host} isn't trusted here (a network filter may be inspecting HTTPS)`,
+    SELF_SIGNED_CERT_IN_CHAIN: `the certificate for ${host} isn't trusted here (a network filter may be inspecting HTTPS)`,
+    CERT_HAS_EXPIRED: `the certificate for ${host} has expired`,
+  }[code];
+  if (e?.name === "TimeoutError" || e?.name === "AbortError") return err(504, `The update service at ${host} didn't answer within 30 seconds.`);
+  return err(502, `Couldn't reach the update service: ${why || (c.message || e?.message || "network error")}${code && !why ? ` (${code})` : code ? ` [${code}]` : ""}.`);
+}
 async function call(c, p, init = {}) {
-  const r = await fetch(`${c.url}/api/hub/client/${p}`, { ...init, redirect: "manual", signal: AbortSignal.timeout(init.timeout || 30000),
+  const url = `${c.url}/api/hub/client/${p}`;
+  const go = () => fetch(url, { ...init, redirect: "manual", signal: AbortSignal.timeout(init.timeout || 30000),
     headers: { authorization: `Bearer ${c.key}`, "x-sgfd": "1", "content-type": "application/json", ...(init.headers || {}) } });
+  let r;
+  try { r = await go(); }
+  catch (e) {
+    if (e?.name === "TimeoutError" || e?.name === "AbortError") throw netProblem(e, url);
+    // A server whose IPv6 route is broken: try once more preferring IPv4
+    try { dns.setDefaultResultOrder("ipv4first"); r = await go(); console.warn("[updates] reached the update service over IPv4 after:", e.cause?.code || e.message); }
+    catch (e2) { throw netProblem(e2, url); }
+  }
   if (r.status >= 300 && r.status < 400) throw err(502, "The update service sent a sign-in page instead of answering (its address may be behind a sign-in).");
   if (!r.ok) { const j = await r.json().catch(() => ({})); throw err(r.status === 401 ? 401 : 502, j.error || `The update service answered ${r.status}.`); }
   return r;

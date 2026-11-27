@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.26.8",
+  "version": "2026.11.26.9",
   "notes": [
+    "Automatic updates: when the update service can't be reached, the message says why (DNS, firewall, certificate...) and IPv4 is tried again.",
     "Updates \u203a Installations: pick the server from a list (St. George, Louisiana Gold & Coins, demo sandbox, this office); client is optional.",
     "Office Your Day: client support requests widget.",
     "Fixes and improvements.",
