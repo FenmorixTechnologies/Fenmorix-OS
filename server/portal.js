@@ -72,13 +72,13 @@ async function startSession(req, res, userId) {
 }
 async function portalUser(req) {
   const t = readCookie(req, COOKIE); if (!t) return null;
-  const r = (await pool.query(`SELECT s.token_hash, s.created_at, s.last_seen, u.*, c.name AS client_name, c.status AS client_status FROM portal_sessions s
+  const r = (await pool.query(`SELECT u.*, s.token_hash, s.created_at AS session_started, s.last_seen AS session_seen, c.name AS client_name, c.status AS client_status FROM portal_sessions s
     JOIN portal_users u ON u.id = s.user_id JOIN sales_clients c ON c.id = u.client_id WHERE s.token_hash = $1`, [sha(t)])).rows[0];
   if (!r) return null;
-  if (!r.active || Date.now() - new Date(r.last_seen) > IDLE_MIN * 60e3 || Date.now() - new Date(r.created_at) > MAX_HOURS * 3600e3) {
+  if (!r.active || Date.now() - new Date(r.session_seen) > IDLE_MIN * 60e3 || Date.now() - new Date(r.session_started) > MAX_HOURS * 3600e3) {
     await pool.query("DELETE FROM portal_sessions WHERE token_hash = $1", [r.token_hash]); return null;
   }
-  if (Date.now() - new Date(r.last_seen) > 30e3) await pool.query("UPDATE portal_sessions SET last_seen = now() WHERE token_hash = $1", [r.token_hash]);
+  if (Date.now() - new Date(r.session_seen) > 30e3) await pool.query("UPDATE portal_sessions SET last_seen = now() WHERE token_hash = $1", [r.token_hash]);
   return r;
 }
 const userJson = u => ({ id: u.id, name: u.name, email: u.email, client: u.client_name });
@@ -138,6 +138,7 @@ export async function handlePortal(req, res, url, send, jsonBody) {
     if (!u || !ok || !u.active || !u.password_hash) throw err(401, "That email and password don't match.");
     await startSession(req, res, u.id);
     const full = await portalUser({ headers: { cookie: String(res.getHeader("Set-Cookie")).split(";")[0] } });
+    if (!full) throw err(500, "Signed in, but the new session couldn't be read back. Try again; if it keeps happening, tell Fenmorix Technologies.");
     await clientAudit(full, "Signed in to the client portal", ip);
     return send(res, 200, { user: userJson(full) });
   }

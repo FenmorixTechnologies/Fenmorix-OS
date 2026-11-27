@@ -141,6 +141,12 @@ check("document downloads (attachment)", dl.s === 200 && dl.t === "application/p
 await pp.locator("nav button", { hasText: "Updates" }).click(); await pp.waitForTimeout(500);
 check("release notes", /Faster reports/.test(await main(pp)));
 await pp.screenshot({ path: "shot-portal.png" });
+// An account made days ago can still sign in (the session's age, not the account's, decides; 11/27/2026 bug)
+psql("UPDATE portal_users SET created_at = now() - interval '3 days'");
+await papi("/api/portal/logout", {});
+const old = await papi("/api/portal/login", { email: "dana@riverbend.example", password: CPW });
+check("an older account signs in", old.status === 200 && /Dana/.test(JSON.stringify(old.body)), JSON.stringify(old));
+check("and stays signed in", (await papi("/api/portal/overview")).status === 200);
 
 // ---- Access turned off ends the session ----
 const uid = psql("SELECT id FROM portal_users");
