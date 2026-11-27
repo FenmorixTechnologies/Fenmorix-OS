@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.27.3",
+  "version": "2026.11.27.4",
   "notes": [
+    "Gradebook for schools (add-on module): classes, weighted grades with comments and graded work, report cards, family sign-ins for students and parents at /grades, reports by grade and subject.",
     "Home menu in groups you can open and close; arrange them in User Management \u203a Organization \u203a Main menu.",
     "Organization types: business, government, school or district, fire/EMS.",
     "Clients & Quotes: module-by-module prices, Build your own (+20%), government and school pricing with students, website feature ideas as support requests.",

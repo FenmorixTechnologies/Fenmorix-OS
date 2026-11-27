@@ -276,6 +276,7 @@ const DEMO_PRESETS = [
   ["Everything", ms => ms.map(m => m.key)],
   ["Standard (fire department)", ms => ms.filter(m => !m.optIn).map(m => m.key)],
   ["Gold & coin shop", () => ["timeclock", "offwork", "sick", "messaging", "spot", "links"]],
+  ["School", () => ["gradebook", "messaging", "forms", "helpdesk", "procurement", "timeclock", "offwork", "sick", "training", "board"]],
   ["Core only", () => []],
 ];
 function DemoModules({ l, setL, groups, toast, pick, fileRef, ask, setAsk, done }) {

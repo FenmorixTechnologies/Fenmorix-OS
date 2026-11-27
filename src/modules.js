@@ -69,6 +69,9 @@ export const MODULES = [
     desc: "Live public protection classification score, records by division, grader binder." },
   { key: "fireprev", name: "Inspections Program", group: "Analytics & Compliance", tiles: ["fireprev"], api: ["fireprev"], collections: [],
     desc: "Annual inspection coverage and rating credit." },
+  // Schools. optIn: only on when a license names it
+  { key: "gradebook", name: "Gradebook", group: "Education", tiles: ["gradebook"], api: ["gradebook", "family"], collections: [], optIn: true,
+    desc: "Classes, assignments by weighted category, grades with comments and graded work, school-set grading periods and letter scale; students and parents see their own grades; reports by grade level and subject." },
   // Retail & commerce (first customer: a precious-metals dealer). optIn: never on St. George's install, never in "all".
   { key: "spot", name: "Live Spot Prices", group: "Retail & Commerce", tiles: ["spot"], api: ["spot"], collections: [], optIn: true,
     desc: "Gold, silver, platinum and palladium spot prices on every page, today's chart, and a showroom TV view." },
@@ -111,7 +114,7 @@ export const TILE_LABELS = [
   { key: "pial", label: "PIAL Tracker" }, { key: "board", label: "Board Report" }, { key: "stats", label: "Comms Statistics" },
   { key: "sick", label: "Sick Leave" }, { key: "fireprev", label: "Fire Prevention" }, { key: "investigations", label: "Investigations" },
   { key: "audit", label: "Audit Log" }, { key: "users", label: "User Management" },
-  { key: "spot", label: "Spot Prices" }, { key: "links", label: "Quick Links" }, { key: "sales", label: "Clients & Quotes" }, { key: "books", label: "Expenses & Deductions" },
+  { key: "gradebook", label: "Gradebook" }, { key: "spot", label: "Spot Prices" }, { key: "links", label: "Quick Links" }, { key: "sales", label: "Clients & Quotes" }, { key: "books", label: "Expenses & Deductions" },
 ];
 
 // ---- Main menu groups (Home side bar). Masters rearrange them in User Management › Organization › Main menu (org.json "menu").
@@ -119,7 +122,7 @@ export const MENU_GROUPS = [
   { name: "Everyday", keys: ["announcements", "messages", "notifications", "directory", "personnel", "offwork", "links", "spot"] },
   { name: "People & time", keys: ["timetracker", "schedule", "callout", "leave", "forceback", "sick"] },
   { name: "Requests & approvals", keys: ["procurement", "reimbursements", "forms", "helpdesk", "ppe", "meetings"] },
-  { name: "Learning & development", keys: ["training", "evals"] },
+  { name: "Learning & development", keys: ["gradebook", "training", "evals"] },
   { name: "Emergencies & operations", keys: ["recall", "command", "imt", "callalerts", "recordings", "investigations", "fireprev"] },
   { name: "Reports & analytics", keys: ["stats", "board", "pial", "audit"] },
   { name: "Business office", keys: ["sales", "books"] },

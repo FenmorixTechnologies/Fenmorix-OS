@@ -4,7 +4,7 @@ import { BRAND } from "./brand.js";
 import { tileOn, moduleOn } from "./licensing.js";
 // Your Day widgets belong to the section their button opens (hidden when that module isn't licensed)
 const SHIFT_MODULES = ["leave", "forceback", "activecalls", "command", "recall", "training", "callout", "stats"];
-const WIDGET_TILE = { clientportal: "sales", schedule: "schedule", spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
+const WIDGET_TILE = { gradebook: "gradebook", clientportal: "sales", schedule: "schedule", spot: "spot", links: "links", time: "timetracker", oncall: "callout", messages: "messages", bookings: "training", offwork: "offwork", meetings: "meetings", forms: "forms", tickets: "helpdesk", reqs: "procurement" };
 import {
   cardStyle, btn, loadShared, money, reqAmount, waitingSummary, canMarkReqPaid, coversDivision,
 } from "./App.jsx";
@@ -18,7 +18,7 @@ import { todayISO, payPeriod, pretty, fireShift, commsShifts, dayNum, neededPerS
 import PunchClock from "./PunchClock.jsx";
 import { useSpot, Change, SpotChart, money as spotMoney, METAL_COLOR } from "./Spot.jsx";
 import { fetchLinks } from "./QuickLinks.jsx";
-import { Coins, Link2, ExternalLink, CalendarClock } from "lucide-react";
+import { Coins, Link2, ExternalLink, CalendarClock, BookOpen } from "lucide-react";
 import { STATUS as SCHED_STATUS, dayLine } from "./scheduleShared.js";
 
 // Colors are defined here (not imported) because this file is loaded while
@@ -416,6 +416,7 @@ export default function YourDayPanel({ data: d, onOpen }) {
           <SpotWidget onOpen={onOpen} />
           <LinksWidget onOpen={onOpen} />
           <ClientRequestsWidget onOpen={onOpen} />
+          <GradebookWidget onOpen={onOpen} />
           <Widget id="meetings" icon={Calendar} tint={SAGE} title="Meetings today" action="Meetings" onAction={() => onOpen("meetings")}>
             {d.todaysMeetings.length === 0 && <Empty>No meetings today.</Empty>}
             {d.todaysMeetings.map(m => (
@@ -518,7 +519,7 @@ function OnDutyWidget({ onOpen }) {
 
 // ---- Widget layout: order + collapsed, saved to the person's profile (/api/prefs "yourDay") ----
 const WidgetLayout = createContext(null);
-const DEFAULT_ORDER = ["clientportal", "spot", "schedule", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
+const DEFAULT_ORDER = ["gradebook", "clientportal", "spot", "schedule", "time", "messages", "oncall", "duty", "offwork", "links", "bookings", "meetings", "forms", "tickets", "reqs"];
 function useWidgetLayout() {
   const [saved, setSaved] = useState({ order: [], collapsed: [] });
   const [editing, setEditing] = useState(false);
@@ -749,6 +750,34 @@ function LinksWidget({ onOpen }) {
 }
 
 // Office install only (Clients & Quotes): open support requests from the client portal
+// Teachers: their classes and how much posted work is past due and not graded yet
+function GradebookWidget({ onOpen }) { return tileOn("gradebook") ? <GradebookBody onOpen={onOpen} /> : null; }
+function GradebookBody({ onOpen }) {
+  const [d, setD] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/gradebook/widget", { credentials: "same-origin", headers: { "X-SGFD-Background": "1" } })
+      .then(r => (r.ok ? r.json() : { classes: [] })).then(j => { if (alive) setD(j); }, () => {});
+    return () => { alive = false; };
+  }, []);
+  if (!d?.classes?.length) return null;
+  const toGrade = d.classes.reduce((t, c) => t + c.toGrade, 0);
+  return (
+    <Widget id="gradebook" icon={BookOpen} tint="#1D5FA8" title="Your classes" action="Gradebook" onAction={() => onOpen("gradebook")} count={toGrade}>
+      {d.classes.slice(0, 6).map(c => (
+        <button type="button" key={c.id} onClick={() => onOpen("gradebook", { classId: c.id })}
+          style={{ display: "flex", gap: 8, alignItems: "center", width: "100%", padding: "7px 0", border: 0, borderBottom: `1px solid ${LINE}`, background: "none", cursor: "pointer", textAlign: "left", font: "inherit", color: INK }}>
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <Ellipsis style={{ display: "block", fontWeight: 700 }}>{c.name}</Ellipsis>
+            <Ellipsis style={{ display: "block", fontSize: 12, color: INK_SOFT }}>{[c.section, `${c.students} students`].filter(Boolean).join(" · ")}</Ellipsis>
+          </span>
+          {c.toGrade > 0 && <span style={{ fontSize: 12, fontWeight: 800, color: "#1D5FA8", flexShrink: 0 }}>{c.toGrade} to grade</span>}
+        </button>
+      ))}
+      {d.classes.length > 6 && <More>+{d.classes.length - 6} more</More>}
+    </Widget>
+  );
+}
 function ClientRequestsWidget({ onOpen }) { return tileOn("sales") ? <ClientRequestsBody onOpen={onOpen} /> : null; }
 const REQ_LABEL = { open: "Open", answered: "Answered", waiting: "Waiting on them", closed: "Closed" };
 function ClientRequestsBody({ onOpen }) {

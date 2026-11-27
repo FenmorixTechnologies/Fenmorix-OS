@@ -1281,3 +1281,34 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   module"; Price book card "Module prices". Tests e2e61 (55).
 - Organization types: fire | business | government | education (brand.js INDUSTRIES; only fire switches on fire wording/rotations); default
   job roles per type (education: Principal, Assistant principal, Department head, Teacher, Staff, Student).
+
+## Gradebook (11/27/2026, migration 063)
+- Module `gradebook` (src/modules.js group "Education", optIn: only on when a license names it; tile "gradebook", api gradebook + family). Michael's
+  answers: visible to the student, parents / guardians, their teachers, administrators and counselors; points weighted by category with the
+  school's letter scale; rosters imported from a spreadsheet; school-set grading periods.
+- Math in `src/gradebookShared.js` (server + screens + family page): category % = earned / possible over counted work (scored, or missing = 0
+  when settings.missingZero; excused / blank don't count); overall = Σ weight × cat % / Σ weight over categories with counted work; all weights
+  0 = straight points. Only PUBLISHED assignments count anywhere (unpublished = the teacher's hidden drafts). Period = assignment.period_id,
+  else due date inside the period's dates.
+- `server/gradebook.js` (routes in the header). Tables gb_periods, gb_students (student_number unique when set), gb_classes (code unique per
+  school_year; categories jsonb copied from settings 'gradebook' defaults), gb_class_teachers, gb_enrollments (dropped_at), gb_assignments,
+  gb_scores (points, status ''|missing|excused|late, comment), gb_score_files (PDF/PNG/JPEG sniffed, 10 MB), gb_period_comments (report-card
+  comment per class/student/period), gb_family + gb_family_links + gb_family_sessions, gb_view_log (append-only trigger; staff + family views
+  of a student's grades, once an hour per viewer/student/page). Settings key 'gradebook' {scale, categories, missingZero, passing, decimals, schoolYear}.
+- Rights: teachers (gb_class_teachers) see/grade their classes and add/drop students there; access section `gradebook` view = administrators and
+  counselors (every class, report cards, reports, CSV), edit = grade any class, manage = setup (periods, scale, categories, classes & teachers,
+  import, family sign-ins, access log). A teacher opening a student sees only her classes (`limited`). Audit module "Gradebook".
+- Import (POST import {fileName, data, preview}): header aliases in `HEAD`; one row per student per class; classes matched by code (else name +
+  period), students by Student ID (else name + grade), teachers by email then name (sorted name tokens, so "Last, First" works); guardians
+  (Guardian / Guardian 2 email) become gb_family guardian rows + links, no email sent. Never removes anything.
+- Family accounts are NOT users rows: separate table, scrypt (auth.js hashPassword), cookie `fx_family` (60 min idle, 12 h), invite token
+  sha256-stored, 14 days, `/grades?invite=`. index.js: /api/family/* mounted before the staff sign-in check (module check), /grades serves
+  grades.html (vite's 4th input; src/family/main.jsx + Family.jsx; never imports App.jsx), its scripts public via publicScripts("grades.html").
+  Family sees only linked students, only published work, files only of published work. No SMTP = links returned to the admin (copy / CSV).
+- UI `src/Gradebook.jsx`: class grid (type points, M = missing, EX = excused, Enter moves down, autosave 800 ms batches; focused cell -> details
+  panel: on time / late / missing / excused, comment, attach graded work), Students tab (add existing / new student, drop, report-card comment
+  for the period), Categories tab, Print; StudentView (report card by period, print, family sign-ins, Who looked); Reports (by grade level +
+  subject, by class, CSV, print); School setup / Classes & teachers / Import rosters / Family sign-ins. Your Day `GradebookWidget` (id
+  "gradebook": teacher's classes + posted work past due not graded). Pricing: MODULE_PRICES.gradebook + edu add-on. Sandbox demo preset "School".
+- Tests: tests/e2e66.mjs via run-school.sh (63; license tests/keys/school.lic = all + gradebook, signed with dev2).
+- Website: Gradebook no longer "Coming next" (parts + index.html + worker.js updated locally; deploy worker.js through the Cloudflare MCP).

@@ -259,5 +259,17 @@
  ],
  "src/portal/Portal.jsx": [
   "sales"
+ ],
+ "server/gradebook.js": [
+  "gradebook"
+ ],
+ "src/Gradebook.jsx": [
+  "gradebook"
+ ],
+ "src/gradebookShared.js": [
+  "gradebook"
+ ],
+ "src/family/Family.jsx": [
+  "gradebook"
  ]
 }

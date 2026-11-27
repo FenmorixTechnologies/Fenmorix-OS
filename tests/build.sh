@@ -10,3 +10,7 @@ sed 's#<script src="/app.js"></script>#<script src="/signin.js"></script>#' dist
 cd /home/claude/testrun/app && \
 NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild src/portal/main.jsx --bundle --outfile=dist/portal.js --loader:.js=jsx --jsx=automatic --define:process.env.NODE_ENV='"production"' --alias:lucide-react=/home/claude/testrun/stubs/lucide-real.js --log-level=warning && \
 sed 's#<script src="/app.js"></script>#<script src="/portal.js"></script>#; s#<title>[^<]*</title>#<title>Fenmorix Client Portal</title>#' dist/index.html > dist/portal.html
+# The gradebook family page's own bundle (production: vite's fourth input, grades.html)
+cd /home/claude/testrun/app && \
+NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild src/family/main.jsx --bundle --outfile=dist/grades.js --loader:.js=jsx --jsx=automatic --define:process.env.NODE_ENV='"production"' --alias:lucide-react=/home/claude/testrun/stubs/lucide-real.js --log-level=warning && \
+sed 's#<script src="/app.js"></script>#<script src="/grades.js"></script>#; s#<title>[^<]*</title>#<title>Grades</title>#' dist/index.html > dist/grades.html

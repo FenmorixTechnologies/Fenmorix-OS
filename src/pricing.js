@@ -43,6 +43,7 @@ export const MODULE_PRICES = {
   evals:          { flat: { s: 3000, m: 5000, l: 8000 }, user: 3,   impl: 1.5 },
   investigations: { flat: { s: 5000, m: 7500, l: 10000 }, user: 5,  impl: 2, segments: ["ps", "gov"] },
   spot:           { flat: { s: 1200, m: 1200, l: 1800 }, user: 1,   impl: 0.5, segments: ["biz"] },
+  gradebook:      { flat: { s: 2000, m: 4500, l: 9000 }, user: 3,   impl: 2,   segments: ["edu"] },
 };
 const sumFlat = (mods, factor = 1) => Object.fromEntries(["s", "m", "l"].map(z => [z, Math.round(mods.reduce((t, k) => t + (MODULE_PRICES[k]?.flat[z] || 0), 0) * factor / 100) * 100]));
 const GOV_ESS = ["messaging", "timeclock", "offwork", "callout", "forms", "meetings"];
@@ -115,7 +116,7 @@ export const DEFAULT_BOOK = {
       ],
       implementation: { s: 3000, m: 7000, l: 14000 },
       audience: { key: "students", label: "Students", perUserYear: 3, tiers: [{ upTo: 500, price: 1200 }, { upTo: 2000, price: 3600 }, { upTo: 6000, price: 8000 }],
-        note: "Students get alerts, their schedule, forms to fill in and (soon) their grades." },
+        note: "Students get alerts, their schedule, forms to fill in and, with the Gradebook, their grades." },
     },
   },
   modulePrices: MODULE_PRICES,
@@ -126,6 +127,8 @@ export const DEFAULT_BOOK = {
       note: "Case files under CJIS controls: authenticator sign-in, need-to-know access, access log." },
     { key: "evals", label: "Evaluations & Simulations", module: "evals", segments: ["ps", "biz", "gov", "edu"], prices: { s: 3000, m: 5000, l: 8000 },
       note: "Scored evaluations, task books and AI role-play simulations." },
+    { key: "gradebook", label: "Gradebook", module: "gradebook", segments: ["edu"], prices: { s: 2000, m: 4500, l: 9000 },
+      note: "Classes, weighted grades with comments and graded work, report cards, family sign-ins for students and parents, reports by grade and subject." },
     { key: "spot", label: "Live Spot Prices", module: "spot", segments: ["biz"], prices: { s: 1200, m: 1200, l: 1800 },
       note: "Precious-metals prices on every page and a showroom TV view (price feed subscription billed by its provider)." },
     { key: "screens", label: "Extra display screens (per 5)", module: "", segments: ["ps", "biz", "gov", "edu"], prices: { s: 600, m: 600, l: 600 }, perUnit: true,

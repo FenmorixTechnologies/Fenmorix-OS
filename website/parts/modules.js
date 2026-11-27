@@ -151,10 +151,10 @@ const MODULES = [
     use: { ps: "Calls, response times, training and rating for the fire board.", gov: "Department activity for the council or commission.",
       biz: "A one-page monthly picture for the owners.", edu: "Attendance, staffing and purchasing summaries for the school board." },
     w: { t: "Reports", l: ["<b>November report</b> ready", "Board meeting Dec 9"] } },
-  { key: "gradebook", label: "Gradebook", group: "Training & reporting", sectors: ["edu"], soon: true,
-    desc: "Grades, assignments and comments that students and teachers can both see.",
-    feats: ["Graded work attached to each grade", "Comments on any grade", "Reports by grade, subject and class"],
-    use: { edu: "Teachers keep grades and attach the graded work; students see them with comments; reports such as \"4th grade social studies\" go to administration and the board. Coming next." },
+  { key: "gradebook", label: "Gradebook", group: "Training & reporting", sectors: ["edu"],
+    desc: "Grades, assignments and comments that teachers, students and parents can all see.",
+    feats: ["Weighted categories and your school's letter scale", "Graded work and comments on any grade", "Students and parents sign in to their own grades", "Reports by grade, subject and class"],
+    use: { edu: "Teachers keep grades and attach the graded work; students see them with comments; reports such as \"4th grade social studies\" go to administration and the board." },
     w: { t: "Gradebook", l: ["<b>12 to grade</b> · Unit 4 quiz", "Class average 84%"] } },
 
   // ---- Public safety & emergencies

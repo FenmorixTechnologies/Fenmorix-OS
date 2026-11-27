@@ -117,6 +117,12 @@ async function handleApi(req, res, url) {
     const { handleHubClient } = await import("./hub.js"); return handleHubClient(req, res, parts, send, (r, max) => jsonBody(r, Math.min(max || SMALL, SMALL)));
   }
 
+  // Gradebook family sign-in (students, parents / guardians): its own accounts and cookie, never a staff session
+  if (parts[1] === "family") {
+    if (!apiAllowed("gradebook")) return send(res, 404, { error: "Not found" });
+    const { handleFamily } = await import("./gradebook.js"); return handleFamily(req, res, url, send, r => jsonBody(r, SMALL));
+  }
+
   // Everything else requires a signed-in, approved person
   if (!user) return send(res, 401, { error: "Please sign in again." });
 
@@ -167,6 +173,7 @@ async function handleApi(req, res, url) {
   if (parts[1] === "system") { const { handleSystem } = await import("./system.js"); return handleSystem(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "forceback") { const { handleForceback } = await import("./forceback.js"); return handleForceback(req, res, parts, user, send, jsonBody); }
   if (parts[1] === "schedule") { const { handleSchedule } = await import("./schedule.js"); return handleSchedule(req, res, parts, user, send, jsonBody, url); }
+  if (parts[1] === "gradebook") { const { handleGradebook } = await import("./gradebook.js"); return handleGradebook(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "offwork") { const { handleOffwork } = await import("./offwork.js"); return handleOffwork(req, res, parts, user, send, jsonBody, url); }
   if (parts[1] === "spot") { const { handleSpot } = await import("./spot.js"); return handleSpot(req, res, parts, user, send, url); }
   if (parts[1] === "clientportal") { const { handlePortalAdmin } = await import("./portal.js"); return handlePortalAdmin(req, res, parts, user, send, jsonBody); }
@@ -306,6 +313,14 @@ async function servePortalHost(req, res, url) {
     res.end(data);
   } catch { send(res, 404, "The client portal isn't built on this server.", "text/plain"); }
 }
+async function serveGrades(req, res) {
+  try {
+    const data = brandHtml((await fs.readFile(path.join(DIST, "grades.html"))).toString("utf8"), { menu: null });
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", ...SECURITY_HEADERS, ...PAGE_HEADERS, "Cache-Control": "no-store",
+      ...(req.secure ? { "Strict-Transport-Security": "max-age=31536000" } : {}) });
+    res.end(data);
+  } catch { send(res, 404, "The gradebook page isn't built on this server.", "text/plain"); }
+}
 async function mayLoadApp(req) {
   if (await getSessionUser(req)) return true;
   const { displayScreenFor } = await import("./display.js");
@@ -320,6 +335,8 @@ async function serveBuilt(req, res, url) {
     if (alt) { res.writeHead(200, { "Content-Type": MIME[path.extname(want)] || "application/octet-stream", "Cache-Control": "no-cache", ...SECURITY_HEADERS }); return res.end(await fs.readFile(alt)); }
     if (want === "brand-wordmark.png") return send(res, 404, "Not found", "text/plain");
   }
+  // The gradebook's family page (students, parents / guardians): always its own small page, whoever asks
+  if ((url.pathname === "/grades" || url.pathname.startsWith("/grades/")) && moduleOn("gradebook")) return serveGrades(req, res);
   let file = path.join(DIST, path.normalize(decodeURIComponent(url.pathname)).replace(/^([/\\])+/, ""));
   if (!file.startsWith(DIST + path.sep) && file !== DIST) return send(res, 403, { error: "Forbidden" });
   try {
@@ -332,7 +349,7 @@ async function serveBuilt(req, res, url) {
     const ext = path.extname(file), rel = path.relative(DIST, file).split(path.sep).join("/");
     if (ext === ".html") {
       if (rel !== "signin.html" && !(await mayLoadApp(req))) file = path.join(DIST, "signin.html");
-    } else if ([".js", ".mjs", ".css", ".map"].includes(ext) && !(await publicScripts()).has(rel) && !(await mayLoadApp(req))) {
+    } else if ([".js", ".mjs", ".css", ".map"].includes(ext) && !(await publicScripts()).has(rel) && !(moduleOn("gradebook") && (await publicScripts("grades.html")).has(rel)) && !(await mayLoadApp(req))) {
       return send(res, 404, "Not found", "text/plain");
     }
   }
@@ -340,7 +357,7 @@ async function serveBuilt(req, res, url) {
   try {
     let data = await fs.readFile(file);
     const html = path.extname(file) === ".html";
-    if (html) data = brandHtml(data.toString("utf8"), ["signin.html", "portal.html"].includes(path.basename(file)) ? { menu: null } : { modules: [...licenseState().modules] });
+    if (html) data = brandHtml(data.toString("utf8"), ["signin.html", "portal.html", "grades.html"].includes(path.basename(file)) ? { menu: null } : { modules: [...licenseState().modules] });
     else if (base === "manifest.webmanifest") data = brandManifest(data.toString("utf8"));
     res.writeHead(200, {
       "Content-Type": MIME[path.extname(file)] || "application/octet-stream", ...SECURITY_HEADERS,

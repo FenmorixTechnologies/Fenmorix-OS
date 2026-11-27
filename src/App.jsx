@@ -16,7 +16,7 @@ import BooksModule from "./Books.jsx";
 import {
   FileText, LayoutDashboard, ClipboardList, PieChart, Settings, Plus,
   CheckCircle2, XCircle, Clock, LogOut, Flame, ChevronDown, ChevronRight, Crosshair,
-  DollarSign, Building2, ShieldCheck, AlertTriangle, X, Pencil, Check, Printer, Upload, Plane, History, Lock, LifeBuoy, Home, Repeat, Calendar, Send, Bell, PhoneCall, Headphones, Folder, Users, Megaphone, Pin, HardHat, Zap, Mail, BarChart3, Award, CalendarDays, Thermometer, GraduationCap, Siren, ClipboardCheck, BellRing, ShieldAlert, User, Inbox, CalendarOff, Landmark
+  DollarSign, Building2, ShieldCheck, AlertTriangle, X, Pencil, Check, Printer, Upload, Plane, History, Lock, LifeBuoy, Home, Repeat, Calendar, Send, Bell, PhoneCall, Headphones, Folder, Users, Megaphone, Pin, HardHat, Zap, Mail, BarChart3, Award, CalendarDays, Thermometer, GraduationCap, Siren, ClipboardCheck, BellRing, ShieldAlert, User, Inbox, CalendarOff, Landmark, BookOpen
 } from "lucide-react";
 import AccountsPanel, { SignDivisionsPicker } from "./AccountsPanel.jsx";
 import { useListView, ListControls, Pager } from "./ListControls.jsx";
@@ -42,6 +42,7 @@ import EvalsModule from "./Evals.jsx";
 import RecallModule from "./Recall.jsx";
 import FirePreventionModule from "./FirePrevention.jsx";
 import OffWorkModule from "./OffWork.jsx";
+import GradebookModule from "./Gradebook.jsx";
 import ScheduleModule from "./Schedule.jsx";
 import NotificationsModule from "./Notifications.jsx";
 import ForceBackModule from "./ForceBack.jsx";
@@ -3408,6 +3409,7 @@ function SplashScreen({ onSelect }) {
     { key: "helpdesk", label: "Help Desk", icon: LifeBuoy, desc: "IT support tickets — assignment, updates, and attachments" },
     { key: "meetings", label: "Meetings", icon: Calendar, desc: "Request a meeting with someone and track accept/decline responses" },
     { key: "offwork", label: "Off Work", icon: CalendarOff, desc: "Post your days off and who can see them; who's out today and this week" },
+    { key: "gradebook", label: "Gradebook", icon: BookOpen, desc: "Your classes: assignments, grades and comments; report cards and reports by grade and subject" },
     { key: "spot", label: "Spot Prices", icon: Coins, desc: "Live gold, silver, platinum and palladium prices, today's charts" },
     { key: "links", label: "Quick Links", icon: Link2, desc: "The websites the team uses every day, and shared logins" },
     { key: "callalerts", label: "Call Alerts", icon: Siren, desc: "Get a notification when calls you care about come in; department alerts for people and groups" },
@@ -5780,6 +5782,7 @@ export default function App() {
   if (activeModule === "books") return <BooksModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "sales") return <SalesModule initial={openWith} onBack={() => setActiveModule(null)} />;
   if (activeModule === "schedule") return <ScheduleModule onBack={() => setActiveModule(null)} />;
+  if (activeModule === "gradebook") return <GradebookModule onBack={() => setActiveModule(null)} initial={openWith} />;
   if (activeModule === "offwork") return <OffWorkModule onBack={() => setActiveModule(null)} initialView={openWith?.view} />;
   if (activeModule === "fireprev") return <FirePreventionModule onBack={() => setActiveModule(null)} />;
   if (activeModule === "recall") return <RecallModule key={JSON.stringify(openWith || {})} init={openWith} onBack={() => setActiveModule(null)} />;

@@ -28,7 +28,7 @@ const which = args[0] || die("Which customer? " + Object.keys(customers).join(",
 const ids = which === "all" ? Object.keys(customers) : [which];
 for (const id of ids) if (!customers[id]) die(`No customer "${id}" in packaging/customers.json`);
 
-const SHIP = [".env.example", ".gitignore", "VERSION.json", "db", "index.html", "portal.html", "package.json", "package-lock.json", "public", "scripts",
+const SHIP = [".env.example", ".gitignore", "VERSION.json", "db", "index.html", "portal.html", "grades.html", "package.json", "package-lock.json", "public", "scripts",
   "server", "signin.html", "src", "vite.config.js"];
 const NOTES = ["CLAUDE.md", "docs"];
 
