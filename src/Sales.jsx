@@ -6,7 +6,7 @@ import { LayoutDashboard, Building2, FileText, FilePlus2, BookOpen, Printer, Plu
   Send, Check, X, Server, Clock, ExternalLink, Search } from "lucide-react";
 import AppShell from "./AppShell.jsx";
 import { cardStyle, btn } from "./App.jsx";
-import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine } from "./pricing.js";
+import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine, modulesFor } from "./pricing.js";
 import { MODULES } from "./modules.js";
 import { quoteHtml, specHtml, printHtml, specPrices } from "./SalesPrint.js";
 import { Installations, Releases } from "./HubAdmin.jsx";
@@ -17,7 +17,7 @@ const lbl = { fontSize: 12, fontWeight: 700, color: SOFT, display: "block", marg
 // Own copy: App.jsx exports aren't ready while this module loads (circular import)
 const inp = { width: "100%", padding: "8px 10px", borderRadius: 6, border: `1px solid ${LINE}`, background: "#fff", fontSize: 14, color: INK, boxSizing: "border-box", fontFamily: "inherit", margin: 0 };
 const h1 = { margin: 0, fontSize: 24, color: INK };
-const KIND = { ps: "Public safety", biz: "Business", gov: "Government" };
+const KIND = { ps: "Public safety", biz: "Business", gov: "Government", edu: "Education" };
 const STATUS = { prospect: "Prospect", active: "Customer", former: "Former customer", lost: "Lost" };
 const Q_STATUS = { draft: "Draft", sent: "Sent", accepted: "Accepted", declined: "Declined", expired: "Expired" };
 const Q_COLOR = { draft: SOFT, sent: ORANGE, accepted: GREEN, declined: RED, expired: "#8A929C" };
@@ -277,7 +277,7 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
     else {
       const c = d.clients.find(x => x.id === init?.clientId);
       setQ(null); setClient(c || null);
-      setForm({ clientId: c?.id || "", title: "", notes: "", internalNotes: "", inputs: { ...DEFAULT_INPUTS, segment: c?.kind === "biz" ? "biz" : "ps", edition: c?.kind === "biz" ? "business" : "operations", users: c?.kind === "biz" ? 10 : 40, currentSpend: c?.currentSpend || [] } });
+      setForm({ clientId: c?.id || "", title: "", notes: "", internalNotes: "", inputs: { ...DEFAULT_INPUTS, segment: ["biz", "gov", "edu"].includes(c?.kind) ? c.kind : "ps", edition: { biz: "business", edu: "campus" }[c?.kind] || "operations", users: c?.kind === "biz" ? 10 : 40, currentSpend: c?.currentSpend || [] } });
     }
   }, [quoteId, init?.clientId]);
   const locked = q && q.status !== "draft";
@@ -331,23 +331,46 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
           </div>
           <div style={row}>
             <Choice label="Market" value={i.segment} options={Object.entries(useBook.segments).map(([k, s]) => ({ key: k, label: s.label }))} onChange={setSeg} />
-            <Num label={i.segment === "ps" ? "Users per agency" : "Users per company"} value={i.users} onChange={v => set("users", v)} min={1} />
-            <Num label={i.segment === "ps" ? "Agencies in the group" : "Companies in the family"} value={i.members} onChange={v => set("members", v)} min={1} />
+            <Num label={{ ps: "Users per agency", biz: "Users per company", gov: "Staff users", edu: "Staff (faculty and employees)" }[i.segment] || "Users"} value={i.users} onChange={v => set("users", v)} min={1} />
+            <Num label={{ ps: "Agencies in the group", biz: "Companies in the family", gov: "Organizations in the group", edu: "Schools in the district" }[i.segment] || "Members"} value={i.members} onChange={v => set("members", v)} min={1} />
             <Choice label="Delivery" value={i.delivery} options={[{ key: "hosted", label: "Hosted by Avexon" }, { key: "onprem", label: "On-premises license" }]} onChange={v => set("delivery", v)} />
           </div>
           {!!d.clients.length && !form.clientId && <div style={{ fontSize: 12.5, color: ORANGE }}>Pick the client to save the quote. You can price it first.</div>}
           {!d.clients.length && <div style={{ fontSize: 12.5, color: ORANGE }}>Add the client on the Clients page to save a quote.</div>}
         </Card>
         <Card title="Edition">
+          {seg.perUser && <div style={{ ...row, marginBottom: 12 }}>
+            <Choice label="Price by" value={i.pricing || "flat"} options={[{ key: "flat", label: "Size (flat price)" }, { key: "perUser", label: "Per staff user" }]} onChange={v => set("pricing", v)} /></div>}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 8 }}>
             {seg.editions.map(e => { const on = e.key === i.edition, sz = sizeFor(seg, Number(i.users) || 1);
+              const mid = seg.sizes[1] || seg.sizes[0];
               return <button key={e.key} type="button" aria-pressed={on} onClick={() => set("edition", e.key)} style={{ textAlign: "left", font: "inherit", cursor: "pointer", borderRadius: 10, padding: 10,
                 border: `2px solid ${on ? "#FF7900" : LINE}`, background: on ? "#FFF7EF" : "#fff", color: INK }}>
-                <b>{e.label}</b><div style={{ fontSize: 13, fontWeight: 700, color: ORANGE }}>{i.segment === "biz" ? `${money(e.perUserMonth)}/user/mo` : `${money(e.prices[sz.key])}/yr`}</div>
+                <b>{e.label}</b><div style={{ fontSize: 13, fontWeight: 700, color: ORANGE }}>{i.segment === "biz" ? `${money(e.perUserMonth)}/user/mo`
+                  : i.pricing === "perUser" && seg.perUser ? `${money(e.perUserYear || e.prices[mid.key] / mid.upTo, true)}/user/yr` : `${money(e.prices[sz.key])}/yr`}</div>
                 <div style={{ fontSize: 12, color: SOFT }}>{e.blurb}</div><div style={{ fontSize: 11.5, color: SOFT, marginTop: 4 }}>{e.modules.length} modules{e.includesTraining ? " · training environment" : ""}</div></button>; })}
+            <button type="button" aria-pressed={i.edition === "custom"} onClick={() => setForm(f => ({ ...f, inputs: { ...f.inputs, edition: "custom", modules: f.inputs.modules?.length ? f.inputs.modules : [...(seg.editions.find(e => e.key === f.inputs.edition)?.modules || [])] } }))}
+              style={{ textAlign: "left", font: "inherit", cursor: "pointer", borderRadius: 10, padding: 10, border: `2px dashed ${i.edition === "custom" ? "#FF7900" : LINE}`, background: i.edition === "custom" ? "#FFF7EF" : "#fff", color: INK }}>
+              <b>{useBook.custom?.label || "Build your own"}</b><div style={{ fontSize: 13, fontWeight: 700, color: ORANGE }}>+{Math.round((useBook.custom?.premiumPct || 0) * 100)}% over bundle rates</div>
+              <div style={{ fontSize: 12, color: SOFT }}>Any modules, priced one by one. Starts from the edition picked before.</div></button>
           </div>
+          {i.edition === "custom" && (() => { const sz = sizeFor(seg, Number(i.users) || 1), mods = modulesFor(i.segment, useBook), chosen = new Set(i.modules || []);
+            const each = m => i.segment === "biz" ? `${money(m.user * (1 + (useBook.custom?.premiumPct || 0)), true)}/user/mo` : `${money(Math.round(m.flat[sz.key] * (seg.factor || 1) * (1 + (useBook.custom?.premiumPct || 0))))}/yr`;
+            return <div role="group" aria-label="Modules picked one by one" style={{ marginTop: 12 }}>
+              <div style={{ ...lbl, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>Modules ({chosen.size}) <span style={{ flex: 1 }} />
+                {seg.editions.map(e => <button key={e.key} type="button" style={{ ...btn("ghost"), padding: "2px 8px", fontSize: 12 }} onClick={() => set("modules", [...e.modules])}>Start from {e.label}</button>)}
+                <button type="button" style={{ ...btn("ghost"), padding: "2px 8px", fontSize: 12 }} onClick={() => set("modules", [])}>Clear</button></div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "4px 14px" }}>
+                {mods.map(m => <label key={m.key} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5 }}>
+                  <input type="checkbox" checked={chosen.has(m.key)} onChange={e => set("modules", e.target.checked ? [...chosen, m.key] : [...chosen].filter(k => k !== m.key))} />
+                  <span style={{ flex: 1 }}>{m.label}</span><span style={{ fontSize: 12, color: SOFT }}>{each(m)}</span></label>)}</div></div>; })()}
+          {seg.audience && <div style={{ ...row, marginTop: 12 }}>
+            <Choice label={seg.audience.label} value={i.audienceMode || "none"} options={[{ key: "none", label: "Not included" },
+              { key: "perUser", label: `Per person (${money(seg.audience.perUserYear, seg.audience.perUserYear % 1 !== 0)}/yr each)` }, { key: "flat", label: "Flat price by how many" }]} onChange={v => set("audienceMode", v)} />
+            {i.audienceMode && i.audienceMode !== "none" && <Num label={`How many ${seg.audience.label.toLowerCase()}`} value={i.audienceCount} onChange={v => set("audienceCount", v)} />}
+            <div style={{ fontSize: 12, color: SOFT, alignSelf: "end" }}>{seg.audience.note} Flat: {seg.audience.tiers.map(t => `up to ${t.upTo.toLocaleString("en-US")} ${money(t.price)}`).join(", ")}.</div></div>}
           {addonsHere.length > 0 && <><div style={{ ...lbl, marginTop: 12 }}>Add-ons</div>
-            <div style={{ display: "grid", gap: 6 }}>{addonsHere.map(a => { const inEd = a.module && seg.editions.find(e => e.key === i.edition)?.modules.includes(a.module);
+            <div style={{ display: "grid", gap: 6 }}>{addonsHere.map(a => { const inEd = a.module && (i.edition === "custom" ? i.modules || [] : seg.editions.find(e => e.key === i.edition)?.modules || []).includes(a.module);
               const on = (i.addons || []).includes(a.key);
               return <label key={a.key} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, opacity: inEd ? 0.5 : 1 }}>
                 <input type="checkbox" disabled={inEd} checked={on || !!inEd} onChange={e => set("addons", e.target.checked ? [...(i.addons || []), a.key] : (i.addons || []).filter(k => k !== a.key))} />
@@ -449,6 +472,12 @@ function Summary({ r }) {
     </div>
     {!on && <><div style={lbl}>Yearly</div>{L(r.lines.recurring)}<div style={{ display: "flex", fontSize: 12.5, borderTop: `1px solid ${LINE}`, paddingTop: 3 }}><span style={{ flex: 1 }}>List per year</span><b>{money(r.listAnnual)}</b></div>{L(r.lines.yearly)}{L(r.lines.customAnnual || [])}</>}
     {r.lines.once.length > 0 && <><div style={{ ...lbl, marginTop: 8 }}>One time</div>{L(r.lines.once)}</>}
+    {r.breakdown?.rows.length > 0 && <details style={{ marginTop: 8 }}><summary style={{ ...lbl, cursor: "pointer" }}>Module by module ({r.breakdown.rows.length})</summary>
+      <div style={{ display: "flex", fontSize: 11.5, color: SOFT, padding: "2px 0" }}><span style={{ flex: 1 }}>Module</span><span style={{ width: 80, textAlign: "right" }}>Per year</span><span style={{ width: 90, textAlign: "right" }}>Implementation</span></div>
+      {r.breakdown.rows.map(x => <div key={x.key} style={{ display: "flex", fontSize: 12.5, padding: "2px 0" }}><span style={{ flex: 1 }}>{x.label}</span><b style={{ width: 80, textAlign: "right" }}>{money(x.price)}</b><span style={{ width: 90, textAlign: "right" }}>{money(x.implementation)}</span></div>)}
+      <div style={{ fontSize: 12, color: r.breakdown.custom ? ORANGE : GREEN, marginTop: 4 }}>{r.breakdown.custom
+        ? `Built one by one: ${money(r.breakdown.atBundleRate)} at bundle rates + ${Math.round(r.breakdown.premiumPct * 100)}% = ${money(r.breakdown.software)}.`
+        : r.breakdown.bundleSaves > 0 ? `Built one by one these modules would cost ${money(r.breakdown.aLaCarte)}; the edition saves ${money(r.breakdown.bundleSaves)} a year.` : ""}</div></details>}
     <div style={{ ...lbl, marginTop: 8 }}>Year by year</div>
     {r.schedule.map(s => <div key={s.year} style={{ display: "flex", fontSize: 12.5, color: s.inTerm ? INK : SOFT }}><span style={{ flex: 1 }}>Year {s.year}{s.inTerm ? "" : " (renewal)"}</span><b>{money(s.total)}</b></div>)}
     {r.hosting?.known && <><div style={{ ...lbl, marginTop: 8 }}>{r.hosting.partner} hosting (separate)</div>
@@ -520,6 +549,26 @@ function BookEditor({ toast, book, setBook, canManage }) {
       {b.addons.map((a, k) => <div key={a.key} style={{ display: "grid", gridTemplateColumns: "2fr repeat(3, 1fr)", gap: 6, marginBottom: 6, alignItems: "center" }}>
         <span style={{ fontSize: 13.5 }}><b>{a.label}</b></span>
         {["s", "m", "l"].map(z => <input key={z} aria-label={`${a.label} ${z}`} type="number" value={a.prices[z]} onChange={ev => upd(y => { y.addons[k].prices[z] = Number(ev.target.value); })} style={inp} />)}</div>)}
+    </Card>
+    <Card title="Module prices (build your own, and each edition's breakdown)">
+      <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>Each module's yearly bundle rate by size (public safety sizes; government and schools multiply by their factor), the business price per user per month, and how much setup it takes. Editions are broken down by these; a set built one by one costs their sum plus the premium.</p>
+      <div style={{ display: "flex", gap: 10, alignItems: "end", flexWrap: "wrap", marginBottom: 10 }}>
+        <Field label="Build-your-own premium %"><input aria-label="Build-your-own premium" type="number" value={Math.round((b.custom?.premiumPct || 0) * 1000) / 10} onChange={ev => upd(y => { y.custom = { ...(y.custom || {}), premiumPct: Number(ev.target.value) / 100 }; })} style={{ ...inp, width: 110 }} /></Field>
+        <Field label="Smallest implementation % (built one by one)"><input aria-label="Smallest implementation" type="number" value={Math.round((b.custom?.minImplementationPct || 0) * 100)} onChange={ev => upd(y => { y.custom = { ...(y.custom || {}), minImplementationPct: Number(ev.target.value) / 100 }; })} style={{ ...inp, width: 110 }} /></Field>
+        {["gov", "edu"].filter(k => b.segments[k]).map(k => <Field key={k} label={`${b.segments[k].label} factor`}><input aria-label={`${b.segments[k].label} factor`} type="number" step="0.05" value={b.segments[k].factor ?? 1} onChange={ev => upd(y => { y.segments[k].factor = Number(ev.target.value); })} style={{ ...inp, width: 90 }} /></Field>)}
+      </div>
+      <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr><th style={th}>Module</th><th style={th}>Small / yr</th><th style={th}>Mid-size / yr</th><th style={th}>Large / yr</th><th style={th}>Business / user / mo</th><th style={th}>Setup weight</th></tr></thead>
+        <tbody>{Object.entries(b.modulePrices || {}).map(([k, m]) => { const name = MODULES.find(x => x.key === k)?.name || k;
+          return <tr key={k}><td style={td}>{name}{m.segments ? <span style={{ fontSize: 11, color: SOFT }}> ({m.segments.join(", ")})</span> : null}</td>
+            {["s", "m", "l"].map(z => <td key={z} style={td}><input aria-label={`${name} ${z}`} type="number" value={m.flat[z]} onChange={ev => upd(y => { y.modulePrices[k].flat[z] = Number(ev.target.value); })} style={inp} /></td>)}
+            <td style={td}><input aria-label={`${name} per user`} type="number" step="0.5" value={m.user} onChange={ev => upd(y => { y.modulePrices[k].user = Number(ev.target.value); })} style={inp} /></td>
+            <td style={td}><input aria-label={`${name} setup weight`} type="number" step="0.5" value={m.impl} onChange={ev => upd(y => { y.modulePrices[k].impl = Number(ev.target.value); })} style={inp} /></td></tr>; })}</tbody></table></div>
+      {["gov", "edu"].filter(k => b.segments[k]?.audience).map(k => { const a = b.segments[k].audience;
+        return <div key={k} style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "end", flexWrap: "wrap" }}>
+          <b style={{ fontSize: 13.5, width: "100%" }}>{b.segments[k].label}: {a.label}</b>
+          <Field label="Per person / yr"><input aria-label={`${a.label} per person`} type="number" step="0.5" value={a.perUserYear} onChange={ev => upd(y => { y.segments[k].audience.perUserYear = Number(ev.target.value); })} style={{ ...inp, width: 100 }} /></Field>
+          {a.tiers.map((t, j) => <Field key={j} label={`Flat, up to ${t.upTo}`}><input aria-label={`${a.label} flat up to ${t.upTo}`} type="number" value={t.price} onChange={ev => upd(y => { y.segments[k].audience.tiers[j].price = Number(ev.target.value); })} style={{ ...inp, width: 110 }} /></Field>)}
+        </div>; })}
     </Card>
     <Card title="Percentages (of the yearly software price)">
       <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>Hosting, compute and the servers behind each recovery tier are {b.seller?.partner || "Avexon"}'s and priced by them. A recovery fee here is only Fenmorix's own work for that tier (0 = none).</p>

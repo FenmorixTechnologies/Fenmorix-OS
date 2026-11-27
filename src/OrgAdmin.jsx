@@ -2,7 +2,9 @@
 // and pay periods. Server: server/system.js /api/system/org + /divisions -> <SYSTEM_DIR>/settings/org.json (kept across updates).
 // Pages read the saved settings from the nexus-brand meta, so a reload shows the change.
 import React, { useEffect, useState } from "react";
-import { Building2, RefreshCw, Pencil, Trash2, Plus } from "lucide-react";
+import { Building2, RefreshCw, Pencil, Trash2, Plus, ArrowUp, ArrowDown, LayoutGrid } from "lucide-react";
+import { menuLayout, TILE_LABELS } from "./modules.js";
+import { tileOn, tileName } from "./licensing.js";
 import { cardStyle, inputStyle, btn } from "./App.jsx";
 import { call } from "./SystemAdmin.jsx";
 
@@ -23,7 +25,8 @@ export default function OrgAdmin({ toast }) {
   // Choosing a type fills in that type's usual wording and schedules (still editable before saving)
   const pickIndustry = v => setF(o => ({
     ...o, industry: v, useCallSign: v === "fire",
-    words: v === "fire" ? { station: "Station / assignment", homeStation: "Home station", callSign: "Radio call sign" } : { station: "Location", homeStation: "Location", callSign: "" },
+    words: v === "fire" ? { station: "Station / assignment", homeStation: "Home station", callSign: "Radio call sign" }
+      : (w => ({ station: w, homeStation: w, callSign: "" }))({ education: "Campus / building", government: "Office / location" }[v] || "Location"),
     work: { ...o.work, rotations: { fire: v === "fire", comms: v === "fire" } },
   }));
   const save = async () => {
@@ -51,7 +54,8 @@ export default function OrgAdmin({ toast }) {
       <div style={{ marginTop: 14 }}>
         <span style={lbl}>This organization is</span>
         <div role="radiogroup" aria-label="Type of organization" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-          {[["business", "A business or office", "Locations, Mon–Fri workdays, no radio call signs"], ["fire", "A fire / EMS department", "Stations, 24-hour and 12-hour rotations, call signs"]].map(([v, t, d]) =>
+          {[["business", "A business or office", "Locations, Mon–Fri workdays, no radio call signs"], ["government", "A government office", "Cities, parishes, counties, utilities: offices, Mon–Fri workdays"],
+            ["education", "A school or district", "Campuses and buildings, faculty and staff, students"], ["fire", "A fire / EMS department", "Stations, 24-hour and 12-hour rotations, call signs"]].map(([v, t, d]) =>
             <label key={v} style={{ display: "flex", gap: 8, alignItems: "flex-start", cursor: "pointer", maxWidth: 320 }}>
               <input type="radio" name="industry" checked={f.industry === v} onChange={() => pickIndustry(v)} style={{ marginTop: 3 }} />
               <span><b style={{ color: INK }}>{t}</b><br /><span style={note}>{d}</span></span></label>)}
@@ -103,7 +107,58 @@ export default function OrgAdmin({ toast }) {
     </section>
     <Divisions list={s.divisions} toast={toast} onChange={x => setS(o => ({ ...o, divisions: x.divisions }))} />
     <JobRoles list={s.roles || []} profiles={s.profiles || []} toast={toast} onChange={x => setS(o => ({ ...o, roles: x.roles }))} />
+    <MainMenu menu={s.menu} toast={toast} onChange={x => setS(o => ({ ...o, menu: x.menu }))} />
   </>;
+}
+
+// Main menu: the Home side bar's groups, their order, and which sections are in each (sections this install has)
+function MainMenu({ menu, toast, onChange }) {
+  const here = new Map(TILE_LABELS.filter(t => tileOn(t.key)).map(t => [t.key, tileName(t.key, t.label)]));
+  const fromSaved = m => menuLayout(m).map(g => ({ name: g.name, keys: g.keys.filter(k => here.has(k)) }));
+  const [groups, setGroups] = useState(() => fromSaved(menu)), [closed, setClosed] = useState(!!menu?.startClosed);
+  const [add, setAdd] = useState(""), [busy, setBusy] = useState(false), [dirty, setDirty] = useState(false);
+  const change = fn => { setGroups(g => fn(g.map(x => ({ ...x, keys: [...x.keys] })))); setDirty(true); };
+  const swap = (arr, i, j) => { if (j < 0 || j >= arr.length) return arr; [arr[i], arr[j]] = [arr[j], arr[i]]; return arr; };
+  const save = async (reset) => {
+    setBusy(true);
+    try {
+      const x = await call("/org", { menu: reset ? null : { groups: groups.filter(g => g.name.trim()), startClosed: closed } });
+      setGroups(fromSaved(x.menu)); setClosed(!!x.menu?.startClosed); setDirty(false); onChange(x);
+      toast(reset ? "Back to the built-in menu. Reload to see it." : "Main menu saved. Reload to see it.");
+    } catch (e) { toast(e.message); } finally { setBusy(false); }
+  };
+  const small = { ...btn("ghost"), padding: "2px 6px" };
+  return <section style={{ ...cardStyle, marginTop: 14 }} aria-label="Main menu">
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <div><div style={h}><LayoutGrid size={16} style={{ verticalAlign: -3 }} /> Main menu</div>
+        <div style={note}>The groups on the Home side bar. People click a group to open or close it; their choice is remembered on their device.</div></div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button type="button" style={btn("outline")} disabled={busy} onClick={() => save(true)}>Use the built-in menu</button>
+        <button type="button" style={btn("primary")} disabled={busy || !dirty} onClick={() => save(false)}>{busy ? "Saving…" : "Save the menu"}</button></div></div>
+    <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13.5, marginTop: 10 }}>
+      <input type="checkbox" checked={closed} onChange={e => { setClosed(e.target.checked); setDirty(true); }} /> Groups start closed (people open the ones they use)</label>
+    {groups.map((g, gi) => <div key={gi} role="group" aria-label={`Menu group ${g.name || gi + 1}`} style={{ border: `1px solid ${LINE}`, borderRadius: 8, padding: 10, marginTop: 10 }}>
+      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+        <input aria-label="Group name" style={{ ...inputStyle, maxWidth: 260, fontWeight: 700 }} value={g.name} maxLength={40} onChange={e => { const v = e.target.value; change(a => { a[gi].name = v; return a; }); }} />
+        <button type="button" aria-label={`Move group ${g.name} up`} style={small} onClick={() => change(a => swap(a, gi, gi - 1))}><ArrowUp size={14} /></button>
+        <button type="button" aria-label={`Move group ${g.name} down`} style={small} onClick={() => change(a => swap(a, gi, gi + 1))}><ArrowDown size={14} /></button>
+        <span style={{ flex: 1 }} />
+        {!g.keys.length && <button type="button" aria-label={`Remove group ${g.name}`} style={small} onClick={() => change(a => { a.splice(gi, 1); return a; })}><Trash2 size={14} /></button>}
+      </div>
+      {!g.keys.length && <div style={{ ...note, marginTop: 6 }}>Empty: move sections here, or remove it.</div>}
+      {g.keys.map((k, ki) => <div key={k} style={{ display: "flex", gap: 6, alignItems: "center", padding: "4px 0", borderTop: ki ? `1px solid ${LINE}` : "none", marginTop: ki ? 0 : 6 }}>
+        <span style={{ flex: 1, fontSize: 14, color: INK }}>{here.get(k)}</span>
+        <button type="button" aria-label={`Move ${here.get(k)} up`} style={small} onClick={() => change(a => { swap(a[gi].keys, ki, ki - 1); return a; })}><ArrowUp size={13} /></button>
+        <button type="button" aria-label={`Move ${here.get(k)} down`} style={small} onClick={() => change(a => { swap(a[gi].keys, ki, ki + 1); return a; })}><ArrowDown size={13} /></button>
+        <select aria-label={`Group for ${here.get(k)}`} style={{ ...inputStyle, width: 200 }} value={gi} onChange={e => { const to = Number(e.target.value); change(a => { a[gi].keys.splice(ki, 1); a[to].keys.push(k); return a; }); }}>
+          {groups.map((x, xi) => <option key={xi} value={xi}>{x.name || `Group ${xi + 1}`}</option>)}</select>
+      </div>)}
+    </div>)}
+    <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+      <input aria-label="New group name" style={{ ...inputStyle, maxWidth: 260 }} placeholder="New group name" maxLength={40} value={add} onChange={e => setAdd(e.target.value)} />
+      <button type="button" style={btn("outline")} disabled={!add.trim() || groups.some(g => g.name.toLowerCase() === add.trim().toLowerCase())}
+        onClick={() => { change(a => [...a, { name: add.trim(), keys: [] }]); setAdd(""); }}><Plus size={14} /> Add a group</button></div>
+  </section>;
 }
 
 // Divisions (departments): add, rename, remove (moving their people to another one)

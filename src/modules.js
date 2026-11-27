@@ -113,3 +113,38 @@ export const TILE_LABELS = [
   { key: "audit", label: "Audit Log" }, { key: "users", label: "User Management" },
   { key: "spot", label: "Spot Prices" }, { key: "links", label: "Quick Links" }, { key: "sales", label: "Clients & Quotes" }, { key: "books", label: "Expenses & Deductions" },
 ];
+
+// ---- Main menu groups (Home side bar). Masters rearrange them in User Management › Organization › Main menu (org.json "menu").
+export const MENU_GROUPS = [
+  { name: "Everyday", keys: ["announcements", "messages", "notifications", "directory", "personnel", "offwork", "links", "spot"] },
+  { name: "People & time", keys: ["timetracker", "schedule", "callout", "leave", "forceback", "sick"] },
+  { name: "Requests & approvals", keys: ["procurement", "reimbursements", "forms", "helpdesk", "ppe", "meetings"] },
+  { name: "Learning & development", keys: ["training", "evals"] },
+  { name: "Emergencies & operations", keys: ["recall", "command", "imt", "callalerts", "recordings", "investigations", "fireprev"] },
+  { name: "Reports & analytics", keys: ["stats", "board", "pial", "audit"] },
+  { name: "Business office", keys: ["sales", "books"] },
+  { name: "Administration", keys: ["users"] },
+];
+const MENU_KEY = /^[a-z][a-z0-9_-]{0,39}$/;
+// A saved layout made safe and complete: every known section appears exactly once (new sections join their default group).
+export function menuLayout(saved) {
+  const known = new Set(TILE_LABELS.map(t => t.key));
+  const out = [], used = new Set();
+  const src = Array.isArray(saved?.groups) && saved.groups.length ? saved.groups : MENU_GROUPS;
+  for (const g of src.slice(0, 16)) {
+    const name = String(g?.name || "").replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 40);
+    if (!name || out.some(o => o.name.toLowerCase() === name.toLowerCase())) continue;
+    const keys = (Array.isArray(g.keys) ? g.keys : []).filter(k => MENU_KEY.test(String(k)) && known.has(k) && !used.has(k));
+    keys.forEach(k => used.add(k));
+    out.push({ name, keys });
+  }
+  for (const d of MENU_GROUPS) for (const k of d.keys) {
+    if (used.has(k)) continue;
+    used.add(k);
+    let g = out.find(o => o.name === d.name) || out.find(o => d.keys.some(x => o.keys.includes(x)));
+    if (!g) { g = { name: d.name, keys: [] }; out.push(g); }
+    g.keys.push(k);
+  }
+  for (const t of TILE_LABELS) if (!used.has(t.key)) { used.add(t.key); (out[out.length - 1] || (out[0] = { name: "More", keys: [] })).keys.push(t.key); }
+  return out;
+}

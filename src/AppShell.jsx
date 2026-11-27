@@ -2,7 +2,7 @@
 // Main menu, the section's pages, who's signed in) and the page on the right.
 // On narrow screens the side bar becomes a top bar with a menu button.
 import React, { useEffect, useState } from "react";
-import { Home, LogOut, KeyRound, Menu, X, MonitorSmartphone } from "lucide-react";
+import { Home, LogOut, KeyRound, Menu, X, MonitorSmartphone, ChevronDown, ChevronRight } from "lucide-react";
 import SessionsPanel from "./Sessions.jsx";
 import { StyleBlock } from "./App.jsx";
 import NexusBrand from "./Brand.jsx";
@@ -30,8 +30,13 @@ function useNarrow() {
   return narrow;
 }
 
+// Which collapsible menu groups this person has closed / opened (this browser); the organization picks whether groups start open.
+const OPEN_KEY = "sgfd-menu-groups";
+function readGroupState() { try { return JSON.parse(localStorage.getItem(OPEN_KEY) || "{}") || {}; } catch { return {}; } }
+
 // nav: [{ key, label, icon, badge, group }]  (group = heading shown above the first item of a group)
-export default function AppShell({ section: sectionKey, nav = [], active, onNav, onHome, children, footerExtra, wide }) {
+// collapsible: the headings become buttons that open and close their group (the Home menu's section groups)
+export default function AppShell({ section: sectionKey, nav = [], active, onNav, onHome, children, footerExtra, wide, collapsible }) {
   const section = sectionName(sectionKey);
   const { user, pendingCount, changePassword, signOut } = useSession();
   const narrow = useNarrow();
@@ -42,8 +47,40 @@ export default function AppShell({ section: sectionKey, nav = [], active, onNav,
   const go = key => { setOpen(false); onNav && onNav(key); };
   const brand = (size = "big") => <NexusBrand size={size} onClick={onHome} title={onHome ? "Back to the main menu" : undefined} />;
 
+  const [groupState, setGroupState] = useState(readGroupState);
+  const startOpen = BRAND.menu?.startClosed ? false : true;
+  const isOpen = g => (groupState[g] === undefined ? startOpen : !!groupState[g]) || nav.some(n => n.group === g && n.key === active);
+  const toggleGroup = g => setGroupState(o => { const next = { ...o, [g]: !isOpen(g) }; try { localStorage.setItem(OPEN_KEY, JSON.stringify(next)); } catch { /* private window */ } return next; });
   let lastGroup = null;
-  const items = nav.map(n => {
+  const items = collapsible ? nav.map((n, i) => {
+    const heading = n.group && n.group !== lastGroup ? n.group : null;
+    lastGroup = n.group || lastGroup;
+    const open = !n.group || isOpen(n.group);
+    const inGroup = n.group ? nav.filter(x => x.group === n.group) : [];
+    const waiting = inGroup.reduce((sum, x) => sum + (x.badge || 0), 0);
+    const Icon = n.icon, on = n.key === active;
+    return (
+      <React.Fragment key={n.key}>
+        {heading && <button type="button" aria-expanded={open} onClick={() => toggleGroup(heading)} className="sgfd-nav" style={{
+          display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "13px 10px 7px", margin: "0 0 4px", background: "none",
+          border: "none", borderBottom: "1px solid rgba(255,255,255,0.10)", borderRadius: 0, cursor: "pointer", fontFamily: "inherit",
+          fontSize: 11.5, fontWeight: 800, color: "#DCE2EC", textTransform: "uppercase", letterSpacing: 0.9 }}>
+          {open ? <ChevronDown size={15} /> : <ChevronRight size={15} />}<span style={{ flex: 1 }}>{heading}</span>
+          {!open && waiting > 0 && <span title={`${waiting} waiting for you`} style={{ background: BRICK, color: "#fff", borderRadius: 999, fontSize: 11, fontWeight: 800, padding: "1px 7px", letterSpacing: 0 }}>{waiting}</span>}
+          {!open && !waiting && <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(220,226,236,0.6)", letterSpacing: 0 }}>{inGroup.length}</span>}
+        </button>}
+        {open && <button type="button" onClick={() => go(n.key)} aria-current={on ? "page" : undefined} className={on ? "sgfd-nav sgfd-nav-on" : "sgfd-nav"} style={{
+          display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "9px 12px", borderRadius: 8,
+          marginBottom: 3, fontSize: 14.5, fontWeight: on ? 800 : 600, border: "none", cursor: "pointer", fontFamily: "inherit",
+          background: on ? THEME.pillBg : "transparent", boxShadow: on ? THEME.pillShadow : "none", color: on ? "#FFFFFF" : "#E4E9F1",
+        }}>
+          {Icon && <Icon size={19} strokeWidth={1.9} style={{ flexShrink: 0, opacity: on ? 1 : 0.92 }} />}
+          <span style={{ flex: 1, minWidth: 0, lineHeight: 1.3 }}>{n.label}</span>
+          {n.badge > 0 && <span title={`${n.badge} waiting for you`} style={{ background: on ? "#fff" : BRICK, color: on ? BRICK : "#fff", borderRadius: 999, fontSize: 11, fontWeight: 800, padding: "1px 7px", minWidth: 18, textAlign: "center" }}>{n.badge}</span>}
+        </button>}
+      </React.Fragment>
+    );
+  }) : nav.map(n => {
     const heading = n.group && n.group !== lastGroup ? n.group : null;
     lastGroup = n.group || lastGroup;
     const on = n.key === active;

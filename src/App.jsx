@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { BRAND } from "./brand.js";
 import { tileOn, moduleOn, tileName } from "./licensing.js";
+import { menuLayout } from "./modules.js";
 import { SetupWizard } from "./BrandingAdmin.jsx";
 import Papa from "papaparse";
 import {
@@ -3441,12 +3442,15 @@ function SplashScreen({ onSelect }) {
   for (const t of tiles) t.label = tileName(t.key, t.label);
   const { pendingCount } = useSession();
   if (pendingCount) badges.users = pendingCount;
+  // Sections in their menu groups (built-in, or the organization's own from User Management › Organization › Main menu)
+  const byKey = new Map(tiles.map(t => [t.key, t]));
+  const grouped = menuLayout(BRAND.menu).flatMap(g => g.keys.filter(k => byKey.has(k)).map(k => ({ ...byKey.get(k), group: g.name })));
   const shellNav = [
     { key: "home", label: "Home", icon: Home },
-    ...tiles.map(t => ({ key: t.key, label: t.label, icon: t.icon, badge: badges[t.key] || 0, group: "Sections" })),
+    ...grouped.map(t => ({ key: t.key, label: t.label, icon: t.icon, badge: badges[t.key] || 0, group: t.group })),
   ];
   return (
-    <AppShell section="Home" nav={shellNav} active="home" onNav={k => k !== "home" && onSelect(k)}>
+    <AppShell section="Home" nav={shellNav} active="home" onNav={k => k !== "home" && onSelect(k)} collapsible>
       <AnnouncementTicker />
       <YourDayPanel data={day} onOpen={onSelect} />
     </AppShell>

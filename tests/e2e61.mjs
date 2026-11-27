@@ -157,6 +157,40 @@ check("business minimum applies", Number(psql(`SELECT result->>'year1Recurring' 
 const oq = (await api("/api/sales/quotes", { clientId: biz, inputs: { segment: "biz", edition: "business", users: 40, delivery: "onprem", termYears: 1 } })).body;
 check("on-premises license", Number(psql(`SELECT result->'onPremQuote'->>'license' FROM sales_quotes WHERE id = '${oq.id}'`)) === 40 * 20 * 12 * 2.75);
 
+// ---- Module prices, build your own, government and schools ----
+const res = id => JSON.parse(psql(`SELECT result FROM sales_quotes WHERE id = '${id}'`));
+const ops = res(bq.id);
+check("edition broken down module by module", ops.breakdown.rows.length === 11 && Math.abs(ops.breakdown.rows.reduce((t, x) => t + x.price, 0) - ops.breakdown.software) < 1
+  && ops.breakdown.bundleSaves > 0, JSON.stringify(ops.breakdown).slice(0, 300));
+const edu = (await api("/api/sales/clients", { name: "Lakeside Middle School", kind: "edu" })).body.id;
+check("schools are a kind of client", psql(`SELECT kind FROM sales_clients WHERE id = '${edu}'`) === "edu");
+const cq2 = (await api("/api/sales/quotes", { clientId: edu, inputs: { segment: "edu", edition: "custom", modules: ["messaging", "recall", "forms", "pial"], users: 60, termYears: 1,
+  audienceMode: "perUser", audienceCount: 800 } })).body;
+const cr = res(cq2.id);
+check("build your own: only modules offered to schools, +20%", cr.breakdown.custom && cr.breakdown.rows.map(x => x.key).join() === "messaging,recall,forms"
+  && cr.breakdown.software === Math.round((1500 + 900 + 1500) * 1.2 * 1.2 / 100) * 100, JSON.stringify(cr.breakdown).slice(0, 300));
+check("students per person", cr.lines.recurring[0].amount === cr.breakdown.software + 2400, JSON.stringify(cr.lines.recurring));
+const eq = (await api("/api/sales/quotes", { clientId: edu, inputs: { segment: "edu", edition: "campus", users: 120, pricing: "perUser", audienceMode: "flat", audienceCount: 900, termYears: 1 } })).body;
+const er = res(eq.id);
+check("per staff user, students flat", er.pricing === "perUser" && er.lines.recurring[0].amount === er.breakdown.software + 3600 && er.breakdown.software >= 14000, JSON.stringify(er.lines.recurring));
+await page.goto(BASE); await page.waitForTimeout(2000);
+await page.locator("nav button", { hasText: "Clients & Quotes" }).first().click(); await page.waitForTimeout(1200);
+await page.locator("nav button", { hasText: "Quotes" }).last().click(); await page.waitForTimeout(800);
+await page.locator("main").getByRole("button", { name: "New quote" }).click(); await page.waitForTimeout(1200);
+await page.getByLabel("Client", { exact: true }).selectOption({ label: "Lakeside Middle School" }); await page.waitForTimeout(300);
+await page.getByLabel("Market", { exact: true }).selectOption("edu"); await page.waitForTimeout(300);
+await page.getByRole("button", { name: /Build your own/ }).click(); await page.waitForTimeout(300);
+const picker = page.getByRole("group", { name: "Modules picked one by one" });
+check("module picker starts from the edition", (await picker.getByRole("checkbox", { checked: true }).count()) === 13 && !(await picker.innerText()).includes("ISO"), await picker.innerText());
+await picker.getByLabel("Command Board").check(); await page.waitForTimeout(300);
+await page.getByText(/^Module by module/).click();
+const sumTxt = await page.getByRole("region", { name: "Price summary" }).innerText();
+check("summary shows each module and the premium", /Command Board/.test(sumTxt) && /at bundle rates \+ 20%/.test(sumTxt), sumTxt.slice(0, 600));
+await page.getByRole("button", { name: "Save quote" }).click(); await page.waitForTimeout(1200);
+await page.getByRole("button", { name: /Print draft|Preview/ }).first().click(); await page.waitForTimeout(1200);
+const qp = await page.evaluate(() => document.getElementById("sales-print-frame")?.contentDocument?.documentElement?.outerHTML || "");
+check("printed quote has the module table", /Module by module/.test(qp) && /Command Board/.test(qp) && /bundle rate plus 20%/.test(qp));
+
 // ---- Price book ----
 await page.locator("nav button", { hasText: "Price book" }).first().click(); await page.waitForTimeout(800);
 await page.getByLabel("Command Mid-size").fill("47000");

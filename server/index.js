@@ -340,7 +340,7 @@ async function serveBuilt(req, res, url) {
   try {
     let data = await fs.readFile(file);
     const html = path.extname(file) === ".html";
-    if (html) data = brandHtml(data.toString("utf8"), path.basename(file) === "signin.html" ? {} : { modules: [...licenseState().modules] });
+    if (html) data = brandHtml(data.toString("utf8"), ["signin.html", "portal.html"].includes(path.basename(file)) ? { menu: null } : { modules: [...licenseState().modules] });
     else if (base === "manifest.webmanifest") data = brandManifest(data.toString("utf8"));
     res.writeHead(200, {
       "Content-Type": MIME[path.extname(file)] || "application/octet-stream", ...SECURITY_HEADERS,

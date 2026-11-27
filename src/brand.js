@@ -28,6 +28,7 @@ export const BRAND = {
   fire: b.fire !== undefined ? !!b.fire : (b.product || "nexus") === "nexus" || !!b.sandbox,
   words: { station: "Station / assignment", homeStation: "Home station", callSign: "Radio call sign", ...(b.words || {}) },
   work: b.work || null,
+  menu: b.menu || null,                 // main menu groups (User Management › Organization); null = built-in
   // The customer's own menu names {tileKey: name} (Branding page; Fenmorix OS only)
   terms: b.terms && typeof b.terms === "object" ? b.terms : {},
   setupPending: !!b.setupPending,

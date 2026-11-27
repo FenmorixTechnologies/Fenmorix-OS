@@ -32,7 +32,7 @@ const clean = (v, n) => String(v ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000
 const line = (v, n) => clean(v, n).replace(/[\r\n\t]+/g, " ");
 const day = v => (/^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? String(v) : null);
 const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Number(v) || 0));
-const KINDS = ["ps", "biz", "gov"], STATUSES = ["prospect", "active", "former", "lost"];
+const KINDS = ["ps", "biz", "gov", "edu"], STATUSES = ["prospect", "active", "former", "lost"];
 const VAULT_KINDS = ["server", "login", "database", "key", "note", "other"];
 const ACT_KINDS = ["note", "call", "email", "meeting", "work", "support"];
 const Q_STATUSES = ["draft", "sent", "accepted", "declined", "expired"];
@@ -56,7 +56,7 @@ function cleanSpend(v) {
 function cleanInputs(v) {
   const i = { ...DEFAULT_INPUTS, ...(v && typeof v === "object" ? v : {}) };
   return {
-    segment: ["ps", "biz"].includes(i.segment) ? i.segment : "ps", users: Math.round(num(i.users, 1, 100000)), edition: line(i.edition, 40),
+    segment: ["ps", "biz", "gov", "edu"].includes(i.segment) ? i.segment : "ps", users: Math.round(num(i.users, 1, 100000)), edition: line(i.edition, 40),
     addons: (Array.isArray(i.addons) ? i.addons : []).map(a => line(a, 40)).slice(0, 20), screens: Math.round(num(i.screens, 0, 100)),
     environments: line(i.environments, 20) || "none", dr: line(i.dr, 20) || "standard", support: line(i.support, 20) || "standard",
     termYears: Math.round(num(i.termYears, 1, 10)) || 1, founding: !!i.founding, delivery: i.delivery === "onprem" ? "onprem" : "hosted",
@@ -68,6 +68,9 @@ function cleanInputs(v) {
     customLines: (Array.isArray(i.customLines) ? i.customLines : []).slice(0, 20).map(c => ({ label: line(c?.label, 200), amount: num(c?.amount, -1e7, 1e7), kind: c?.kind === "annual" ? "annual" : "once" })).filter(c => c.label),
     currentSpend: cleanSpend(i.currentSpend),
     hostingAnnual: num(i.hostingAnnual, 0, 1e8), hostingOneTime: num(i.hostingOneTime, 0, 1e8), hostingNote: line(i.hostingNote, 300),
+    modules: [...new Set((Array.isArray(i.modules) ? i.modules : []).map(m => line(m, 40)).filter(m => /^[a-z]+$/.test(m)))].slice(0, 60),
+    pricing: i.pricing === "perUser" ? "perUser" : "flat",
+    audienceMode: ["perUser", "flat"].includes(i.audienceMode) ? i.audienceMode : "none", audienceCount: Math.round(num(i.audienceCount, 0, 200000)),
   };
 }
 const clientJson = r => ({

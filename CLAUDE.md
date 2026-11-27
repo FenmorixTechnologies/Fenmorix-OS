@@ -1248,3 +1248,36 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
 - Office Your Day: `ClientRequestsWidget` (id "clientportal", WIDGET_TILE sales) lists open/unread portal requests from GET /api/clientportal
   (60 s poll); a row opens Clients & Quotes on that client with the request open (SalesModule `initial` {clientId, ticket} via openWith).
 - packaging SHIP now includes portal.html (vite's third input: every package needs it or `vite build` fails).
+
+## Website v2, feature ideas, menu groups, module pricing, schools (11/27/2026, migrations 061-062)
+- Website (website/index.html is ASSEMBLED from website/parts/: hero.css, body.html, modules.js, config.js, ideas.js, ideas.css + the old
+  CSS; edit the parts, then rebuild index.html and worker.js the same way): four sectors (Public safety / Government / Business / Education)
+  with module presets; "Build your system" configurator = a live picture of the product (side bar groups, Your Day cards per module,
+  sector-specific card text), color swatches + own color + "Your name on it"; tapping a module shows what it does and its use in the
+  chosen sector (MODULES in parts/modules.js: desc, feats, use {ps,gov,biz,edu}, sectors, w/wEdu cards; Gradebook "Coming next").
+  No fire-only wording outside the Public safety section ("by the people who use it every day"; "Not a public safety agency?").
+- Feature ideas form (#ideas): name, organization, email, phone, idea (all required) + Cloudflare Turnstile (widget "fenmorix.com feature
+  ideas", sitekey 0x4AAAAAAGWMktYnw7EvzJNP). Worker POST /api/idea checks fields + Turnstile (secret binding TURNSTILE_SECRET), forwards to
+  https://office.fenmorix.com/api/hub/client/request (already behind the Access bypass for /api/hub/client) with headers x-sgfd: 1 and
+  x-fenmorix-site = OFFICE_SECRET binding. Office: hub.js websiteRequest checks it against WEBSITE_FORM_SECRET (.env, ≥ 24 chars, timing-safe)
+  and stores a portal_tickets row with client_id NULL, source 'website', contact jsonb (migration 061). Vendor list/widget LEFT JOIN
+  clients ("<org> (website)", Website pill, opens inline on the Overview with mailto/tel); replies are emailed when SMTP is set.
+  Deploying the Worker: the MCP sandbox can't fetch outside Cloudflare's API, so big HTML goes up in sha256-checked chunks through a scratch
+  KV namespace, then is assembled onto the deployed script (see the 11/27 session).
+- Cloudflare Access: "Fenmorix Office" app and the organization session are 720h (30 days) since 11/27/2026.
+- Home menu groups: src/modules.js MENU_GROUPS + menuLayout(saved) (every known tile once; new tiles join their default group). Org settings
+  `menu` {groups: [{name, keys}] | null, startClosed} in org.json (brand.js orgSettings/saveOrgSettings; brand meta `menu`, never on
+  signin/portal pages). AppShell `collapsible` (Home only): headings are buttons (aria-expanded), open/closed per browser in localStorage
+  "sgfd-menu-groups", closed group shows its badge total or item count. User Management › Organization › Main menu (OrgAdmin MainMenu):
+  rename/reorder groups, move sections, add/remove empty groups, "Groups start closed", "Use the built-in menu". Group names must not contain
+  a section name (tests click `nav button` hasText), hence "Requests & approvals", "Learning & development". Tests: e2e65 (run-menu.sh).
+- Pricing (src/pricing.js): MODULE_PRICES {flat {s,m,l}, user, impl, segments?}; every public-safety edition = the sum of its modules'
+  flat prices (so editions break down exactly). Edition "custom" (Build your own, inputs.modules) = Σ module prices × (1 + book.custom.premiumPct
+  0.20); implementation scales by impl weights (min 30%). Segments gov (factor 1.4, sizes 50/250/1000) and edu (factor 1.2, sizes 75/300/1500):
+  flat by size or pricing "perUser" (users × edition rate, at least the Small price); audience (edu Students $3/yr or flat 500/2000/6000 tiers;
+  gov Volunteers and part-time users) via audienceMode perUser|flat + audienceCount. result.breakdown {rows [{key,label,list,price,
+  implementation}], software, aLaCarte, atBundleRate, bundleSaves, custom}. mergeBook merges segments/modulePrices/custom one level down.
+  Clients kind 'edu' (migration 062). Quote builder: Price by, Build your own + module picker, students; Summary + printed quote "Module by
+  module"; Price book card "Module prices". Tests e2e61 (55).
+- Organization types: fire | business | government | education (brand.js INDUSTRIES; only fire switches on fire wording/rotations); default
+  job roles per type (education: Principal, Assistant principal, Department head, Teacher, Staff, Student).

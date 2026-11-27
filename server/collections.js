@@ -27,7 +27,7 @@ const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback);
 
 export const ROLE_LABEL = {
   user: "Requester", approver1: "Purchaser's signature", approver2: "Pre-approval",
-  get fire_chief() { return orgSettings().industry === "business" ? "Final approval" : "Fire chief (final approval)"; },
+  get fire_chief() { return orgSettings().fire ? "Fire chief (final approval)" : "Final approval"; },
   accounting: "Accounting", master: "Master admin",
 };
 const ROLES = Object.keys(ROLE_LABEL);

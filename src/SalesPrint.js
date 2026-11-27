@@ -129,6 +129,7 @@ export function quoteHtml(q, client, opts = {}) {
       <tr class="tot"><td>List price per year</td><td class="n">${money(r.listAnnual)}</td></tr>
       ${rows(r.lines.yearly)}${rows(r.lines.customAnnual || [])}
       <tr class="tot"><td>Year one</td><td class="n">${money(r.year1Recurring)}</td></tr></tbody></table>`}
+  ${moduleTable(r)}
   ${r.lines.once.length ? `<h3>One-time</h3><table><thead><tr><th>Item</th><th class="n">Amount</th></tr></thead><tbody>${rows(r.lines.once)}
       <tr class="tot"><td>One-time total</td><td class="n">${money(r.lines.once.reduce((s, l) => s + l.amount, 0))}</td></tr></tbody></table>` : ""}
   ${r.hosting ? hostingHtml(r.hosting, r.dr) : ""}
@@ -154,6 +155,17 @@ export function quoteHtml(q, client, opts = {}) {
   return doc(`${q.number} ${client.name}`, body, opts.draft);
 }
 
+// Module by module: each module's part of the software price and of implementation; a ready-made edition also shows what the same
+// modules would cost built one by one
+function moduleTable(r) {
+  const b = r.breakdown; if (!b || !b.rows.length || r.onPremQuote) return "";
+  return `<h3>Module by module</h3><table><thead><tr><th>Module</th><th class="n">Per year</th>${b.implementation ? '<th class="n">Implementation</th>' : ""}</tr></thead><tbody>
+    ${b.rows.map(x => `<tr><td>${esc(x.label)}</td><td class="n">${money(x.price)}</td>${b.implementation ? `<td class="n">${money(x.implementation)}</td>` : ""}</tr>`).join("")}
+    <tr class="tot"><td>${esc(r.edition.label)}${r.members > 1 ? " (each)" : ""}</td><td class="n">${money(b.software)}</td>${b.implementation ? `<td class="n">${money(b.implementation)}</td>` : ""}</tr></tbody></table>
+    ${b.custom ? `<p class="muted" style="margin:3px 0">Built one by one: each module at the bundle rate plus ${Math.round(b.premiumPct * 100)}%. A ready-made edition with the same modules costs less.</p>`
+      : b.bundleSaves > 0 ? `<p class="muted" style="margin:3px 0">The same modules built one by one would cost ${money(b.aLaCarte)} a year; the ${esc(r.edition.label)} edition saves ${money(b.bundleSaves)}.</p>` : ""}`;
+}
+
 // The spec sheet's price table (also shown on the Spec sheets page)
 export function specPrices(book, segKey, edKey) {
   const seg = book.segments[segKey], ed = seg.editions.find(e => e.key === edKey) || seg.editions[0];
@@ -166,7 +178,7 @@ export function specPrices(book, segKey, edKey) {
   return {
     head: ["", ...seg.sizes.map(z => `${z.label} (up to ${z.upTo} users)`)],
     rows: [[`${ed.label}, per year`, ...seg.sizes.map(z => money(ed.prices[z.key]))], ["One-time implementation", ...seg.sizes.map(z => money(seg.implementation[z.key]))]],
-    note: `One price per agency, by size. Above ${seg.quoteAbove} users, quoted. Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
+    note: `One price per ${seg.unit || "agency"}, by size${seg.perUser ? " (or per staff user)" : ""}. Above ${seg.quoteAbove} users, quoted. Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
 }
 
 // Spec sheet: what an edition includes and the service options (no prices unless asked)

@@ -382,8 +382,8 @@ export async function handleSystem(req, res, parts, user, send, jsonBody, url) {
   if (what === "org") {
     const before = orgSettings();
     const after = saveOrgSettings(b);
-    const changed = [before.industry !== after.industry && `type: ${after.industry === "fire" ? "fire/EMS" : "business"}`,
-      JSON.stringify(before.words) !== JSON.stringify(after.words) && "wording", JSON.stringify(before.work) !== JSON.stringify(after.work) && "work schedules / pay periods"].filter(Boolean);
+    const changed = [before.industry !== after.industry && `type: ${{ fire: "fire/EMS", business: "business", government: "government", education: "school" }[after.industry] || after.industry}`,
+      JSON.stringify(before.words) !== JSON.stringify(after.words) && "wording", JSON.stringify(before.work) !== JSON.stringify(after.work) && "work schedules / pay periods", JSON.stringify(before.menu) !== JSON.stringify(after.menu) && "main menu"].filter(Boolean);
     if (changed.length) await audit(user, "Changed organization settings", changed.join(", "));
     return send(res, 200, { ...(await orgState()), saved: true });
   }

@@ -9,6 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { configureWork } from "../src/shifts.js";
+import { menuLayout } from "../src/modules.js";
 
 const APP_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const on = v => /^(1|on|true|yes)$/i.test(String(v || "").trim());
@@ -78,13 +79,14 @@ export const PAY_KINDS = ["weekly", "biweekly", "semimonthly", "monthly"];
 export function orgSettings() {
   const sv = savedOrg();
   const defIndustry = product() === "nexus" || isSandbox() ? "fire" : "business";
-  const industry = ["fire", "business"].includes(sv.industry) ? sv.industry : defIndustry;
+  const industry = INDUSTRIES.includes(sv.industry) ? sv.industry : defIndustry;
   const fire = industry === "fire";
   const W = sv.words || {};
   const word = (k, d) => (typeof W[k] === "string" ? clean(W[k], 40) : d);
+  const place = { education: "Campus / building", government: "Office / location" }[industry] || "Location";
   const words = {
-    station: word("station", fire ? "Station / assignment" : "Location"),
-    homeStation: word("homeStation", fire ? "Home station" : "Location"),
+    station: word("station", fire ? "Station / assignment" : place),
+    homeStation: word("homeStation", fire ? "Home station" : place),
     callSign: word("callSign", fire ? "Radio call sign" : ""),          // "" = not used (hidden)
   };
   const w = sv.work || {}, pay = w.pay || {};
@@ -102,10 +104,21 @@ export function orgSettings() {
   configureWork(work);   // server-side copy of the shared schedule code follows the saved settings
   // Job roles (User Management › Organization): names people are given (their job title), each optionally carrying a permission
   // profile. Businesses start with three; fire departments use free-text job titles and start with none.
-  const roles = Array.isArray(sv.roles) ? cleanRoles(sv.roles) : (fire ? [] : DEFAULT_BUSINESS_ROLES.map(r => ({ ...r })));
-  return { industry, fire, words, work, roles };
+  const roles = Array.isArray(sv.roles) ? cleanRoles(sv.roles) : (fire ? [] : (DEFAULT_ROLES[industry] || DEFAULT_BUSINESS_ROLES).map(r => ({ ...r })));
+  // Main menu groups: null = the built-in grouping (src/modules.js MENU_GROUPS); else [{name, keys}] in the saved order
+  const menu = sv.menu && (Array.isArray(sv.menu.groups) || sv.menu.startClosed) ? { groups: Array.isArray(sv.menu.groups) ? sv.menu.groups : null, startClosed: !!sv.menu.startClosed } : null;
+  return { industry, fire, words, work, roles, menu };
 }
 export const DEFAULT_BUSINESS_ROLES = [{ name: "Owner", profile: "firechief" }, { name: "Manager", profile: "division" }, { name: "Employee", profile: "" }];
+// fire = fire/EMS department; business; government (cities, parishes, utilities); education (schools, districts). Only "fire" turns on
+// the fire-service wording and rotations; the others differ in their starting wording and job roles.
+export const INDUSTRIES = ["fire", "business", "government", "education"];
+const DEFAULT_ROLES = {
+  business: DEFAULT_BUSINESS_ROLES,
+  government: [{ name: "Director", profile: "firechief" }, { name: "Supervisor", profile: "division" }, { name: "Employee", profile: "" }],
+  education: [{ name: "Principal", profile: "firechief" }, { name: "Assistant principal", profile: "division" }, { name: "Department head", profile: "division" },
+    { name: "Teacher", profile: "" }, { name: "Staff", profile: "" }, { name: "Student", profile: "" }],
+};
 const PROFILE_KEY = /^[a-z0-9_-]{1,40}$/;
 export function cleanRoles(list) {
   const out = [], seen = new Set();
@@ -120,7 +133,7 @@ export function cleanRoles(list) {
 }
 export function saveOrgSettings(next) {
   const cur = savedOrg(), out = { ...cur };
-  if (next.industry !== undefined) out.industry = ["fire", "business"].includes(next.industry) ? next.industry : undefined;
+  if (next.industry !== undefined) out.industry = INDUSTRIES.includes(next.industry) ? next.industry : undefined;
   if (next.words && typeof next.words === "object") {
     out.words = { ...(cur.words || {}) };
     for (const k of ["station", "homeStation", "callSign"]) if (typeof next.words[k] === "string") out.words[k] = clean(next.words[k], 40);
@@ -139,6 +152,8 @@ export function saveOrgSettings(next) {
     out.work = o;
   }
   if (Array.isArray(next.roles)) out.roles = cleanRoles(next.roles);
+  if (next.menu !== undefined) out.menu = next.menu && typeof next.menu === "object"
+    ? { groups: Array.isArray(next.menu.groups) ? menuLayout(next.menu).map(g => ({ name: g.name, keys: g.keys })) : null, startClosed: !!next.menu.startClosed } : undefined;
   fs.mkdirSync(settingsDir(), { recursive: true });
   fs.writeFileSync(path.join(settingsDir(), "org.json"), JSON.stringify(out, null, 1) + "\n");
   orgCache = { mtime: -1, data: {} };
@@ -163,7 +178,7 @@ export function brand() {
     theme: prod, colors: themeOverrides(), terms: savedTerms(), wordmark: !!brandFile("brand-wordmark.png"), orgLogo: !!brandFile("org-logo.png"),
     // A new customer's install (kit from the License Manager): the first master admin gets the setup wizard
     setupPending: prod === "fenmorix" && !isSandbox() && sv.setup === "pending",
-    ...(() => { const o = orgSettings(); return { industry: o.industry, fire: o.fire, words: o.words, work: o.work }; })(),
+    ...(() => { const o = orgSettings(); return { industry: o.industry, fire: o.fire, words: o.words, work: o.work, menu: o.menu }; })(),
     sandboxNote: isSandbox() ? clean(e.SANDBOX_NOTE, 300) || "Sandbox: every person, call and record here is made up. Don't enter real names, patient, case or personnel information." : "",
   };
 }
