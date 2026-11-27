@@ -1,6 +1,9 @@
 {
-  "version": "2026.11.27.2",
+  "version": "2026.11.27.3",
   "notes": [
+    "Home menu in groups you can open and close; arrange them in User Management \u203a Organization \u203a Main menu.",
+    "Organization types: business, government, school or district, fire/EMS.",
+    "Clients & Quotes: module-by-module prices, Build your own (+20%), government and school pricing with students, website feature ideas as support requests.",
     "A database restart (an Ubuntu update of PostgreSQL, a restore) no longer stops the app; it reconnects by itself.",
     "Client portal: accounts more than 12 hours old could not sign in (\"Something went wrong saving to the database\"). Fixed.",
     "Automatic updates: when the update service can't be reached, the message says why (DNS, firewall, certificate...) and IPv4 is tried again.",
