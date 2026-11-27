@@ -1239,7 +1239,7 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   hosting by Avexon), contact = mailto michael@fenmorix.com (demo email lists the picked modules). Preview artifact
   https://claude.ai/artifact/3xT6nGT5N35Ttd2Z47niXQ. LIVE since 11/26/2026: Worker `fenmorix-site` (website/worker.js = HTML + logo/favicon
   inlined, robots.txt, sitemap.xml, www -> apex 301, CSP) on routes fenmorix.com/*, www.fenmorix.com/*, and portal.fenmorix.com/* (a "portal
-  opens soon" placeholder; DNS AAAA 100:: proxied). When the portal goes live: change portal DNS to A 52.15.58.152 and delete that route.
+  opens soon" placeholder until 11/26/2026 evening). The portal is LIVE now: portal.fenmorix.com = A 52.15.58.152 (proxied, no Access), route removed.
   Rollback for the site: point the two routes back to `fenmorix-site-login` (old Pages site "fenmorix" + login pill). Deploy = upload the
   script through the Cloudflare MCP (paste content; check sha256 in the code before uploading). BlakSheep does SEO.
 - packaging SHIP now includes portal.html (vite's third input: every package needs it or `vite build` fails).
