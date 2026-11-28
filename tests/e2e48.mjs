@@ -108,6 +108,13 @@ check("unknown accounts get the same answer as wrong passwords", (await client()
 r = await A("/api/auth/me");
 check("signed-in people aren't slowed by it", r.status === 200 && r.body.user?.name === "Ann Alpha");
 
+// Search engines: app servers are never indexed (the public site is fenmorix.com)
+{ const rb = await fetch("http://localhost:3077/robots.txt"); const t = await rb.text();
+  check("robots.txt on the app disallows everything", rb.status === 200 && /Disallow: \//.test(t), t);
+  const pg = await fetch("http://localhost:3077/"); const html = await pg.text();
+  check("app pages carry noindex (header and meta)", /noindex/.test(pg.headers.get("x-robots-tag") || "") && /name="robots" content="noindex/.test(html), pg.headers.get("x-robots-tag"));
+  const api = await fetch("http://localhost:3077/api/health");
+  check("API answers carry noindex too", /noindex/.test(api.headers.get("x-robots-tag") || "")); }
 check("server log has no crashes", !/TypeError|ReferenceError/.test(fs.readFileSync("/home/claude/testrun/app/server.log", "utf8").split("\n").slice(-400).join("\n")));
 done();
 process.exit(0);

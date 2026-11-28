@@ -424,6 +424,9 @@ const portalOn = !!String(process.env.PORTAL_HOST || "").trim();
 async function handler(req, res) {
   req.secure = !!tls;
   const url = new URL(req.url, "http://localhost");
+  // App servers (customers, sandbox, office, portal) are never meant for search engines: the public website is fenmorix.com.
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  if (url.pathname === "/robots.txt") return send(res, 200, "User-agent: *\nDisallow: /\n", "text/plain; charset=utf-8");
   try {
     if (portalOn && (await import("./portal.js")).isPortalRequest(req)) return await servePortalHost(req, res, url);
     if (url.pathname.startsWith("/api/")) return await handleApi(req, res, url);

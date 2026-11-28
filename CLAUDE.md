@@ -1326,4 +1326,9 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   guardian); POST students accepts classIds (manage). Teachers keep the search picker (all=1 -> 403). e2e66 covers it.
 - Website: Education group in website/parts/modules.js is local only (NOT deployed, waiting on the SEO plan approval: Claude Doc
   "Fenmorix.com SEO — Phase Zero Audit and Implementation Plan"). Don't commit website/ until it is deployed (worker.js in git = deployed).
+- Search engines (11/27/2026): index.js handler sets `X-Robots-Tag: noindex, nofollow` on every response and answers /robots.txt with
+  Disallow: / (before the portal host check); index/signin/portal/grades.html carry the robots meta (tests/build.sh adds it to its stand-in
+  index.html). e2e48 checks both. Website SEO phase 1 is on branch website-education-group: website/build.mjs assembles shell.html + parts/
+  into index.html and rewrites worker.js constants (HTML, NOTFOUND, LASTMOD, OG); routing code in worker.js is hand-edited; tools/serve.mjs
+  runs the Worker locally (x-host / x-proto headers), tools/og.mjs renders assets/og.jpg. The build fails on unsupported claims (BANNED).
 

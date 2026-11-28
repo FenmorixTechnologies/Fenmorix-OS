@@ -1,6 +1,7 @@
 {
-  "version": "2026.11.27.5",
+  "version": "2026.11.27.6",
   "notes": [
+    "Search engines are told not to index this server (the public website is separate).",
     "School pricing: per-module school prices, a new Classroom edition (Gradebook + staff tools), and school competitor costs for quote comparisons. Saved price books from before this change refresh to the new prices (save once to keep).",
     "Home menu: a new Education group holds the Gradebook.",
     "Gradebook: administrators can see every student and add students by hand, with a class and a parent or guardian.",
