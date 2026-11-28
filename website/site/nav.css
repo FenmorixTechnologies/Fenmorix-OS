@@ -1,0 +1,27 @@
+/* Top menu (home page and every other page): dropdowns on wide screens, one Menu panel on phones */
+.top { z-index: 20; }
+.top .wrap { position: relative; }
+.mainnav { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+.mainnav .nm { position: relative; }
+.mainnav .nb, .mainnav .nl, .mainnav .menu-btn { font: 600 16px/1 var(--body); color: var(--silver); background: none; border: 0; padding: 10px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; }
+.mainnav .nb::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-3px) rotate(45deg); }
+.mainnav .nb:hover, .mainnav .nl:hover, .mainnav .menu-btn:hover, .mainnav .nb[aria-expanded="true"] { color: var(--white); background: #ffffff12; }
+.mainnav .nb[aria-current], .mainnav .nl[aria-current] { color: var(--white); }
+.mainnav .btn { margin-left: 8px; padding: 11px 16px; font-size: 15px; color: #1A0B00; }
+.dd { position: absolute; top: calc(100% + 8px); left: 0; min-width: 260px; background: var(--navy-2); border: 1px solid var(--steel); border-top: 3px solid var(--orange); border-radius: 0 0 10px 10px; padding: 10px; box-shadow: 0 18px 40px #00000066; display: grid; gap: 2px; }
+.dd[hidden] { display: none; }
+.dd a { display: block; color: #DCE1E6; text-decoration: none; font: 600 16px/1.3 var(--body); padding: 9px 12px; border-radius: 6px; white-space: nowrap; }
+.dd a:hover, .dd a:focus-visible { background: #ffffff10; color: var(--white); }
+.dd a[aria-current] { color: var(--orange); }
+.dd .dh { margin: 4px 12px 6px; font: 600 13px/1.2 var(--body); color: #8C99A8; }
+.menu-btn { display: none !important; }
+.allmenu { position: absolute; top: 100%; left: 0; right: 0; background: var(--navy-2); border: 1px solid var(--steel); border-top: 3px solid var(--orange); border-radius: 0 0 12px 12px; padding: 18px 20px 20px; box-shadow: 0 24px 48px #00000088; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 18px 24px; max-height: calc(100vh - 90px); overflow-y: auto; }
+.allmenu[hidden] { display: none; }
+.allmenu h2 { font: 700 14px/1.2 var(--body); color: #8C99A8; margin: 0 0 8px; letter-spacing: 0; }
+.allmenu a { display: block; color: #DCE1E6; text-decoration: none; font: 600 17px/1.3 var(--body); padding: 8px 0; }
+.allmenu a:hover { color: var(--white); }
+@media (max-width: 920px) {
+  .mainnav .nm, .mainnav .nl { display: none; }
+  .menu-btn { display: inline-flex !important; align-items: center; gap: 8px; color: var(--white) !important; border: 1px solid #ffffff40 !important; }
+}
+@media (max-width: 420px) { .mainnav .btn { display: none; } }

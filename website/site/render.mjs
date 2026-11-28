@@ -11,8 +11,6 @@ function shell(D, { path, title, desc, crumbs, h1, lead, kicker, body, cta = tru
   const ld = { "@context": "https://schema.org", "@graph": [
     { "@type": "WebPage", "@id": url + "#page", url, name: title, description: desc, isPartOf: { "@id": D.site + "/#site" }, publisher: { "@id": D.site + "/#org" }, inLanguage: "en-US" },
     { "@type": "BreadcrumbList", itemListElement: trail.map(([name, href], i) => ({ "@type": "ListItem", position: i + 1, name, item: D.site + href })) } ] };
-  const nav = [["/modules", "Modules"], ["/solutions/public-safety", "Public safety"], ["/solutions/government", "Government"],
-    ["/solutions/business", "Business"], ["/solutions/education", "Education"], ["/security", "Security"]];
   const ind = D.industries.map(i => `<li><a href="/solutions/${i.slug}">${esc(i.nav)}</a></li>`).join("");
   return `<!doctype html>
 <html lang="en">
@@ -47,7 +45,7 @@ ${head}${D.beacon || ""}
 <div class="band">
 <header class="top"><div class="wrap">
 <a href="/"><img src="/assets/logo.png" width="450" height="102" alt="Fenmorix Technologies home"></a>
-<nav aria-label="Main">${nav.map(([h, t]) => `<a class="hide-sm" href="${h}"${active === h ? ' aria-current="page"' : ""}>${t}</a>`).join("")}<a class="btn btn-fire" href="${D.demo}">Request a demo</a></nav>
+${topNav(D, active)}
 </div></header>
 <div class="title"><div class="wrap">
 <nav class="crumbs" aria-label="Breadcrumb">${trail.map(([n, h], i) => i === trail.length - 1 ? `<span aria-current="page">${esc(n)}</span>` : `<a href="${h}">${esc(n)}</a> › `).join("")}</nav>
@@ -67,8 +65,28 @@ ${cta ? `<section class="cta"><div class="wrap"><h2>See it with your own organiz
 </div>
 <div class="base"><img src="/assets/logo.png" width="450" height="102" alt="Fenmorix Technologies"><span>© Fenmorix Technologies, LLC. Baton Rouge, Louisiana.</span></div>
 </div></footer>
+<script>${D.navjs || ""}</script>
 </body>
 </html>`;
+}
+
+// The top menu, shared by the home page (build.mjs puts it in the header) and every other page.
+export function menuGroups(D) {
+  return [
+    ["Solutions", D.industries.map(i => [i.nav, `/solutions/${i.slug}`])],
+    ["Product", [["All modules", "/modules"], ["Build your system", "/#build"], ["Security", "/security"], ["Integrations", "/integrations"],
+      ["Hosting", "/hosting"], ["How pricing works", "/#pricing"]]],
+    ["Company", [["Avexon partnership", "/partners/avexon"], ["Request a demo", "/demo"], ["Email michael@fenmorix.com", "mailto:michael@fenmorix.com"],
+      ["Client login", "https://portal.fenmorix.com"], ["Staff sign-in", "https://office.fenmorix.com"]]],
+  ];
+}
+export function topNav(D, active) {
+  const groups = menuGroups(D);
+  const cur = h => (h === active ? ' aria-current="page"' : "");
+  const id = g => "nm-" + g.toLowerCase();
+  const dd = groups.map(([g, links]) => `<div class="nm"><button type="button" class="nb" aria-expanded="false" aria-controls="${id(g)}"${links.some(([, h]) => h === active) ? " aria-current=\"true\"" : ""}>${g}</button><div class="dd" id="${id(g)}" hidden>${links.map(([t, h]) => `<a href="${h}"${cur(h)}>${esc(t)}</a>`).join("")}</div></div>`).join("");
+  return `<nav class="mainnav" aria-label="Main">${dd}<a class="nl" href="https://portal.fenmorix.com">Client login</a><a class="btn btn-fire" href="${D.demo}">Request a demo</a><button type="button" class="menu-btn" aria-expanded="false" aria-controls="nm-all">Menu</button></nav>
+<div class="allmenu" id="nm-all" hidden>${groups.map(([g, links]) => `<div><h2>${g}</h2>${links.map(([t, h]) => `<a href="${h}"${cur(h)}>${esc(t)}</a>`).join("")}</div>`).join("")}</div>`;
 }
 
 const modBy = (D, key) => D.modules.find(m => m.key === key);
@@ -110,7 +128,7 @@ function industryPage(D, ind) {
 <p style="margin-top:24px"><a href="/modules">See every module</a></p></div></section>
 ${related.length ? `<section><div class="wrap"><h2>Related</h2><ul class="pills">${related.map(i => `<li><a href="/solutions/${i.slug}">${esc(i.nav)}</a></li>`).join("")}</ul></div></section>` : ""}`;
   return shell(D, { path: `/solutions/${ind.slug}`, title: ind.title, desc: ind.desc, crumbs: [[ind.nav, `/solutions/${ind.slug}`]],
-    h1: ind.h1, lead: ind.intro[0], body, active: ["ps"].includes(ind.sector) ? "/solutions/public-safety" : `/solutions/${ind.slug}` });
+    h1: ind.h1, lead: ind.intro[0], body, active: `/solutions/${ind.slug}` });
 }
 
 function factPage(D, key) {
