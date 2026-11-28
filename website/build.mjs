@@ -27,11 +27,17 @@ const schema = {
 
 let html = rd("shell.html");
 html = html.replace(/<!--part:([\w.-]+)-->/g, (_, f) => rd("parts/" + f).trim());
+// Cloudflare Turnstile site key (public; widget "fenmorix.com feature ideas"). The secret lives only in the Worker's bindings.
+const TURNSTILE_SITEKEY = "0x4AAAAAAGWMktYnw7EvzJNP";
+html = html.replaceAll("__TURNSTILE_SITEKEY__", TURNSTILE_SITEKEY);
 html = html.replace("<!--schema-->", `<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>`);
+// Same light minifying the live page has always had: no indentation, no whole-line comments, no blank lines.
+html = html.split("\n").map(l => l.trimStart()).filter(l => l && !/^\/\/( |$)/.test(l) && !/^\/\*.*\*\/$/.test(l)).join("\n");
 const notFound = rd("404.html");
 
 const problems = [];
 if (/<!--part:/.test(html)) problems.push("a part placeholder was not filled");
+if (/__[A-Z_]+__/.test(html)) problems.push("a __PLACEHOLDER__ was not filled: " + html.match(/__[A-Z_]+__/)[0]);
 if ((html.match(/<h1[\s>]/g) || []).length !== 1) problems.push("index.html needs exactly one <h1>");
 for (const need of ['rel="canonical"', 'name="description"', 'property="og:image"', "application/ld+json"])
   if (!html.includes(need)) problems.push("index.html is missing " + need);

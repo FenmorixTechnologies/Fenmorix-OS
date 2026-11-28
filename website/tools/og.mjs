@@ -15,5 +15,10 @@ p{font:400 28px/1.4 "Fira Sans",sans-serif;color:#C5CAD0;margin:22px 0 0;max-wid
 const b = await chromium.launch(); const pg = await b.newPage({ viewport: { width: 1200, height: 630 } });
 await pg.setContent(html, { waitUntil: "networkidle" }).catch(() => pg.setContent(html));
 await pg.waitForTimeout(500);
-await pg.screenshot({ path: new URL("../assets/og.jpg", import.meta.url).pathname, type: "jpeg", quality: 88 });
+await pg.screenshot({ path: new URL("../assets/og-src.png", import.meta.url).pathname, type: "png" });
 await b.close();
+// Then compress (Pillow): small enough to inline in the Worker.
+import { execFileSync } from "node:child_process";
+const src = new URL("../assets/og-src.png", import.meta.url).pathname, out = new URL("../assets/og.jpg", import.meta.url).pathname;
+execFileSync("python3", ["-c", "import sys;from PIL import Image;Image.open(sys.argv[1]).convert('RGB').save(sys.argv[2],'JPEG',quality=62,optimize=True,progressive=True,subsampling=2)", src, out]);
+fs.unlinkSync(src);
