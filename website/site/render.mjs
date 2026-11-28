@@ -76,7 +76,7 @@ export function menuGroups(D) {
     ["Solutions", D.industries.map(i => [i.nav, `/solutions/${i.slug}`])],
     ["Product", [["All modules", "/modules"], ["Build your system", "/#build"], ["Security", "/security"], ["Integrations", "/integrations"],
       ["Hosting", "/hosting"], ["How pricing works", "/#pricing"]]],
-    ["Company", [["Avexon partnership", "/partners/avexon"], ["Request a demo", "/demo"], ["Email michael@fenmorix.com", "mailto:michael@fenmorix.com"]]],
+    ["Company", [["Avexon partnership", "/partners/avexon"], ["Request a demo", "/demo"]]],
   ];
 }
 // Plain links beside the dropdowns (and their own group in the phone menu).
