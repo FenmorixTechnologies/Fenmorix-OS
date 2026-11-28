@@ -176,7 +176,7 @@ export function specPrices(book, segKey, edKey) {
       ...seg.sizes.map(z => [`One-time implementation, ${z.label} (up to ${z.upTo} users)`, money(seg.implementation[z.key])])],
     note: `Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
   return {
-    head: ["", ...seg.sizes.map(z => `${z.label} (up to ${z.upTo} users)`)],
+    head: ["", ...seg.sizes.map(z => `${z.label} (up to ${z.upTo} ${seg.audience ? "staff" : "users"})`)],
     rows: [[`${ed.label}, per year`, ...seg.sizes.map(z => money(ed.prices[z.key]))], ["One-time implementation", ...seg.sizes.map(z => money(seg.implementation[z.key]))]],
     note: `One price per ${seg.unit || "agency"}, by size${seg.perUser ? " (or per staff user)" : ""}. Above ${seg.quoteAbove} users, quoted. Hosting and compute are quoted separately by ${partner}. Multi-year terms are discounted.` };
 }
@@ -191,7 +191,8 @@ export function specHtml(book, segKey, edKey, { prices = false } = {}) {
   const round = n => Math.round(n);
   // Yearly software price at each size: public safety = the size's price; business = per user at the size's top, or the minimum
   const base = z => biz ? Math.max(ed.perUserMonth * 12 * z.upTo, ed.minYear) : ed.prices[z.key];
-  const sizeHead = sizes.map(z => biz ? `${z.label} (${z.upTo} users)` : `${z.label} (up to ${z.upTo} users)`);
+  const who = seg.audience ? "staff" : "users";
+  const sizeHead = sizes.map(z => biz ? `${z.label} (${z.upTo} users)` : `${z.label} (up to ${z.upTo} ${who})`);
   const th = (cols, extra = []) => `<thead><tr>${cols.map((h, i) => `<th${i >= cols.length - extra.length ? ' class="n"' : ""}>${esc(h)}</th>`).join("")}</tr></thead>`;
   const n = v => `<td class="n">${v}</td>`;
   const pctCells = pct => sizes.map(z => n(pct ? `${money(round(base(z) * pct))}<span class="muted">/yr</span>` : "Included")).join("");
@@ -201,12 +202,13 @@ export function specHtml(book, segKey, edKey, { prices = false } = {}) {
 
   const pricing = !prices ? "" : `<h2>Pricing</h2>
     <table>${th(["", ...sizeHead], sizeHead)}<tbody>
-      <tr><td><b>${esc(ed.label)} software, per year</b>${biz ? `<span class="d">${money(ed.perUserMonth)} per user per month, billed yearly; yearly minimum ${money(ed.minYear)}</span>` : `<span class="d">One price per agency at each size</span>`}</td>${sizes.map(z => n(`<b>${money(base(z))}</b>`)).join("")}</tr>
-      <tr><td>Per user, per month${biz ? "" : " (at the size's top)"}</td>${sizes.map(z => n(money(base(z) / z.upTo / 12, true))).join("")}</tr>
+      <tr><td><b>${esc(ed.label)} software, per year</b>${biz ? `<span class="d">${money(ed.perUserMonth)} per user per month, billed yearly; yearly minimum ${money(ed.minYear)}</span>` : `<span class="d">One price per ${esc(seg.unit || "agency")} at each size${seg.perUser ? `, or ${money(Number(ed.perUserYear) || Math.round(ed.prices[(sizes[1] || sizes[0]).key] / (sizes[1] || sizes[0]).upTo * 100) / 100, true)} per staff user a year (at least the Small price)` : ""}</span>`}</td>${sizes.map(z => n(`<b>${money(base(z))}</b>`)).join("")}</tr>
+      <tr><td>Per ${biz ? "user" : who === "staff" ? "staff user" : "user"}, per month${biz ? "" : " (at the size's top)"}</td>${sizes.map(z => n(money(base(z) / z.upTo / 12, true))).join("")}</tr>
+      ${seg.audience && (segKey !== "edu" || ed.modules.includes("gradebook")) ? `<tr><td>${esc(seg.audience.label)}<span class="d">${esc(seg.audience.note)}</span></td><td class="n" colspan="${sizes.length}">${money(seg.audience.perUserYear, seg.audience.perUserYear % 1 !== 0)} per person a year, or flat: ${seg.audience.tiers.map(t => `${money(t.price)} up to ${t.upTo.toLocaleString("en-US")}`).join(" · ")}</td></tr>` : ""}
       <tr><td>One-time implementation<span class="d">Setup, branding, roles and permissions, staff training</span></td>${sizes.map(z => n(money(seg.implementation[z.key]))).join("")}</tr>
       <tr><td>Hosting and compute<span class="d">Sized to your users, data and recovery tier</span></td>${sizes.map(() => n(`Quoted by ${partner}`)).join("")}</tr>
     </tbody></table>
-    <p class="muted" style="margin:0">${biz ? "" : `Above ${seg.quoteAbove} users, quoted. `}Prices in U.S. dollars, before term discounts. Hosting is billed by ${partner}.</p>`;
+    <p class="muted" style="margin:0">${biz ? "" : `Above ${seg.quoteAbove} ${who}, quoted. `}Prices in U.S. dollars, before term discounts. Hosting is billed by ${partner}.</p>`;
 
   const addonRows = addons.map(a => `<tr><td><b>${esc(a.label)}</b><span class="d">${esc(a.note || "")}</span></td>${prices
     ? sizes.map(z => n(`${money(a.prices[z.key])}<span class="muted">/yr${a.perUnit ? " each" : ""}</span>`)).join("") : ""}</tr>`).join("");

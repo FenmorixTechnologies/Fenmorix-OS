@@ -120,9 +120,10 @@ export const TILE_LABELS = [
 // ---- Main menu groups (Home side bar). Masters rearrange them in User Management › Organization › Main menu (org.json "menu").
 export const MENU_GROUPS = [
   { name: "Everyday", keys: ["announcements", "messages", "notifications", "directory", "personnel", "offwork", "links", "spot"] },
+  { name: "Education", keys: ["gradebook"] },
   { name: "People & time", keys: ["timetracker", "schedule", "callout", "leave", "forceback", "sick"] },
   { name: "Requests & approvals", keys: ["procurement", "reimbursements", "forms", "helpdesk", "ppe", "meetings"] },
-  { name: "Learning & development", keys: ["gradebook", "training", "evals"] },
+  { name: "Learning & development", keys: ["training", "evals"] },
   { name: "Emergencies & operations", keys: ["recall", "command", "imt", "callalerts", "recordings", "investigations", "fireprev"] },
   { name: "Reports & analytics", keys: ["stats", "board", "pial", "audit"] },
   { name: "Business office", keys: ["sales", "books"] },

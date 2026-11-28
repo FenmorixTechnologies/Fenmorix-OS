@@ -222,13 +222,33 @@ for (const n of ["School setup", "Classes & teachers", "Import rosters", "Family
 }
 check("every manager page opens", true);
 await page.locator("nav button", { hasText: "Students" }).first().click(); await page.waitForTimeout(600);
-await page.getByLabel("Find a student").fill("Adams"); await page.waitForTimeout(900);
-await page.getByRole("button", { name: /Adams, Ava/ }).click(); await page.waitForTimeout(1300);
+await page.getByLabel("Filter students").fill("Adams"); await page.waitForTimeout(600);
+await page.getByRole("region", { name: "Student list" }).getByRole("button", { name: /Adams, Ava/ }).click(); await page.waitForTimeout(1300);
 t = await page.getByRole("region", { name: "Report card" }).innerText();
 check("report card with every period", /Quarter 1/.test(t) && /Quarter 2/.test(t) && /4th Grade Social Studies/.test(t), t.slice(0, 300));
 check("family sign-ins on the student page", /Pat Adams/.test(await page.getByRole("region", { name: "Student and family sign-ins" }).innerText()));
 await page.screenshot({ path: "/tmp/claude-0/gb-student.png" });
 
+// ---- Students page: list and add a student by hand (with a class and a parent sign-in)
+await page.locator("nav button", { hasText: "Students" }).first().click(); await page.waitForTimeout(1200);
+t = await page.getByRole("region", { name: "Student list" }).innerText();
+check("student list for managers", /Adams, Ava/.test(t) && /Cruz, Cal/.test(t), t.slice(0, 200));
+await page.getByRole("button", { name: "Add a student" }).click();
+const sd = page.getByRole("dialog", { name: "Add a student" });
+await sd.getByLabel("Student first name").fill("Dee"); await sd.getByLabel("Student last name").fill("Diaz");
+await sd.getByLabel("Student student id").fill("1004"); await sd.getByLabel("Student grade").fill("4");
+await sd.getByLabel("Add to a class").selectOption({ label: "4th Grade Math · 3rd (Tess Teacher)" });
+await sd.getByLabel("Guardian name").fill("Lee Diaz"); await sd.getByLabel("Guardian email").fill("lee@family.example");
+await sd.getByRole("button", { name: "Add student" }).click(); await page.waitForTimeout(1500);
+check("student added by hand, in the class, with a parent sign-in", psql("SELECT count(*) FROM gb_students WHERE student_number = '1004'") === "1"
+  && psql(`SELECT count(*) FROM gb_enrollments e JOIN gb_students s ON s.id = e.student_id WHERE s.student_number = '1004' AND e.class_id = '${cls["MA4-01"]}'`) === "1"
+  && psql("SELECT count(*) FROM gb_family_links l JOIN gb_family f ON f.id = l.family_id JOIN gb_students s ON s.id = l.student_id WHERE s.student_number = '1004' AND f.email = 'lee@family.example'") === "1");
+check("new student in the list", /Diaz, Dee/.test(await page.getByRole("region", { name: "Student list" }).innerText()));
+r = await tapi("/api/gradebook/students?all=1");
+check("teachers can't pull the whole student list", r.status === 403);
+await page.goto(BASE); await page.waitForTimeout(2000);
+t = await page.locator("nav").first().innerText();
+check("Gradebook under its own Education group in the menu", /EDUCATION/i.test(t) && t.toUpperCase().indexOf("EDUCATION") < t.toUpperCase().indexOf("GRADEBOOK"), t.slice(0, 300));
 check("no page errors", !errors.length, errors.join(" | "));
 done();
 await browser.close();

@@ -168,11 +168,12 @@ const cq2 = (await api("/api/sales/quotes", { clientId: edu, inputs: { segment: 
   audienceMode: "perUser", audienceCount: 800 } })).body;
 const cr = res(cq2.id);
 check("build your own: only modules offered to schools, +20%", cr.breakdown.custom && cr.breakdown.rows.map(x => x.key).join() === "messaging,recall,forms"
-  && cr.breakdown.software === Math.round((1500 + 900 + 1500) * 1.2 * 1.2 / 100) * 100, JSON.stringify(cr.breakdown).slice(0, 300));
+  && cr.breakdown.software === Math.round((1000 + 1400 + 1000) * 1.2 / 100) * 100, JSON.stringify(cr.breakdown).slice(0, 300));
 check("students per person", cr.lines.recurring[0].amount === cr.breakdown.software + 2400, JSON.stringify(cr.lines.recurring));
 const eq = (await api("/api/sales/quotes", { clientId: edu, inputs: { segment: "edu", edition: "campus", users: 120, pricing: "perUser", audienceMode: "flat", audienceCount: 900, termYears: 1 } })).body;
 const er = res(eq.id);
-check("per staff user, students flat", er.pricing === "perUser" && er.lines.recurring[0].amount === er.breakdown.software + 3600 && er.breakdown.software >= 14000, JSON.stringify(er.lines.recurring));
+check("per staff user, students flat", er.pricing === "perUser" && er.lines.recurring[0].amount === er.breakdown.software + 3600 && Math.abs(er.breakdown.software - 120 * Math.round(33800 / 300 * 100) / 100) < 0.01, JSON.stringify(er.lines.recurring));
+check("school prices are set module by module (Classroom = the Gradebook + 5 modules)", er.edition.key === "campus" && JSON.stringify((await api("/api/sales/calc", { inputs: { segment: "edu", edition: "classroom", users: 50 } })).body.result?.edition?.prices || (await api("/api/sales/calc", { inputs: { segment: "edu", edition: "classroom", users: 50 } })).body.edition?.prices) === JSON.stringify({ s: 5800, m: 20200, l: 43900 }));
 await page.goto(BASE); await page.waitForTimeout(2000);
 await page.locator("nav button", { hasText: "Clients & Quotes" }).first().click(); await page.waitForTimeout(1200);
 await page.locator("nav button", { hasText: "Quotes" }).last().click(); await page.waitForTimeout(800);
@@ -181,7 +182,7 @@ await page.getByLabel("Client", { exact: true }).selectOption({ label: "Lakeside
 await page.getByLabel("Market", { exact: true }).selectOption("edu"); await page.waitForTimeout(300);
 await page.getByRole("button", { name: /Build your own/ }).click(); await page.waitForTimeout(300);
 const picker = page.getByRole("group", { name: "Modules picked one by one" });
-check("module picker starts from the edition", (await picker.getByRole("checkbox", { checked: true }).count()) === 13 && !(await picker.innerText()).includes("ISO"), await picker.innerText());
+check("module picker starts from the edition", (await picker.getByRole("checkbox", { checked: true }).count()) === 6 && !(await picker.innerText()).includes("ISO"), await picker.innerText());
 await picker.getByLabel("Command Board").check(); await page.waitForTimeout(300);
 await page.getByText(/^Module by module/).click();
 const sumTxt = await page.getByRole("region", { name: "Price summary" }).innerText();

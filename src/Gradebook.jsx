@@ -643,6 +643,81 @@ function FamilySignIns({ home, toast }) {
   </div>;
 }
 
+// ---------------------------------------------------------------- students (list, add by hand, edit)
+function StudentDialog({ st, home, onClose, onSaved, toast }) {
+  const [f, setF] = useState(() => st ? { ...st } : { firstName: "", lastName: "", number: "", gradeLevel: "", email: "", active: true });
+  const [classIds, setClassIds] = useState([]), [pick, setPick] = useState(""), [g, setG] = useState({ name: "", email: "", relationship: "" }), [busy, setBusy] = useState(false);
+  const set = (k, v) => setF(x => ({ ...x, [k]: v }));
+  const classes = (home.classes || []).filter(c => c.active);
+  const save = async () => {
+    setBusy(true);
+    try {
+      const r = await call("/students", { ...f, id: st?.id, classIds: st ? undefined : classIds });
+      let link = null;
+      if (!st && g.email.trim()) {
+        const x = await call("/family", { studentId: r.id, kind: "guardian", name: g.name || g.email, email: g.email, relationship: g.relationship });
+        link = x.invite;
+      }
+      toast(st ? "Student saved." : link && !link.emailed ? "Student added. Open the student to copy the parent's sign-in link." : "Student added.");
+      onSaved(r.id); onClose();
+    } catch (e) { toast(e.message); } finally { setBusy(false); }
+  };
+  return <Dialog title={st ? `Edit ${st.firstName} ${st.lastName}` : "Add a student"} onClose={onClose}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      {[["firstName", "First name"], ["lastName", "Last name"], ["number", "Student ID"], ["gradeLevel", "Grade"]].map(([k, l]) =>
+        <label key={k}><span style={label}>{l}</span><input aria-label={`Student ${l.toLowerCase()}`} style={inputStyle} value={f[k] || ""} onChange={e => set(k, e.target.value)} /></label>)}
+      <label style={{ gridColumn: "1 / -1" }}><span style={label}>Student email (optional, for the student's own sign-in)</span>
+        <input aria-label="Student email" type="email" style={inputStyle} value={f.email || ""} onChange={e => set("email", e.target.value)} /></label>
+    </div>
+    {st && <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 10, fontSize: 14 }}><input type="checkbox" checked={f.active !== false} onChange={e => set("active", e.target.checked)} /> Enrolled (unchecked = left the school; grades are kept)</label>}
+    {!st && <>
+      <div style={{ marginTop: 12 }}><span style={label}>Classes (optional)</span>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>{classIds.map(id => { const c = classes.find(x => x.id === id); return <span key={id} style={{ border: `1px solid ${LINE}`, borderRadius: 999, padding: "3px 6px 3px 10px", fontSize: 13, display: "inline-flex", alignItems: "center", gap: 4 }}>
+          {c?.name}{c?.section ? ` · ${c.section}` : ""}<button type="button" aria-label="Remove class" style={{ ...btn("ghost"), padding: 2 }} onClick={() => setClassIds(x => x.filter(y => y !== id))}><X size={12} /></button></span>; })}</div>
+        <select aria-label="Add to a class" style={inputStyle} value={pick} onChange={e => { const v = e.target.value; if (v) setClassIds(x => [...new Set([...x, v])]); setPick(""); }}>
+          <option value="">Add to a class…</option>{classes.filter(c => !classIds.includes(c.id)).map(c => <option key={c.id} value={c.id}>{c.name}{c.section ? ` · ${c.section}` : ""}{c.teachers.length ? ` (${c.teachers.map(t => t.name).join(", ")})` : ""}</option>)}</select></div>
+      <div style={{ marginTop: 12 }}><span style={label}>Parent / guardian sign-in (optional)</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          <input aria-label="Guardian name" placeholder="Name" style={inputStyle} value={g.name} onChange={e => setG(x => ({ ...x, name: e.target.value }))} />
+          <input aria-label="Guardian email" placeholder="Email" type="email" style={inputStyle} value={g.email} onChange={e => setG(x => ({ ...x, email: e.target.value }))} />
+          <input aria-label="Guardian relationship" placeholder="Mother, Father…" style={inputStyle} value={g.relationship} onChange={e => setG(x => ({ ...x, relationship: e.target.value }))} /></div></div>
+    </>}
+    <div style={{ display: "flex", gap: 8, marginTop: 14 }}><button type="button" style={btn("primary")} disabled={busy} onClick={save}>{st ? "Save student" : "Add student"}</button><button type="button" style={btn("outline")} onClick={onClose}>Cancel</button></div>
+  </Dialog>;
+}
+function StudentsPage({ home, toast, openStudent }) {
+  const full = home.canView || home.canManage;
+  const [list, setList] = useState(null), [q, setQ] = useState(""), [grade, setGrade] = useState(""), [edit, setEdit] = useState(null), [showLeft, setShowLeft] = useState(false);
+  const load = () => full && call("/students?all=1").then(r => setList(r.students), e => toast(e.message));
+  useEffect(() => { load(); }, []);
+  const grades = useMemo(() => [...new Set((list || []).map(s => s.gradeLevel).filter(Boolean))].sort((a, b) => (Number(a) || -1) - (Number(b) || -1) || a.localeCompare(b)), [list]);
+  const shown = (list || []).filter(s => (showLeft || s.active !== false) && (!grade || s.gradeLevel === grade) && (!q || `${s.firstName} ${s.lastName} ${s.lastName}, ${s.firstName} ${s.number}`.toLowerCase().includes(q.toLowerCase())));
+  return <div style={{ display: "grid", gap: 12 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ fontSize: 22, fontWeight: 800, color: INK, flex: 1 }}>Students</div>
+      {home.canManage && <button type="button" style={btn("primary")} onClick={() => setEdit("new")}><Plus size={14} /> Add a student</button>}</div>
+    {!full && <div style={cardStyle}><StudentPicker onPick={s => openStudent(s.id)} placeholder="Type a student's name or ID" />
+      <div style={{ fontSize: 12.5, color: SOFT, marginTop: 8 }}>You'll see their grades for the classes you teach. Opening a student's grades is logged.</div></div>}
+    {full && <>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        <input aria-label="Filter students" style={{ ...inputStyle, maxWidth: 300 }} placeholder="Name or student ID" value={q} onChange={e => setQ(e.target.value)} />
+        <select aria-label="Grade level filter" style={{ ...inputStyle, width: "auto" }} value={grade} onChange={e => setGrade(e.target.value)}><option value="">Every grade</option>{grades.map(g => <option key={g} value={g}>Grade {g}</option>)}</select>
+        {home.canManage && <label style={{ fontSize: 13.5, display: "flex", gap: 6, alignItems: "center" }}><input type="checkbox" checked={showLeft} onChange={e => setShowLeft(e.target.checked)} /> Show students who left</label>}
+        <span style={{ flex: 1 }} /><span style={{ color: SOFT, fontSize: 13 }}>{list ? `${shown.length} of ${list.length}` : "Loading…"}</span></div>
+      <div style={{ ...cardStyle, padding: 0, overflowX: "auto" }} role="region" aria-label="Student list"><table style={{ borderCollapse: "collapse", width: "100%" }}>
+        <thead><tr>{["Student", "ID", "Grade", "Classes", "Family sign-ins", ""].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
+        <tbody>{shown.slice(0, 500).map(s => <tr key={s.id} style={{ opacity: s.active === false ? 0.55 : 1 }}>
+          <td style={td}><button type="button" style={{ ...btn("ghost"), padding: 0, color: BLUE, fontWeight: 600 }} onClick={() => openStudent(s.id)}>{studentName(s)}</button>{s.active === false ? <span style={{ color: SOFT, fontSize: 12 }}> · left</span> : null}</td>
+          <td style={td}>{s.number}</td><td style={td}>{s.gradeLevel}</td><td style={td}>{s.classes}</td>
+          <td style={td}>{s.guardians} parent{s.guardians === 1 ? "" : "s"}{s.ownSignIn ? " + student" : ""}</td>
+          <td style={{ ...td, textAlign: "right" }}>{home.canManage && <button type="button" style={btn("ghost")} onClick={() => setEdit(s)}>Edit</button>}</td></tr>)}</tbody></table>
+        {list && !shown.length && <div style={{ padding: 14, color: SOFT }}>{list.length ? "No students match." : "No students yet. Add them one at a time here, or import the class rosters."}</div>}
+        {shown.length > 500 && <div style={{ padding: 10, color: SOFT, fontSize: 13 }}>Showing the first 500; filter to find others.</div>}</div>
+      <div style={{ fontSize: 12.5, color: SOFT }}>Opening a student's grades is logged.</div>
+    </>}
+    {edit && <StudentDialog st={edit === "new" ? null : edit} home={home} toast={toast} onClose={() => setEdit(null)} onSaved={id => { load(); if (edit === "new" && !home.canView && !home.canManage) openStudent(id); }} />}
+  </div>;
+}
+
 // ---------------------------------------------------------------- the module
 export default function GradebookModule({ onBack, initial }) {
   const [home, setHome] = useState(null), [error, setError] = useState(""), [view, setView] = useState("classes");
@@ -680,11 +755,7 @@ export default function GradebookModule({ onBack, initial }) {
           <div style={{ fontSize: 13, color: SOFT, marginTop: 6 }}>{c.students} student{c.students === 1 ? "" : "s"} · {c.teachers.map(t => t.name).join(", ") || "No teacher"}{c.active ? "" : " · archived"}</div>
         </button>)}</div>}
   </div>;
-  else if (view === "students") body = <div style={{ display: "grid", gap: 12 }}>
-    <div style={{ fontSize: 22, fontWeight: 800, color: INK }}>Students</div>
-    <div style={cardStyle}><StudentPicker onPick={s => openStudent(s.id)} placeholder="Type a student's name or ID" />
-      <div style={{ fontSize: 12.5, color: SOFT, marginTop: 8 }}>{home.canView ? "Opening a student's grades is logged." : "You'll see their grades for the classes you teach. Opening a student's grades is logged."}</div></div>
-  </div>;
+  else if (view === "students") body = <StudentsPage home={home} toast={toast} openStudent={openStudent} />;
   else if (view === "reports") body = <div style={{ display: "grid", gap: 12 }}><div style={{ fontSize: 22, fontWeight: 800, color: INK }}>Reports</div><Reports home={home} toast={toast} /></div>;
   else if (view === "setup") body = <div style={{ display: "grid", gap: 12 }}><div style={{ fontSize: 22, fontWeight: 800, color: INK }}>School setup</div><Setup home={home} setHome={setHome} toast={toast} /></div>;
   else if (view === "manageclasses") body = <div style={{ display: "grid", gap: 12 }}>

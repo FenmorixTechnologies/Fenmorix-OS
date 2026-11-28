@@ -6,7 +6,7 @@ import { LayoutDashboard, Building2, FileText, FilePlus2, BookOpen, Printer, Plu
   Send, Check, X, Server, Clock, ExternalLink, Search } from "lucide-react";
 import AppShell from "./AppShell.jsx";
 import { cardStyle, btn } from "./App.jsx";
-import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine, modulesFor } from "./pricing.js";
+import { DEFAULT_INPUTS, calculate, money, sizeFor, marketLine, modulesFor, ratesFor } from "./pricing.js";
 import { MODULES } from "./modules.js";
 import { quoteHtml, specHtml, printHtml, specPrices } from "./SalesPrint.js";
 import { Installations, Releases } from "./HubAdmin.jsx";
@@ -440,11 +440,12 @@ function QuoteBuilder({ quoteId, init, d, book, toast, open, reloadAll }) {
             <button type="button" aria-label="Remove" style={btn("ghost")} onClick={() => set("currentSpend", spend.filter((_, j) => j !== k))}><X size={14} /></button></div>)}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             <button type="button" style={btn("ghost")} onClick={() => set("currentSpend", [...spend, { label: "", annual: 0 }])}><Plus size={13} /> Add software</button>
-            {(useBook.marketRates || []).length > 0 && <select aria-label="Add a typical cost" value="" style={{ ...inp, width: "auto", maxWidth: 360 }}
-              onChange={e => { const rate = useBook.marketRates.find(m => m.key === e.target.value); const l = marketLine(rate, (Number(i.users) || 1) * (Number(i.members) || 1), r?.size?.key || "m");
+            {ratesFor(i.segment, useBook).length > 0 && <select aria-label="Add a typical cost" value="" style={{ ...inp, width: "auto", maxWidth: 360 }}
+              onChange={e => { const rate = useBook.marketRates.find(m => m.key === e.target.value);
+                const l = marketLine(rate, (Number(i.users) || 1) * (Number(i.members) || 1), r?.size?.key || "m", (Number(i.audienceCount) || 0) * (Number(i.members) || 1));
                 if (l) set("currentSpend", [...spend, { label: l.label + " (typical)", annual: l.annual }]); }}>
               <option value="">Add a typical cost…</option>
-              {useBook.marketRates.map(m => <option key={m.key} value={m.key} title={m.source}>{m.label}{m.basis === "user" ? ` · ${money(m.annual, m.annual % 1 !== 0)}/user/yr` : ""}</option>)}
+              {ratesFor(i.segment, useBook).map(m => <option key={m.key} value={m.key} title={m.source}>{m.label}{m.basis === "user" ? ` · ${money(m.annual, m.annual % 1 !== 0)}/user/yr` : m.basis === "student" ? ` · ${money(m.annual, m.annual % 1 !== 0)}/student/yr` : ""}</option>)}
             </select>}
           </div>
           <div style={{ fontSize: 11.5, color: SOFT, marginTop: 6 }}>Typical costs come from public contracts and published prices (Price book › Typical competitor costs). Replace them with the customer's real invoices when you have them.</div>
@@ -534,6 +535,8 @@ function BookEditor({ toast, book, setBook, canManage }) {
     <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}><h1 style={h1}>Price book</h1><span style={{ flex: 1 }} />
       {canManage && <button type="button" style={btn("ghost")} onClick={reset}>Reset to defaults</button>}
       {canManage && <button type="button" style={btn("primary")} disabled={!dirty || busy} onClick={() => save()}><Save size={14} /> Save price book</button>}</div>
+    {book.refreshedFrom && <div role="status" style={{ background: "#FFF4E5", border: "1px solid #F5C27A", borderRadius: 8, padding: "10px 12px", marginBottom: 12, maxWidth: 820 }}>
+      The price book saved here was from before the module-by-module prices, government and school pricing, so the new prices are in use now (your seller details were kept). Save once to keep it this way.</div>}
     <p style={{ color: SOFT, marginTop: 0, maxWidth: 820 }}>Every number the calculator uses. Saved quotes keep the book they were priced with, so changing a price here never changes a quote you've sent.</p>
     {Object.entries(b.segments).map(([sk, s]) => <Card key={sk} title={`${s.label} editions`}>
       <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr><th style={th}>Edition</th>
@@ -600,11 +603,11 @@ function BookEditor({ toast, book, setBook, canManage }) {
         {pctIn("On-prem maintenance %", () => b.onPrem.maintenancePct, (y, v) => { y.onPrem.maintenancePct = v; })}
       </div></Card>
     <Card title="Typical competitor costs">
-      <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>What departments pay today, from public contracts and published prices. The quote builder's "Add a typical cost" uses these. Per-user rates are multiplied by the quote's users; flat rates use the quote's size.</p>
+      <p style={{ fontSize: 12.5, color: SOFT, marginTop: 0 }}>What departments pay today, from public contracts and published prices. The quote builder's "Add a typical cost" uses these. Per-user rates are multiplied by the quote's users, per-student rates by its students; flat rates use the quote's size. Each quote lists only the costs for its market.</p>
       <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr><th style={th}>Product</th><th style={th}>Basis</th><th style={th}>Small</th><th style={th}>Mid</th><th style={th}>Large</th><th style={th}>Source</th></tr></thead>
         <tbody>{(b.marketRates || []).map((m, k) => <tr key={m.key}><td style={td}><b>{m.label}</b><div style={{ fontSize: 11.5, color: SOFT }}>Replaced by: {m.replaces}</div></td>
-          <td style={td}>{m.basis === "user" ? "per user / yr" : "per year"}</td>
-          {m.basis === "user" ? <td style={td} colSpan={3}><input aria-label={`${m.label} per user`} type="number" step="0.01" value={m.annual} onChange={e => upd(y => { y.marketRates[k].annual = Number(e.target.value); })} style={{ ...inp, width: 110 }} /></td>
+          <td style={td}>{m.basis === "user" ? "per user / yr" : m.basis === "student" ? "per student / yr" : "per year"}{m.segments ? <div style={{ fontSize: 11, color: SOFT }}>{m.segments.map(x => SEG_SHORT[x] || x).join(", ")}</div> : null}</td>
+          {m.basis === "user" || m.basis === "student" ? <td style={td} colSpan={3}><input aria-label={`${m.label} per user`} type="number" step="0.01" value={m.annual} onChange={e => upd(y => { y.marketRates[k].annual = Number(e.target.value); })} style={{ ...inp, width: 110 }} /></td>
             : ["s", "m", "l"].map(z => <td key={z} style={td}><input aria-label={`${m.label} ${z}`} type="number" value={m.annual[z]} onChange={e => upd(y => { y.marketRates[k].annual[z] = Number(e.target.value); })} style={{ ...inp, width: 100 }} /></td>)}
           <td style={{ ...td, fontSize: 11.5, color: SOFT, maxWidth: 320 }}>{m.source}{m.setup ? ` · setup ${money(m.setup.m)}` : ""}</td></tr>)}</tbody></table></div>
     </Card>
@@ -637,6 +640,7 @@ function BookEditor({ toast, book, setBook, canManage }) {
 }
 
 // ---------------------------------------------------------------- Module
+const SEG_SHORT = { ps: "Public safety", gov: "Government", biz: "Business", edu: "Schools" };
 export default function SalesModule({ onBack, initial }) {
   const [d, setD] = useState(null), [book, setBook] = useState(null), [msg, setMsg] = useState("");
   const [view, setView] = useState(() => initial?.clientId ? { page: "client", id: initial.clientId, init: { ticket: initial.ticket }, t: Date.now() } : { page: "overview", init: initial?.ticket ? { ticket: initial.ticket } : null }), [clientEdit, setClientEdit] = useState(null);

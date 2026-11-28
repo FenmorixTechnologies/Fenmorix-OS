@@ -15,46 +15,53 @@
 import { MODULES } from "./modules.js";
 const moduleName = k => MODULES.find(m => m.key === k)?.name || k;
 export const MODULE_PRICES = {
-  messaging:      { flat: { s: 1500, m: 3000, l: 6000 }, user: 4,   impl: 1 },
-  timeclock:      { flat: { s: 1200, m: 2400, l: 4800 }, user: 4,   impl: 1.5 },
-  offwork:        { flat: { s: 600,  m: 1200, l: 2400 }, user: 2,   impl: 0.5 },
-  callout:        { flat: { s: 600,  m: 1200, l: 2400 }, user: 3,   impl: 0.5 },
-  forms:          { flat: { s: 1500, m: 3000, l: 6000 }, user: 2,   impl: 2 },
-  meetings:       { flat: { s: 600,  m: 1200, l: 2400 }, user: 0.5, impl: 0.5 },
-  leave:          { flat: { s: 800,  m: 1800, l: 3400 }, user: 1.5, impl: 1.5 },
-  forceback:      { flat: { s: 400,  m: 900,  l: 1700 }, user: 1,   impl: 0.5 },
-  sick:           { flat: { s: 600,  m: 1400, l: 2600 }, user: 2,   impl: 1 },
-  training:       { flat: { s: 1200, m: 2900, l: 5300 }, user: 7,   impl: 2 },
-  procurement:    { flat: { s: 1400, m: 3300, l: 6100 }, user: 2,   impl: 2 },
-  reimbursements: { flat: { s: 600,  m: 1400, l: 2600 }, user: 1,   impl: 1 },
-  helpdesk:       { flat: { s: 500,  m: 1200, l: 2200 }, user: 1,   impl: 0.5 },
-  gear:           { flat: { s: 500,  m: 1100, l: 2100 }, user: 1,   impl: 1 },
-  links:          { flat: { s: 300,  m: 600,  l: 1200 }, user: 0.5, impl: 0.5 },
+  messaging:      { flat: { s: 1500, m: 3000, l: 6000 }, user: 4,   impl: 1, edu: { s: 1000, m: 3500, l: 7500 } },
+  timeclock:      { flat: { s: 1200, m: 2400, l: 4800 }, user: 4,   impl: 1.5, edu: { s: 900, m: 2800, l: 6000 } },
+  offwork:        { flat: { s: 600,  m: 1200, l: 2400 }, user: 2,   impl: 0.5, edu: { s: 500, m: 1800, l: 3600 } },
+  callout:        { flat: { s: 600,  m: 1200, l: 2400 }, user: 3,   impl: 0.5, edu: { s: 400, m: 1400, l: 2800 } },
+  forms:          { flat: { s: 1500, m: 3000, l: 6000 }, user: 2,   impl: 2, edu: { s: 1000, m: 3500, l: 7000 } },
+  meetings:       { flat: { s: 600,  m: 1200, l: 2400 }, user: 0.5, impl: 0.5, edu: { s: 400, m: 1400, l: 2800 } },
+  leave:          { flat: { s: 800,  m: 1800, l: 3400 }, user: 1.5, impl: 1.5, segments: ["ps", "gov", "biz"] },
+  forceback:      { flat: { s: 400,  m: 900,  l: 1700 }, user: 1,   impl: 0.5, segments: ["ps", "gov", "biz"] },
+  sick:           { flat: { s: 600,  m: 1400, l: 2600 }, user: 2,   impl: 1, edu: { s: 500, m: 1800, l: 3600 } },
+  training:       { flat: { s: 1200, m: 2900, l: 5300 }, user: 7,   impl: 2, edu: { s: 1000, m: 3400, l: 6800 } },
+  procurement:    { flat: { s: 1400, m: 3300, l: 6100 }, user: 2,   impl: 2, edu: { s: 1100, m: 3800, l: 7500 } },
+  reimbursements: { flat: { s: 600,  m: 1400, l: 2600 }, user: 1,   impl: 1, edu: { s: 500, m: 1600, l: 3200 } },
+  helpdesk:       { flat: { s: 500,  m: 1200, l: 2200 }, user: 1,   impl: 0.5, edu: { s: 600, m: 2200, l: 4500 } },
+  gear:           { flat: { s: 500,  m: 1100, l: 2100 }, user: 1,   impl: 1, edu: { s: 600, m: 2200, l: 4500 } },
+  links:          { flat: { s: 300,  m: 600,  l: 1200 }, user: 0.5, impl: 0.5, edu: { s: 300, m: 800, l: 1600 } },
   activecalls:    { flat: { s: 1000, m: 2400, l: 4400 }, user: 2,   impl: 1.5, segments: ["ps", "gov"] },
   callalerts:     { flat: { s: 500,  m: 1200, l: 2200 }, user: 1,   impl: 0.5, segments: ["ps", "gov"] },
-  command:        { flat: { s: 1200, m: 2800, l: 5200 }, user: 3,   impl: 1.5 },
-  imt:            { flat: { s: 800,  m: 1900, l: 3500 }, user: 2,   impl: 1 },
-  recall:         { flat: { s: 900,  m: 2100, l: 3900 }, user: 2,   impl: 1 },
+  command:        { flat: { s: 1200, m: 2800, l: 5200 }, user: 3,   impl: 1.5, edu: { s: 1000, m: 3200, l: 6200 } },
+  imt:            { flat: { s: 800,  m: 1900, l: 3500 }, user: 2,   impl: 1, edu: { s: 600, m: 2200, l: 4200 } },
+  recall:         { flat: { s: 900,  m: 2100, l: 3900 }, user: 2,   impl: 1, edu: { s: 1400, m: 4000, l: 8000 } },
   recordings:     { flat: { s: 600,  m: 1400, l: 2600 }, user: 2,   impl: 1, segments: ["ps", "gov"] },
   stats:          { flat: { s: 1000, m: 2400, l: 4400 }, user: 3,   impl: 2, segments: ["ps", "gov"] },
-  board:          { flat: { s: 600,  m: 1400, l: 2600 }, user: 2,   impl: 1 },
+  board:          { flat: { s: 600,  m: 1400, l: 2600 }, user: 2,   impl: 1, edu: { s: 500, m: 1800, l: 3600 } },
   pial:           { flat: { s: 800,  m: 1900, l: 3500 }, user: 2,   impl: 2, segments: ["ps"] },
   fireprev:       { flat: { s: 600,  m: 1500, l: 2700 }, user: 2,   impl: 1, segments: ["ps", "gov"] },
-  evals:          { flat: { s: 3000, m: 5000, l: 8000 }, user: 3,   impl: 1.5 },
+  evals:          { flat: { s: 3000, m: 5000, l: 8000 }, user: 3,   impl: 1.5, edu: { s: 2000, m: 6000, l: 10000 } },
   investigations: { flat: { s: 5000, m: 7500, l: 10000 }, user: 5,  impl: 2, segments: ["ps", "gov"] },
   spot:           { flat: { s: 1200, m: 1200, l: 1800 }, user: 1,   impl: 0.5, segments: ["biz"] },
-  gradebook:      { flat: { s: 2000, m: 4500, l: 9000 }, user: 3,   impl: 2,   segments: ["edu"] },
+  gradebook:      { flat: { s: 2000, m: 4500, l: 9000 }, user: 3,   impl: 2,   segments: ["edu"], edu: { s: 1500, m: 6000, l: 15000 } },
 };
-const sumFlat = (mods, factor = 1) => Object.fromEntries(["s", "m", "l"].map(z => [z, Math.round(mods.reduce((t, k) => t + (MODULE_PRICES[k]?.flat[z] || 0), 0) * factor / 100) * 100]));
+// edu {s, m, l} = the module's own school price (11/27/2026: set against what schools pay; see marketRates with segment "edu").
+// A module's yearly price at a size in a segment: its own price for that segment when it has one (e.g. `edu` = school prices set
+// against what schools pay), else the public-safety price × the segment's factor
+export const flatFor = (mp, segKey, factor, z) => (mp?.[segKey]?.[z] != null ? Number(mp[segKey][z]) : (Number(mp?.flat?.[z]) || 0) * factor);
+const sumFlat = (mods, factor = 1, segKey = "") => Object.fromEntries(["s", "m", "l"].map(z => [z, Math.round(mods.reduce((t, k) => t + flatFor(MODULE_PRICES[k], segKey, factor, z), 0) / 100) * 100]));
 const GOV_ESS = ["messaging", "timeclock", "offwork", "callout", "forms", "meetings"];
 const GOV_OPS = [...GOV_ESS, "sick", "leave", "forceback", "training", "procurement", "reimbursements", "helpdesk", "gear", "board"];
 const GOV_ALL = [...GOV_OPS, "recall", "imt", "command", "callalerts", "activecalls", "fireprev", "links"];
 const EDU_ESS = ["messaging", "recall", "timeclock", "offwork", "forms", "meetings"];
+const EDU_CLASS = ["messaging", "recall", "offwork", "forms", "meetings", "gradebook"];
 const EDU_CAMPUS = [...EDU_ESS, "sick", "procurement", "reimbursements", "helpdesk", "gear", "training", "board"];
-const EDU_ALL = [...EDU_CAMPUS, "callout", "imt", "command", "evals", "links"];
+const EDU_ALL = [...EDU_CAMPUS, "gradebook", "callout", "imt", "command", "evals", "links"];
 
 export const DEFAULT_BOOK = {
-  version: 1,
+  // version 2 (11/27/2026): module-by-module prices, government and school pricing, Avexon hosting apart. A book saved before it is
+  // replaced by these defaults (keeping the seller details), so an old saved copy can't keep quoting the old prices.
+  version: 2,
   segments: {
     ps: {
       label: "Public safety", unit: "agency", units: "agencies",
@@ -110,13 +117,14 @@ export const DEFAULT_BOOK = {
       sizes: [{ key: "s", label: "Small", upTo: 75 }, { key: "m", label: "Mid-size", upTo: 300 }, { key: "l", label: "Large", upTo: 1500 }],
       quoteAbove: 1500,
       editions: [
-        { key: "essentials", label: "Essentials", blurb: "Campus alerts and safety check-in, messages, schedules, who's out, forms and parent conferences.", modules: EDU_ESS, prices: sumFlat(EDU_ESS, 1.2) },
-        { key: "campus", label: "Campus", blurb: "Essentials plus absence patterns, purchasing, reimbursements, help desk, equipment, teacher certifications and board reports.", modules: EDU_CAMPUS, prices: sumFlat(EDU_CAMPUS, 1.2) },
-        { key: "complete", label: "Complete", blurb: "Campus plus on-call lists, emergency plans and crisis command, evaluations and shared logins.", modules: EDU_ALL, prices: sumFlat(EDU_ALL, 1.2), includesTraining: true },
+        { key: "essentials", label: "Essentials", blurb: "Campus alerts and staff roll call, staff messages, time clock, who's out, forms and approvals, meeting requests.", modules: EDU_ESS, prices: sumFlat(EDU_ESS, 1, "edu") },
+        { key: "classroom", label: "Classroom", blurb: "The Gradebook (grades and report cards that students and families see) with campus alerts, staff messages, who's out, forms and meeting requests.", modules: EDU_CLASS, prices: sumFlat(EDU_CLASS, 1, "edu") },
+        { key: "campus", label: "Campus", blurb: "Essentials plus staff absence patterns, purchasing, reimbursements, IT and facilities help desk, devices and equipment, PD and certifications, board reports.", modules: EDU_CAMPUS, prices: sumFlat(EDU_CAMPUS, 1, "edu") },
+        { key: "complete", label: "Complete", blurb: "Campus plus the Gradebook, on-call lists, emergency plans and crisis command, staff evaluations and shared logins.", modules: EDU_ALL, prices: sumFlat(EDU_ALL, 1, "edu"), includesTraining: true },
       ],
       implementation: { s: 3000, m: 7000, l: 14000 },
       audience: { key: "students", label: "Students", perUserYear: 3, tiers: [{ upTo: 500, price: 1200 }, { upTo: 2000, price: 3600 }, { upTo: 6000, price: 8000 }],
-        note: "Students get alerts, their schedule, forms to fill in and, with the Gradebook, their grades." },
+        note: "With the Gradebook, each student and their parents or guardians sign in to see the student's own grades, assignments, teacher comments and graded work." },
     },
   },
   modulePrices: MODULE_PRICES,
@@ -127,7 +135,7 @@ export const DEFAULT_BOOK = {
       note: "Case files under CJIS controls: authenticator sign-in, need-to-know access, access log." },
     { key: "evals", label: "Evaluations & Simulations", module: "evals", segments: ["ps", "biz", "gov", "edu"], prices: { s: 3000, m: 5000, l: 8000 },
       note: "Scored evaluations, task books and AI role-play simulations." },
-    { key: "gradebook", label: "Gradebook", module: "gradebook", segments: ["edu"], prices: { s: 2000, m: 4500, l: 9000 },
+    { key: "gradebook", label: "Gradebook", module: "gradebook", segments: ["edu"], prices: { s: 1500, m: 6000, l: 15000 },
       note: "Classes, weighted grades with comments and graded work, report cards, family sign-ins for students and parents, reports by grade and subject." },
     { key: "spot", label: "Live Spot Prices", module: "spot", segments: ["biz"], prices: { s: 1200, m: 1200, l: 1800 },
       note: "Precious-metals prices on every page and a showroom TV view (price feed subscription billed by its provider)." },
@@ -177,41 +185,61 @@ export const DEFAULT_BOOK = {
   // basis "user" = per user per year (× the quote's users); "flat" = per year by size {s, m, l}. setup = their one-time fee, if known.
   // Starting points for the "Software it replaces" lines; always confirm the customer's real invoice.
   marketRates: [
-    { key: "aladtec", label: "Aladtec (staff scheduling)", replaces: "Time Clock, Work Schedule, Who's Out", basis: "user", annual: 81,
+    { key: "aladtec", segments: ["ps", "gov"], label: "Aladtec (staff scheduling)", replaces: "Time Clock, Work Schedule, Who's Out", basis: "user", annual: 81,
       source: "Willowick, OH quote 2026: 71 users, $5,759.55/yr ($81.12/user)" },
-    { key: "vector-lms", label: "Vector Solutions LMS (training records)", replaces: "Training", basis: "user", annual: 115,
+    { key: "vector-lms", segments: ["ps", "gov"], label: "Vector Solutions LMS (training records)", replaces: "Training", basis: "user", annual: 115,
       source: "Santa Fe County, NM order 2026: $113–$118 per member/yr, +3%/yr" },
-    { key: "vector-checkit", label: "Vector Check It (equipment & PPE checks)", replaces: "Equipment & Asset Tracking", basis: "user", annual: 62,
+    { key: "vector-checkit", segments: ["ps"], label: "Vector Check It (equipment & PPE checks)", replaces: "Equipment & Asset Tracking", basis: "user", annual: 62,
       source: "Santa Fe County, NM order 2026: $61.74 per person/yr" },
-    { key: "pstrax", label: "PSTrax (apparatus checks, SCBA, PPE, assets)", replaces: "Equipment & Asset Tracking", basis: "flat", annual: { s: 6000, m: 9950, l: 15900 }, setup: { s: 5000, m: 8000, l: 15900 },
+    { key: "pstrax", segments: ["ps"], label: "PSTrax (apparatus checks, SCBA, PPE, assets)", replaces: "Equipment & Asset Tracking", basis: "flat", annual: { s: 6000, m: 9950, l: 15900 }, setup: { s: 5000, m: 8000, l: 15900 },
       source: "Troy, MI 2021: $9,950/yr (7 stations); Berkeley, CA 2022: $15,900/yr + $15,900 implementation" },
-    { key: "firstdue", label: "First Due (suite, not counting its RMS)", replaces: "Inspections, preplans, training, assets, personnel", basis: "flat", annual: { s: 8750, m: 15000, l: 120000 },
+    { key: "firstdue", segments: ["ps"], label: "First Due (suite, not counting its RMS)", replaces: "Inspections, preplans, training, assets, personnel", basis: "flat", annual: { s: 8750, m: 15000, l: 120000 },
       source: "Olivette, MO 2024: $8,750/yr; Truckee Meadows FPD, NV 2021: $15,000/yr; Baton Rouge FD 2022: $120,000/yr (15 modules), up to 5%/yr" },
-    { key: "fireworks", label: "FireWorks modules (not NFIRS reporting)", replaces: "Inspections, investigations, preplans, inventory, analytics, CAD interface", basis: "flat", annual: { s: 18440, m: 18440, l: 18440 },
+    { key: "fireworks", segments: ["ps"], label: "FireWorks modules (not NFIRS reporting)", replaces: "Inspections, investigations, preplans, inventory, analytics, CAD interface", basis: "flat", annual: { s: 18440, m: 18440, l: 18440 },
       source: "Apex, NC quote: $18,440/yr for inspections, investigations, preplan, inventory, analytics, CAD interface, cloud; +5%/yr" },
     { key: "jotform", label: "Jotform (forms)", replaces: "Forms & Case Management", basis: "flat", annual: { s: 1188, m: 1188, l: 1188 },
       source: "jotform.com: Gold $99/mo billed yearly, one user (HIPAA needs Gold or Enterprise)" },
-    { key: "active911", label: "Active911 (alerting)", replaces: "Dispatch Alerts, Emergency Recall", basis: "user", annual: 16.65,
+    { key: "active911", segments: ["ps"], label: "Active911 (alerting)", replaces: "Dispatch Alerts, Emergency Recall", basis: "user", annual: 16.65,
       source: "active911.com: $16.65 per device/yr (1–50 devices)" },
-    { key: "iamresponding", label: "IamResponding (response & recall)", replaces: "Dispatch Alerts, Emergency Recall", basis: "flat", annual: { s: 349, m: 700, l: 1500 },
+    { key: "iamresponding", segments: ["ps"], label: "IamResponding (response & recall)", replaces: "Dispatch Alerts, Emergency Recall", basis: "flat", annual: { s: 349, m: 700, l: 1500 },
       source: "iamresponding.com: from $349/yr; larger departments quoted" },
-    { key: "everbridge", label: "Everbridge (mass notification / recall)", replaces: "Emergency Recall, Messaging", basis: "flat", annual: { s: 6250, m: 15000, l: 30000 },
+    { key: "everbridge", segments: ["ps", "gov"], label: "Everbridge (mass notification / recall)", replaces: "Emergency Recall, Messaging", basis: "flat", annual: { s: 6250, m: 15000, l: 30000 },
       source: "Big Horn Co., MT $6,250/yr; Fillmore Co., MN $6,257/yr; Allegany Co., MD $28,792/yr" },
-    { key: "tabletcommand", label: "Tablet Command (incident command)", replaces: "Incident Command Board", basis: "flat", annual: { s: 31000, m: 31000, l: 31000 }, setup: { s: 15500, m: 15500, l: 15500 },
+    { key: "tabletcommand", segments: ["ps"], label: "Tablet Command (incident command)", replaces: "Incident Command Board", basis: "flat", annual: { s: 31000, m: 31000, l: 31000 }, setup: { s: 15500, m: 15500, l: 15500 },
       source: "Placentia, CA: $31,000/yr + $15,500 one-time (6 apparatus)" },
-    { key: "firstwatch", label: "FirstWatch (CAD analytics dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "flat", annual: { s: 42700, m: 42700, l: 42700 }, setup: { s: 86644, m: 86644, l: 86644 },
+    { key: "firstwatch", segments: ["ps"], label: "FirstWatch (CAD analytics dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "flat", annual: { s: 42700, m: 42700, l: 42700 }, setup: { s: 86644, m: 86644, l: 86644 },
       source: "2025 resolution (ecode360 BL4015): $3,559.07/month + $86,644.29 project initiation" },
-    { key: "cleargov", label: "ClearGov (budgeting)", replaces: "Purchasing & Requisitions, Board Reports", basis: "flat", annual: { s: 13000, m: 15000, l: 48000 }, setup: { s: 6000, m: 8500, l: 8500 },
+    { key: "cleargov", segments: ["ps", "gov", "edu"], label: "ClearGov (budgeting)", replaces: "Purchasing & Requisitions, Board Reports", basis: "flat", annual: { s: 13000, m: 15000, l: 48000 }, setup: { s: 6000, m: 8500, l: 8500 },
       source: "Johnstown, OH ~$13,000/yr + $6,000 setup; Freetown, MA ~$15,000/yr + $8,500; Mercer Co., PA $48,305" },
     { key: "procurify", label: "Procurify (requisitions & purchasing)", replaces: "Purchasing & Requisitions, Expense Reimbursements", basis: "flat", annual: { s: 4210, m: 15000, l: 40000 },
       source: "Vendr buyer data: median $15,000/yr, range $4,210–$40,000" },
-    { key: "otter", label: "Otter.ai Business (transcription)", replaces: "Radio Recordings & Transcripts", basis: "user", annual: 240,
+    { key: "otter", segments: ["ps", "gov"], label: "Otter.ai Business (transcription)", replaces: "Radio Recordings & Transcripts", basis: "user", annual: 240,
       source: "otter.ai: Business $19.99/user/month billed yearly (count only the people who'd use it)" },
-    { key: "slack", label: "Slack Pro (team messaging)", replaces: "Messaging & Chat", basis: "user", annual: 96,
+    { key: "slack", segments: ["biz", "gov"], label: "Slack Pro (team messaging)", replaces: "Messaging & Chat", basis: "user", annual: 96,
       source: "Vendr: companies pay about $7.25–$8.70/user/month" },
-    { key: "deputy", label: "Deputy (business time clock & scheduling)", replaces: "Time Clock, Work Schedule", basis: "user", annual: 78,
+    { key: "deputy", segments: ["biz"], label: "Deputy (business time clock & scheduling)", replaces: "Time Clock, Work Schedule", basis: "user", annual: 78,
       source: "deputy.com: Core $6.50/user/month" },
-    { key: "powerbi", label: "Power BI Pro (dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "user", annual: 168,
+    // Schools (11/27/2026). Student information systems do much more than grades (attendance, scheduling, state reporting): the
+    // Gradebook replaces only the grading, report-card and family-portal part, so compare with care.
+    { key: "powerschool", segments: ["edu"], label: "PowerSchool SIS (grades, report cards, parent portal)", replaces: "Gradebook (grades, report cards and family sign-ins; not attendance, scheduling or state reporting)", basis: "student", annual: 15.57,
+      source: "Seattle Public Schools quote 2019–22: SIS maintenance & support $15.57 per student/yr (49,500 students); enrollment and registration $5.57 per student more" },
+    { key: "infinitecampus", segments: ["edu"], label: "Infinite Campus (student information system)", replaces: "Gradebook (grades, report cards and family sign-ins; not attendance, scheduling or state reporting)", basis: "student", annual: 5.95,
+      source: "Montana OPI statewide contract 2021–26: $5.95 per student/yr (license $4.00, support $0.95, hosting $1.00) for about 149,000 students; single-district contracts average $19,068 (Civic IQ, 46 contracts)" },
+    { key: "gradelink", segments: ["edu"], label: "Gradelink SIS (small and private schools)", replaces: "Gradebook", basis: "flat", annual: { s: 1272, m: 1272, l: 1272 }, setup: { s: 275, m: 275, l: 275 },
+      source: "gradelink.com pricing page, Nov 2026: example $106/month + $275 setup; the price rises with enrollment (no published per-student rate)" },
+    { key: "centegix", segments: ["edu"], label: "CENTEGIX CrisisAlert (staff alert badges), per school", replaces: "Emergency Recall as campus alerts and staff check-in (by phone; Fenmorix OS has no wearable badges)", basis: "flat", annual: { s: 7000, m: 8500, l: 10000 }, setup: { s: 6000, m: 6000, l: 6000 },
+      source: "ESC Region 13 (TX) contract pricing: $7,000–$10,000 per site/yr district-wide, 3-year minimum; installation up to $4,000 + up to $2,000 training per site" },
+    { key: "raptor", segments: ["edu"], label: "Raptor emergency management + badge alert, per campus", replaces: "Emergency Recall (campus alerts, drills and roll call), Incident Command (reunification excluded)", basis: "flat", annual: { s: 5800, m: 5800, l: 5800 },
+      source: "Comal ISD, TX board vote: about $220,000/yr districtwide for 38 campuses (≈$5,800 each); Southwest ISD, TX 2025-26: $120,681/yr + $108,070 one-time" },
+    { key: "frontline-absence", segments: ["edu"], label: "Frontline Absence & Substitute Management", replaces: "Who's Out, Absence Analytics", basis: "flat", annual: { s: 4084, m: 4084, l: 4084 },
+      source: "SD74 (IL) 2022-23: $4,084/yr, rising 3–4.5% a year (a small district; larger districts pay more)" },
+    { key: "frontline-central", segments: ["edu"], label: "Frontline Central (HR paperwork and personnel files)", replaces: "Personnel File, Forms (HR forms and approvals)", basis: "flat", annual: { s: 19078, m: 19078, l: 19078 }, setup: { s: 3780, m: 3780, l: 3780 },
+      source: "Harlem SD 122 (IL) 2021-22: $19,078/yr + $3,780 implementation" },
+    { key: "schooldude", segments: ["edu", "gov"], label: "SchoolDude / Brightly (maintenance requests and work orders)", replaces: "Help Desk (facilities requests), Equipment & Asset Tracking", basis: "flat", annual: { s: 9660, m: 9660, l: 9660 },
+      source: "District memo, June 2023: $9,660 for 2022-23 (maintenance requests, scheduling, preventive maintenance)" },
+    { key: "frontline-analytics", segments: ["edu"], label: "Frontline Budget Management Analytics", replaces: "Board & Council Reports", basis: "flat", annual: { s: 11880, m: 11880, l: 11880 }, setup: { s: 2200, m: 2200, l: 2200 },
+      source: "Frontline proposal to EASD 131 (IL), 2025: $11,880/yr + $2,200 implementation" },
+    { key: "powerbi", segments: ["ps", "gov", "biz"], label: "Power BI Pro (dashboards)", replaces: "Dispatch Center Analytics, Board Reports", basis: "user", annual: 168,
       source: "Microsoft list price $14/user/month since April 2025 (count only report builders/viewers)" },
   ],
   quoteValidDays: 30,
@@ -289,7 +317,7 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
     perMember = Math.max(round(users * rate * 12), min);
     annual.push({ key: "edition", label: `${edName}: ${users} users × ${money(rate, rate % 1 !== 0)}/user/month${users * rate * 12 < min ? " (yearly minimum)" : ""}`, amount: perMember, each: members > 1 });
   } else {
-    const prices = custom ? Object.fromEntries(["s", "m", "l"].map(z => [z, Math.round(ed.modules.reduce((t, k) => t + MP[k].flat[z], 0) * factor * prem / 100) * 100])) : ed.prices;
+    const prices = custom ? Object.fromEntries(["s", "m", "l"].map(z => [z, Math.round(ed.modules.reduce((t, k) => t + flatFor(MP[k], i.segment, factor, z), 0) * prem / 100) * 100])) : ed.prices;
     if (perUserMode) {
       const mid = seg.sizes[1] || seg.sizes[0];
       const rate = Number(ed.perUserYear) || Math.round(prices[mid.key] / mid.upTo * 100) / 100;
@@ -303,6 +331,7 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
   const editionSoftware = perMember;
   // Students / volunteers: per person at a fraction of the staff rate, or a flat price by how many
   const aud = seg.audience, ac = Math.max(0, Math.round(Number(i.audienceCount) || 0));
+  if (aud && ac && i.segment === "edu" && !ed.modules.includes("gradebook") && !(i.addons || []).includes("gradebook")) notes.push("Students and families sign in only with the Gradebook: add it, or leave students off.");
   if (aud && ac && ["perUser", "flat"].includes(i.audienceMode)) {
     if (i.audienceMode === "flat") {
       const last = aud.tiers[aud.tiers.length - 1], t = aud.tiers.find(x => ac <= x.upTo) || last;
@@ -454,7 +483,7 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
 
   // ---- Module by module: what each module of this edition costs (its share of the edition price, by its bundle rate), its share of
   // implementation, and what the same modules would cost built one by one
-  const listOf = k => (isBiz ? MP[k].user * users * 12 : MP[k].flat[size.key] * factor);
+  const listOf = k => (isBiz ? MP[k].user * users * 12 : flatFor(MP[k], i.segment, factor, size.key));
   const listSum = ed.modules.reduce((t, k) => t + listOf(k), 0);
   const implSum = ed.modules.reduce((t, k) => t + implW(k), 0);
   const breakdown = {
@@ -481,13 +510,17 @@ export function calculate(inputs, book = DEFAULT_BOOK) {
 }
 
 // One "Software it replaces" line from a market rate, for this many users at this size
-export function marketLine(rate, users, sizeKey) {
+// basis "user" = per staff user per year; "student" = per student per year (schools: the quote's student count); "flat" = by size.
+export function marketLine(rate, users, sizeKey, students = 0) {
   if (!rate) return null;
-  const n = Math.max(1, Math.round(Number(users) || 1));
-  const annual = rate.basis === "user" ? Math.round(rate.annual * n) : Number(rate.annual?.[sizeKey] ?? rate.annual?.m ?? 0);
-  const label = rate.basis === "user" ? `${rate.label}: ${n} users × ${money(rate.annual, rate.annual % 1 !== 0)}/yr` : rate.label;
-  return { label, annual, setup: rate.setup ? Number(rate.setup[sizeKey] ?? 0) : 0, source: rate.source };
+  const n = Math.max(1, Math.round(Number(users) || 1)), st = Math.max(0, Math.round(Number(students) || 0));
+  const per = (count, word) => ({ annual: Math.round(rate.annual * count), label: `${rate.label}: ${count.toLocaleString("en-US")} ${word} × ${money(rate.annual, rate.annual % 1 !== 0)}/yr` });
+  const x = rate.basis === "user" ? per(n, "users") : rate.basis === "student" ? per(st || n, st ? "students" : "people")
+    : { annual: Number(rate.annual?.[sizeKey] ?? rate.annual?.m ?? 0), label: rate.label };
+  return { ...x, setup: rate.setup ? Number(rate.setup[sizeKey] ?? 0) : 0, source: rate.source };
 }
+// The typical costs that apply to a market (rates with no `segments` apply everywhere)
+export const ratesFor = (segment, book = DEFAULT_BOOK) => (book.marketRates || []).filter(m => !m.segments || m.segments.includes(segment));
 
 export function money(n, cents = false) {
   const v = Number(n) || 0;
@@ -498,6 +531,12 @@ export function money(n, cents = false) {
 export function mergeBook(saved) {
   if (!saved || typeof saved !== "object") return structuredClone(DEFAULT_BOOK);
   const out = structuredClone(DEFAULT_BOOK);
+  // Saved before the current price model: start from the new defaults, keeping only who the seller is
+  if ((Number(saved.version) || 1) < DEFAULT_BOOK.version) {
+    for (const k of ["seller", "quoteValidDays"]) if (saved[k] !== undefined && saved[k] !== null) out[k] = saved[k];
+    out.refreshedFrom = Number(saved.version) || 1;
+    return out;
+  }
   for (const [k, v] of Object.entries(saved)) if (v !== undefined && v !== null && k in out) out[k] = v;
   // Segments, module prices and the build-your-own settings merge one level down, so a book saved before government, schools or
   // module prices existed still gets them

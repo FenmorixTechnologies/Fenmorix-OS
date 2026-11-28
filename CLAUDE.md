@@ -1312,3 +1312,18 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   "gradebook": teacher's classes + posted work past due not graded). Pricing: MODULE_PRICES.gradebook + edu add-on. Sandbox demo preset "School".
 - Tests: tests/e2e66.mjs via run-school.sh (63; license tests/keys/school.lic = all + gradebook, signed with dev2).
 - Website: Gradebook no longer "Coming next"; deployed 11/27/2026 (worker.js sha256 fd705ca0…, edited in place on the deployed script, secrets kept).
+
+## School pricing, Education menu group, students by hand (11/27/2026, no migration)
+- pricing.js: DEFAULT_BOOK.version 2; mergeBook returns defaults for saved books with version < 2 (keeps seller, quoteValidDays; sets
+  `refreshedFrom`, BookEditor banner "Save once"). MODULE_PRICES[k].edu {s,m,l} = school prices (flatFor uses mp[segKey] before PS × factor);
+  edu editions Essentials / Classroom (EDU_CLASS, new: gradebook + messaging, recall, offwork, forms, meetings) / Campus / Complete all sumFlat(.., "edu").
+  Students only count with the Gradebook (note otherwise). marketRates edu (PowerSchool, Infinite Campus per student; Gradelink, CENTEGIX, Raptor,
+  Frontline Absence/Central/Analytics, SchoolDude flat) with public-contract sources; ParentSquare left out (we don't message families).
+  tools/sales/make-pricing-pdf.mjs (confidential sheet, school comparison page) + tools/sales/make-samples.mjs (sample quotes, spec sheets)
+  write to /tmp/claude-0/pricing/. SalesPrint spec sheets say staff, students row only with the Gradebook.
+- MENU_GROUPS: "Education" (gradebook) after Everyday; "Learning & development" = training, evals.
+- Gradebook: GET students?all=1 (view/manage; managers also see inactive) -> StudentsPage list with filters + StudentDialog (add/edit, class,
+  guardian); POST students accepts classIds (manage). Teachers keep the search picker (all=1 -> 403). e2e66 covers it.
+- Website: Education group in website/parts/modules.js is local only (NOT deployed, waiting on the SEO plan approval: Claude Doc
+  "Fenmorix.com SEO — Phase Zero Audit and Implementation Plan"). Don't commit website/ until it is deployed (worker.js in git = deployed).
+

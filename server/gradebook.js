@@ -12,7 +12,8 @@
 //   POST classes/:id/comment         {studentId, periodId, comment}       report-card comment for the period
 //   POST files {assignmentId, studentId, name, dataUrl}   GET files/:id   POST files/:id/remove     graded work (PDF / picture)
 //   GET  students?q=                 find students to add (name, number, grade only)
-//   POST students                    {id?, firstName, lastName, number, gradeLevel, email, active, classId?}    (manage; teachers may add new ones to their class)
+//   GET  students?all=1              every student (view / manage), with class and family sign-in counts
+//   POST students                    {id?, firstName, lastName, number, gradeLevel, email, active, classId?, classIds?}  (manage; teachers may add new ones to their class)
 //   GET  students/:id                the student's report card (view: every class; a teacher: their classes only). Logged.
 //   GET  report?periodId&grade&subject  (+ report.csv)   averages and letter grades by grade level and subject   (view)
 // Manage (school setup): POST settings {scale, categories, missingZero, passing, schoolYear}, POST periods {id?, name, starts, ends,
@@ -460,6 +461,16 @@ export async function handleGradebook(req, res, parts, user, send, jsonBody, url
     }
     if (a === "students" && !id) {
       if (!r.view && !r.teacher && !r.manage) throw err(403, "Only teachers, administrators and counselors can look up students.");
+      // The whole list (administrators, counselors, managers): every student with grade level, classes and family sign-ins
+      if (q.all === "1") {
+        if (!r.view && !r.manage) throw err(403, "The student list is for administrators and counselors.");
+        const rows = (await pool.query(`SELECT st.*,
+            (SELECT count(*)::int FROM gb_enrollments e JOIN gb_classes c ON c.id = e.class_id WHERE e.student_id = st.id AND e.dropped_at IS NULL AND c.active) AS classes,
+            (SELECT count(*)::int FROM gb_family_links l JOIN gb_family f ON f.id = l.family_id WHERE l.student_id = st.id AND f.kind = 'guardian') AS guardians,
+            (SELECT count(*)::int FROM gb_family_links l JOIN gb_family f ON f.id = l.family_id WHERE l.student_id = st.id AND f.kind = 'student') AS own_signin
+          FROM gb_students st ${r.manage ? "" : "WHERE st.active"} ORDER BY st.active DESC, lower(st.last_name), lower(st.first_name) LIMIT 20000`)).rows;
+        return send(res, 200, { students: rows.map(x => ({ ...studentJson(x), classes: x.classes, guardians: x.guardians, ownSignIn: x.own_signin > 0 })) });
+      }
       const term = line(q.q, 80).toLowerCase();
       if (term.length < 2) return send(res, 200, { students: [] });
       const rows = (await pool.query(`SELECT * FROM gb_students WHERE active AND (lower(first_name || ' ' || last_name) LIKE $1 OR lower(last_name || ', ' || first_name) LIKE $1 OR lower(student_number) = $2)
@@ -655,6 +666,10 @@ export async function handleGradebook(req, res, parts, user, send, jsonBody, url
       sid = (await pool.query("INSERT INTO gb_students (first_name, last_name, student_number, grade_level, email) VALUES ($1, $2, $3, $4, $5) RETURNING id", [first, last, number, grade, email])).rows[0].id;
     }
     if (classId) await pool.query("INSERT INTO gb_enrollments (class_id, student_id) VALUES ($1, $2) ON CONFLICT (class_id, student_id) DO UPDATE SET dropped_at = NULL", [classId, sid]);
+    // Managers adding a student by hand can put them in classes at the same time
+    if (r.manage && Array.isArray(b.classIds)) for (const cid of b.classIds.filter(isUuid).slice(0, 20)) {
+      await pool.query("INSERT INTO gb_enrollments (class_id, student_id) SELECT id, $2 FROM gb_classes WHERE id = $1 ON CONFLICT (class_id, student_id) DO UPDATE SET dropped_at = NULL", [cid, sid]);
+    }
     await audit(user, b.id ? "Changed a student record" : "Added a student", `${last}, ${first}${number ? ` (${number})` : ""}`);
     return send(res, 200, { id: sid });
   }
