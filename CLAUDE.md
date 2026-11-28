@@ -1347,5 +1347,12 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   worker.js with SITE, CSS, SITEMAP and render.mjs (without `export`), and checks one h1, unique titles/descriptions 50-170 chars, BANNED
   words and that every internal link resolves. Routes: /modules, /modules/<slug>, /solutions/<slug>, /security, /integrations, /hosting,
   /partners/avexon; trailing slash -> 301; unknown -> 404. Deployed sha 27e6ae02...
-- Next (P3, not started): analytics (Cloudflare Web Analytics suggested), Search Console/Bing TXT, demo form, privacy/terms after attorney review.
+- P3 (built 11/27/2026, branch website-seo-phase3, NOT deployed until Michael approves): /demo page (render.mjs demoPage; posts to /api/idea
+  with kind "demo"; the Worker writes the answers out as the text and forwards kind to the office; hub.js websiteRequest labels it
+  "Demo request: <org>" once the office runs this version, until then it shows as "Feature idea: Demo request"). Home "Request a demo"
+  buttons go to /demo; the configurator saves its build in sessionStorage "fx-build" and /demo fills type, modules and (typed) name.
+  Cloudflare Web Analytics site created (site tag 93ea91d7..., token in site/content.mjs ANALYTICS_TOKEN, manual beacon on every page;
+  CSP allows static.cloudflareinsights.com + connect-src cloudflareinsights.com). Privacy policy + website terms = Claude Doc DRAFT for the
+  attorney (https://claude.ai/artifact/Di7SYqsp4TfXH1oqHwLmvV); not published. Search Console/Bing need Michael's Google sign-in
+  (Domain property; Google's Cloudflare option or a TXT record), then submit https://fenmorix.com/sitemap.xml; Bing imports from Google.
 

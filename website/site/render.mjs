@@ -5,7 +5,7 @@
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const FONTS = "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;600;700&display=swap";
 
-function shell(D, { path, title, desc, crumbs, h1, lead, kicker, body, cta = true, active }) {
+function shell(D, { path, title, desc, crumbs, h1, lead, kicker, body, cta = true, active, head = "" }) {
   const url = D.site + path;
   const trail = [["Home", "/"], ...crumbs];
   const ld = { "@context": "https://schema.org", "@graph": [
@@ -39,6 +39,7 @@ function shell(D, { path, title, desc, crumbs, h1, lead, kicker, body, cta = tru
 <link href="${FONTS}" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="${FONTS}" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/site.css">
+${head}${D.beacon || ""}
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 </head>
 <body>
@@ -121,13 +122,72 @@ ${p.cta ? `<p style="margin-top:28px"><a class="btn btn-fire" href="${p.cta.href
     h1: p.h1, lead: p.intro, body, active: path });
 }
 
+// Demo request: the form posts to /api/idea with kind "demo"; the Worker checks Turnstile and forwards it to Fenmorix's office.
+function demoPage(D) {
+  const opt = (v, t) => `<option value="${esc(v)}">${esc(t)}</option>`;
+  const body = `<section><div class="wrap demo-grid">
+<div class="prose">
+<h2>What happens next</h2>
+<p>We'll get back to you to find a time that works. The demo walks through the modules you pick, on a copy of Fenmorix OS that can carry your organization's name and colors.</p>
+<p>If you built your system on the <a href="/#build">home page</a>, the modules you switched on are filled in below.</p>
+<p>Prefer email? Write to <a href="mailto:michael@fenmorix.com?subject=${encodeURIComponent("Fenmorix OS demo")}">michael@fenmorix.com</a>.</p>
+</div>
+<form id="demo-form" novalidate>
+<div class="f2"><label>Your name<input name="name" autocomplete="name" required></label><label><span>Your title <span class="opt">(optional)</span></span><input name="title" autocomplete="organization-title"></label></div>
+<label>Organization<input name="org" autocomplete="organization" required></label>
+<div class="f2"><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Phone<input name="phone" type="tel" autocomplete="tel" required></label></div>
+<div class="f2"><label>Type of organization<select name="sector" required>${opt("", "Choose one")}${Object.entries(D.sectors).map(([k, s]) => opt(k, s.label)).join("")}</select></label>
+<label><span>Number of people <span class="opt">(optional)</span></span><select name="size">${opt("", "Choose one")}${["Under 25", "25 to 100", "100 to 500", "More than 500"].map(x => opt(x, x)).join("")}</select></label></div>
+<label><span>Modules you'd like to see <span class="opt">(optional)</span></span><textarea name="modules" rows="4"></textarea></label>
+<label><span>Best time to talk <span class="opt">(optional)</span></span><input name="when"></label>
+<label><span>Anything else we should know <span class="opt">(optional)</span></span><textarea name="notes" rows="4"></textarea></label>
+<label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+<div class="cf-turnstile" data-sitekey="${esc(D.sitekey)}" data-theme="light"></div>
+<div class="send"><button class="btn btn-fire" type="submit">Request a demo</button><p id="demo-status" role="status" aria-live="polite"></p></div>
+</form>
+</div></section>
+<script>
+(() => {
+  const f = document.getElementById("demo-form"), st = document.getElementById("demo-status");
+  const say = (t, c) => { st.textContent = t; st.className = c || ""; };
+  try { const b = JSON.parse(sessionStorage.getItem("fx-build") || "null");
+    if (b) { if (b.sector) f.elements.sector.value = b.sector; if (b.modules && b.modules.length) f.elements.modules.value = b.modules.join(", "); if (b.own && b.name) f.elements.org.value = b.name; } } catch (e) {}
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    const v = Object.fromEntries(new FormData(f)), bad = [];
+    for (const [k, label] of [["name", "your name"], ["org", "your organization"], ["email", "your email"], ["phone", "your phone number"], ["sector", "the type of organization"]]) {
+      const val = String(v[k] || "").trim();
+      const wrong = !val || (k === "email" && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(val)) || (k === "phone" && val.replace(/\\D/g, "").length < 7);
+      f.elements[k].setAttribute("aria-invalid", wrong ? "true" : "false"); if (wrong) bad.push(label);
+    }
+    if (bad.length) { say("Please fill in " + bad.join(", ").replace(/, ([^,]*)$/, " and $1") + ".", "bad"); f.querySelector('[aria-invalid="true"]').focus(); return; }
+    const token = (f.querySelector('[name="cf-turnstile-response"]') || {}).value || "";
+    const btn = f.querySelector("button[type=submit]"); btn.disabled = true; say("Sending…");
+    try {
+      const r = await fetch("/api/idea", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...v, kind: "demo", token }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "It didn't go through.");
+      f.reset(); f.querySelectorAll("[aria-invalid]").forEach(x => x.removeAttribute("aria-invalid"));
+      try { sessionStorage.removeItem("fx-build"); } catch (e) {}
+      say("Thank you. Your request reached our team, and we'll contact you at the email you gave.", "ok");
+    } catch (err) { say(err.message + " You can also email michael@fenmorix.com.", "bad"); }
+    finally { btn.disabled = false; if (window.turnstile) try { window.turnstile.reset(); } catch (e) {} }
+  });
+})();
+</script>`;
+  return shell(D, { path: "/demo", title: "Request a demo | Fenmorix OS", desc: "Ask for a demo of Fenmorix OS for your agency, office, company or school, with the modules you want to see.",
+    crumbs: [["Request a demo", "/demo"]], h1: "Request a demo", lead: "Tell us about your organization and what you'd like to see. We'll set up a time to show you Fenmorix OS.",
+    body, cta: false, active: "/demo", head: `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>\n` });
+}
+
 export function siteRoutes(D) {
-  return ["/modules", ...D.modules.map(m => `/modules/${m.slug}`), ...D.industries.map(i => `/solutions/${i.slug}`),
+  return ["/modules", "/demo", ...D.modules.map(m => `/modules/${m.slug}`), ...D.industries.map(i => `/solutions/${i.slug}`),
     ...Object.entries(D.pages).map(([k, p]) => p.path || "/" + k)];
 }
 
 export function renderRoute(path, D) {
   if (path === "/modules") return modulesIndex(D);
+  if (path === "/demo") return demoPage(D);
   let m = path.match(/^\/modules\/([a-z0-9-]+)$/);
   if (m) { const mod = D.modules.find(x => x.slug === m[1]); return mod ? modulePage(D, mod) : null; }
   m = path.match(/^\/solutions\/([a-z0-9-]+)$/);

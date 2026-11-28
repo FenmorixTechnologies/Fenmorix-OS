@@ -27,9 +27,9 @@ const schema = {
 
 let html = rd("shell.html");
 html = html.replace(/<!--part:([\w.-]+)-->/g, (_, f) => rd("parts/" + f).trim());
-// Cloudflare Turnstile site key (public; widget "fenmorix.com feature ideas"). The secret lives only in the Worker's bindings.
-const TURNSTILE_SITEKEY = "0x4AAAAAAGWMktYnw7EvzJNP";
-html = html.replaceAll("__TURNSTILE_SITEKEY__", TURNSTILE_SITEKEY);
+const C = await import(path.join(dir, "site/content.mjs"));
+const BEACON = `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${C.ANALYTICS_TOKEN}"}'></script>`;
+html = html.replaceAll("__TURNSTILE_SITEKEY__", C.TURNSTILE_SITEKEY).replace("<!--beacon-->", BEACON);
 html = html.replace("<!--schema-->", `<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>`);
 // Same light minifying the live page has always had: no indentation, no whole-line comments, no blank lines.
 html = html.split("\n").map(l => l.trimStart()).filter(l => l && !/^\/\/( |$)/.test(l) && !/^\/\*.*\*\/$/.test(l)).join("\n");
@@ -39,6 +39,7 @@ const problems = [];
 if (/<!--part:/.test(html)) problems.push("a part placeholder was not filled");
 if (/__[A-Z_]+__/.test(html)) problems.push("a __PLACEHOLDER__ was not filled: " + html.match(/__[A-Z_]+__/)[0]);
 if ((html.match(/<h1[\s>]/g) || []).length !== 1) problems.push("index.html needs exactly one <h1>");
+if (!html.includes("cloudflareinsights")) problems.push("index.html is missing the analytics beacon");
 for (const need of ['rel="canonical"', 'name="description"', 'property="og:image"', "application/ld+json"])
   if (!html.includes(need)) problems.push("index.html is missing " + need);
 // Wording the product doesn't support (SEO plan section 3). Lower-case match on the visible copy and scripts.
@@ -47,11 +48,10 @@ const BANNED = ["permission slip", "parent conference", "parent-teacher", "built
 for (const [name, text] of [["index.html", html], ["404.html", notFound]])
   for (const b of BANNED) if (text.toLowerCase().includes(b)) problems.push(`${name} says "${b}", which the product doesn't support`);
 // ---- Pages beyond the home page (site/content.mjs words + parts/modules.js catalog, drawn by site/render.mjs)
-const C = await import(path.join(dir, "site/content.mjs"));
 const { renderRoute, siteRoutes } = await import(path.join(dir, "site/render.mjs"));
 const cat = new Function(rd("parts/modules.js") + "\nreturn { SECTORS, GROUPS, MODULES, PRESETS };")();
 const D = {
-  site: C.SITE_URL, demo: C.DEMO, groups: cat.GROUPS, sectors: Object.fromEntries(Object.entries(cat.SECTORS).map(([k, v]) => [k, { label: v.label, in: v.in }])),
+  site: C.SITE_URL, demo: C.DEMO, beacon: BEACON, sitekey: C.TURNSTILE_SITEKEY, groups: cat.GROUPS, sectors: Object.fromEntries(Object.entries(cat.SECTORS).map(([k, v]) => [k, { label: v.label, in: v.in }])),
   presets: cat.PRESETS, notes: C.MODULE_NOTES, industries: C.INDUSTRIES, pages: C.PAGES,
   modules: cat.MODULES.filter(m => !C.HIDDEN.includes(m.key)).map(m => {
     if (!C.SLUGS[m.key]) problems.push(`module ${m.key} has no page address in site/content.mjs SLUGS`);
