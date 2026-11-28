@@ -29,6 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "fd2be27b31e64c70b9571bffdd414730"}'></script>
 <style>
 :root {
 --navy: #08131D; --navy-2: #0F2234; --steel: #1B3147; --orange: #FF7900; --burnt: #C94D00; --arctic: #55CFFF;
@@ -308,7 +309,7 @@ footer a:hover { color: var(--white); }
 <div class="board">
 <div id="groups"></div>
 <div class="about" id="about" aria-live="polite"></div>
-<div class="tally"><b id="count">0</b><p id="tally-text">modules on.</p><a class="btn btn-fire" id="build-mail" href="mailto:michael@fenmorix.com">Request a demo of this</a></div>
+<div class="tally"><b id="count">0</b><p id="tally-text">modules on.</p><a class="btn btn-fire" id="build-mail" href="/demo">Request a demo of this</a></div>
 </div>
 </div>
 </div>
@@ -431,7 +432,7 @@ footer a:hover { color: var(--white); }
 <div class="wrap">
 <h2>See it with your own organization in it</h2>
 <div style="display:flex;gap:12px;flex-wrap:wrap">
-<a class="btn btn-dark" id="demo-mail" href="mailto:michael@fenmorix.com?subject=Fenmorix%20OS%20demo">Request a demo</a>
+<a class="btn btn-dark" id="demo-mail" href="/demo">Request a demo</a>
 <a class="btn btn-ghost" href="https://portal.fenmorix.com">Client login</a>
 </div>
 </div>
@@ -728,9 +729,8 @@ const m = mod(k), w = (sector === "edu" && m.wEdu) || m.w;
 return `<div class="pv-card${k === fresh ? " new" : ""}"><h4>${esc(w.t)}</h4>${w.l.map(x => `<p>${x}</p>`).join("")}</div>`;
 }).join("") : `<div class="pv-empty">Switch on a module to see it here.</div>`;
 pv.setAttribute("aria-label", `Preview of Fenmorix OS for ${name}, in ${PAINTS.find(p => p.a === paint.a)?.name || "your color"}, with ${on.size} modules: ${[...on].map(k => mod(k).label).join(", ") || "none"}.`);
-const body = `Our organization: ${name}\nType: ${SECTORS[sector].label}\nOur size (people):\nBest time to talk:\n\nModules we're interested in: ${[...on].map(k => mod(k).label).join(", ")}\nColor: ${paint.a}\n`;
-$("build-mail").href = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo: " + name) + "&body=" + encodeURIComponent(body);
-window.fxBuild = { sector, modules: [...on].map(k => mod(k).label), name, color: paint.a };
+window.fxBuild = { sector, modules: [...on].map(k => mod(k).label), name, own: !!$("pv-name").value.trim(), color: paint.a };
+try { sessionStorage.setItem("fx-build", JSON.stringify(window.fxBuild)); } catch {}
 }
 const sw = $("swatches");
 PAINTS.forEach((p, i) => {

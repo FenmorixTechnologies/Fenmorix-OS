@@ -162,8 +162,12 @@ check("website idea without the secret is refused", (await site("wrong-secret-wr
 check("website idea missing the phone is refused", (await site("test-website-secret-0123456789abcdef", { ...idea, phone: "" })).s === 400);
 const sent = await site("test-website-secret-0123456789abcdef", idea);
 check("website idea accepted", sent.s === 200 && sent.j?.number > 0, JSON.stringify(sent));
+const demoReq = await site("test-website-secret-0123456789abcdef", { kind: "demo", name: "Pat Rivers", org: "Riverbend Water District", email: "pat@riverbend.example", phone: "225-555-0144", idea: "Demo request\nType: Government" });
+check("website demo request accepted", demoReq.s === 200, JSON.stringify(demoReq));
+check("demo request is labeled as one", psql("SELECT subject FROM portal_tickets WHERE number = " + demoReq.j?.number) === "Demo request: Riverbend Water District"
+  && psql("SELECT count(*) FROM audit_log WHERE action = 'Demo request from the website'") === "1");
 const list = (await api("/api/clientportal")).body;
-const w = list.open.find(t => t.source === "website");
+const w = list.open.find(t => t.source === "website" && /bus-line/.test(t.subject));
 check("listed as a request from the website", !!w && w.clientId === null && /Lakeside Middle School \(website\)/.test(w.clientName) && /bus-line board/.test(w.subject) && w.unread, JSON.stringify(w));
 await page.goto(OFFICE); await page.waitForTimeout(2500);
 t = await page.locator("body").innerText();

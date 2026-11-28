@@ -3,7 +3,11 @@
 // build.mjs refuses wording from the "claims the product doesn't support" list (SEO plan, section 3).
 
 export const SITE_URL = "https://fenmorix.com";
-export const DEMO = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo");
+export const DEMO = "/demo";
+// Cloudflare Web Analytics (cookieless; site "fenmorix.com"). The token is public: it only lets a page send visit counts.
+export const ANALYTICS_TOKEN = "fd2be27b31e64c70b9571bffdd414730";
+// Cloudflare Turnstile site key (public; widget "fenmorix.com feature ideas"). The secret lives only in the Worker's bindings.
+export const TURNSTILE_SITEKEY = "0x4AAAAAAGWMktYnw7EvzJNP";
 
 // Catalog key -> page address. Keys are the license keys in src/modules.js; never rename a slug once live.
 export const SLUGS = {

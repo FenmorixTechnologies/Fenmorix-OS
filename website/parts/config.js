@@ -84,10 +84,9 @@
       return `<div class="pv-card${k === fresh ? " new" : ""}"><h4>${esc(w.t)}</h4>${w.l.map(x => `<p>${x}</p>`).join("")}</div>`;
     }).join("") : `<div class="pv-empty">Switch on a module to see it here.</div>`;
     pv.setAttribute("aria-label", `Preview of Fenmorix OS for ${name}, in ${PAINTS.find(p => p.a === paint.a)?.name || "your color"}, with ${on.size} modules: ${[...on].map(k => mod(k).label).join(", ") || "none"}.`);
-    // Demo email carries the build
-    const body = `Our organization: ${name}\nType: ${SECTORS[sector].label}\nOur size (people):\nBest time to talk:\n\nModules we're interested in: ${[...on].map(k => mod(k).label).join(", ")}\nColor: ${paint.a}\n`;
-    $("build-mail").href = "mailto:michael@fenmorix.com?subject=" + encodeURIComponent("Fenmorix OS demo: " + name) + "&body=" + encodeURIComponent(body);
-    window.fxBuild = { sector, modules: [...on].map(k => mod(k).label), name, color: paint.a };
+    window.fxBuild = { sector, modules: [...on].map(k => mod(k).label), name, own: !!$("pv-name").value.trim(), color: paint.a };
+    // The demo request page picks this up and fills in the type and modules.
+    try { sessionStorage.setItem("fx-build", JSON.stringify(window.fxBuild)); } catch {}
   }
 
   // Colors and name
