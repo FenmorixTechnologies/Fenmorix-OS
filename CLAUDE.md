@@ -1356,3 +1356,14 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   attorney (https://claude.ai/artifact/Di7SYqsp4TfXH1oqHwLmvV); not published. Search Console/Bing need Michael's Google sign-in
   (Domain property; Google's Cloudflare option or a TXT record), then submit https://fenmorix.com/sitemap.xml; Bing imports from Google.
 
+- Top menu (LIVE 11/28/2026, sha 6a2d3112...): render.mjs `menuGroups(D)` / `topNav(D, active)` (Solutions / Product / Company dropdowns +
+  Client login + Request a demo; phones: one Menu panel `#nm-all`), site/nav.css + site/nav.js shared by the home page (build.mjs fills
+  <!--topnav--> in parts/body.html, <!--navcss--> / <!--navjs--> in shell.html) and every other page (CSS constant = site.css + nav.css,
+  D.navjs inline). Mouse = opens on hover, Esc / outside click closes. The footer keeps the same links (search engines).
+- Email (11/28/2026): fenmorix.com mail is Microsoft 365 from GoDaddy (MX outlook, SPF "v=spf1 include:secureserver.net -all" = GoDaddy's
+  documented value for 365, DMARC p=quarantine, 365 DKIM CNAMEs). Sending from the app = Amazon SES us-east-2 (account "Happy Path"
+  344293002027): domain identity fenmorix.com (Easy DKIM 2048: three <token>._domainkey CNAMEs -> <token>.dkim.amazonses.com) + custom
+  MAIL FROM mail.fenmorix.com (MX 10 feedback-smtp.us-east-2.amazonses.com, TXT v=spf1 include:amazonses.com ~all), added in Cloudflare
+  (DNS only). Office .env: SMTP_HOST=email-smtp.us-east-2.amazonaws.com, SMTP_PORT=587, SMTP_USER/PASS = SES SMTP credentials (Michael
+  enters them), SMTP_FROM="Fenmorix Technologies <noreply@fenmorix.com>". SES starts in the sandbox (200/day, verified recipients only)
+  until production access is granted.
