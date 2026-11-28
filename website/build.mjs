@@ -48,7 +48,7 @@ const BANNED = ["permission slip", "parent conference", "parent-teacher", "built
 for (const [name, text] of [["index.html", html], ["404.html", notFound]])
   for (const b of BANNED) if (text.toLowerCase().includes(b)) problems.push(`${name} says "${b}", which the product doesn't support`);
 // ---- Pages beyond the home page (site/content.mjs words + parts/modules.js catalog, drawn by site/render.mjs)
-const { renderRoute, siteRoutes } = await import(path.join(dir, "site/render.mjs"));
+const { renderRoute, siteRoutes, topNav } = await import(path.join(dir, "site/render.mjs"));
 const cat = new Function(rd("parts/modules.js") + "\nreturn { SECTORS, GROUPS, MODULES, PRESETS };")();
 const D = {
   site: C.SITE_URL, demo: C.DEMO, beacon: BEACON, sitekey: C.TURNSTILE_SITEKEY, groups: cat.GROUPS, sectors: Object.fromEntries(Object.entries(cat.SECTORS).map(([k, v]) => [k, { label: v.label, in: v.in }])),
@@ -58,6 +58,12 @@ const D = {
     return { key: m.key, slug: C.SLUGS[m.key], label: m.label, group: m.group, desc: m.desc, feats: m.feats, use: m.use || {}, sectors: m.sectors || null };
   }),
 };
+const NAV_JS = rd("site/nav.js").trim();
+D.navjs = NAV_JS;
+html = html.replace("<!--topnav-->", () => topNav(D, "")).replace("<!--navcss-->", () => rd("site/nav.css")).replace("<!--navjs-->", () => NAV_JS);
+html = html.split("\n").map(l => l.trimStart()).filter(l => l && !/^\/\/( |$)/.test(l) && !/^\/\*.*\*\/$/.test(l)).join("\n");
+for (const k of ["topnav", "navcss", "navjs"]) if (html.includes(`<!--${k}-->`)) problems.push(`index.html: <!--${k}--> was not filled`);
+if (!html.includes('class="mainnav"')) problems.push("index.html is missing the top menu");
 const routes = ["/", ...siteRoutes(D)];
 const seen = { title: new Map(), desc: new Map() };
 for (const r of routes.slice(1)) {
@@ -91,7 +97,7 @@ const sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www
 const renderCode = rd("site/render.mjs").replace(/^export /gm, "");
 const region = `// ---- generated site start (website/build.mjs; edit site/*.mjs, site/site.css, parts/modules.js)
 const SITE = ${JSON.stringify(D)};
-const CSS = ${JSON.stringify(rd("site/site.css"))};
+const CSS = ${JSON.stringify(rd("site/site.css") + "\n" + rd("site/nav.css"))};
 const SITEMAP = '${sitemap}';
 ${renderCode}
 // ---- generated site end`;
