@@ -1324,11 +1324,23 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
 - MENU_GROUPS: "Education" (gradebook) after Everyday; "Learning & development" = training, evals.
 - Gradebook: GET students?all=1 (view/manage; managers also see inactive) -> StudentsPage list with filters + StudentDialog (add/edit, class,
   guardian); POST students accepts classIds (manage). Teachers keep the search picker (all=1 -> 403). e2e66 covers it.
-- Website: Education group in website/parts/modules.js is local only (NOT deployed, waiting on the SEO plan approval: Claude Doc
-  "Fenmorix.com SEO — Phase Zero Audit and Implementation Plan"). Don't commit website/ until it is deployed (worker.js in git = deployed).
 - Search engines (11/27/2026): index.js handler sets `X-Robots-Tag: noindex, nofollow` on every response and answers /robots.txt with
   Disallow: / (before the portal host check); index/signin/portal/grades.html carry the robots meta (tests/build.sh adds it to its stand-in
-  index.html). e2e48 checks both. Website SEO phase 1 is on branch website-education-group: website/build.mjs assembles shell.html + parts/
-  into index.html and rewrites worker.js constants (HTML, NOTFOUND, LASTMOD, OG); routing code in worker.js is hand-edited; tools/serve.mjs
-  runs the Worker locally (x-host / x-proto headers), tools/og.mjs renders assets/og.jpg. The build fails on unsupported claims (BANNED).
+  index.html). e2e48 checks both.
+- Website: Education group + SEO phase 1 deployed 11/28/2026 (see "Website SEO phase 1" below).
+
+## Website SEO phase 1 (deployed 11/28/2026; plan = Claude Doc "Fenmorix.com SEO — Phase Zero Audit and Implementation Plan")
+- Build: `node website/build.mjs` = shell.html + parts/* -> index.html (light minify: no indentation, whole-line comments or blank lines,
+  same as the live page always had; fills __TURNSTILE_SITEKEY__; JSON-LD Organization/WebSite/SoftwareApplication) and rewrites the
+  worker.js constants HTML, NOTFOUND (404.html), LASTMOD, OG (assets/og.jpg, from tools/og.mjs, ~35 KB). The build stops on unfilled
+  placeholders, != 1 h1, missing canonical/description/og:image, or BANNED wording (permission slips, parent conferences, Built for CJIS...).
+- worker.js routing (hand-edited): http and www -> 301 https://fenmorix.com, /index.html -> 301 /, real 404 page (X-Robots-Tag noindex),
+  robots.txt (Disallow /api/), sitemap.xml with lastmod, /assets/og.jpg.
+- Local check: `node website/tools/serve.mjs 8787` (headers x-host / x-proto fake the host/scheme). Deploy: `python3 website/tools/patch.py`
+  makes a small patch from main's worker.js (= live) -> upload pieces to a scratch KV namespace with sha256 checks, assemble on Cloudflare
+  from the live script (keeps LOGO/FAV/AVX/FXW/PORTAL), compare sha256 with the local worker.js, PUT with keep_bindings secret_text, delete
+  the namespace. Gotcha: a \u00b7 escape typed into a tool call arrives as the character; long runs of "A" in base64 are where copying slips
+  (send them as "A".repeat(n)). Rollback = upload main's previous worker.js.
+- Next (P2, not started): registry + module/industry pages; P3: analytics (Cloudflare Web Analytics suggested), Search Console/Bing TXT,
+  demo form, privacy/terms after attorney review.
 
