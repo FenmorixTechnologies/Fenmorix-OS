@@ -76,17 +76,18 @@ export function menuGroups(D) {
     ["Solutions", D.industries.map(i => [i.nav, `/solutions/${i.slug}`])],
     ["Product", [["All modules", "/modules"], ["Build your system", "/#build"], ["Security", "/security"], ["Integrations", "/integrations"],
       ["Hosting", "/hosting"], ["How pricing works", "/#pricing"]]],
-    ["Company", [["Avexon partnership", "/partners/avexon"], ["Request a demo", "/demo"], ["Email michael@fenmorix.com", "mailto:michael@fenmorix.com"],
-      ["Client login", "https://portal.fenmorix.com"], ["Staff sign-in", "https://office.fenmorix.com"]]],
+    ["Company", [["Avexon partnership", "/partners/avexon"], ["Request a demo", "/demo"], ["Email michael@fenmorix.com", "mailto:michael@fenmorix.com"]]],
   ];
 }
+// Plain links beside the dropdowns (and their own group in the phone menu).
+const TOP_LINKS = [["Email us", "mailto:michael@fenmorix.com"], ["Client login", "https://portal.fenmorix.com"], ["Staff login", "https://office.fenmorix.com"]];
 export function topNav(D, active) {
   const groups = menuGroups(D);
   const cur = h => (h === active ? ' aria-current="page"' : "");
   const id = g => "nm-" + g.toLowerCase();
   const dd = groups.map(([g, links]) => `<div class="nm"><button type="button" class="nb" aria-expanded="false" aria-controls="${id(g)}"${links.some(([, h]) => h === active) ? " aria-current=\"true\"" : ""}>${g}</button><div class="dd" id="${id(g)}" hidden>${links.map(([t, h]) => `<a href="${h}"${cur(h)}>${esc(t)}</a>`).join("")}</div></div>`).join("");
-  return `<nav class="mainnav" aria-label="Main">${dd}<a class="nl" href="https://portal.fenmorix.com">Client login</a><a class="btn btn-fire" href="${D.demo}">Request a demo</a><button type="button" class="menu-btn" aria-expanded="false" aria-controls="nm-all">Menu</button></nav>
-<div class="allmenu" id="nm-all" hidden>${groups.map(([g, links]) => `<div><h2>${g}</h2>${links.map(([t, h]) => `<a href="${h}"${cur(h)}>${esc(t)}</a>`).join("")}</div>`).join("")}</div>`;
+  return `<nav class="mainnav" aria-label="Main">${dd}${TOP_LINKS.map(([t, h]) => `<a class="nl" href="${h}">${t}</a>`).join("")}<a class="btn btn-fire" href="${D.demo}">Request a demo</a><button type="button" class="menu-btn" aria-expanded="false" aria-controls="nm-all">Menu</button></nav>
+<div class="allmenu" id="nm-all" hidden>${[...groups, ["Contact & sign in", TOP_LINKS]].map(([g, links]) => `<div><h2>${g}</h2>${links.map(([t, h]) => `<a href="${h}"${cur(h)}>${esc(t)}</a>`).join("")}</div>`).join("")}</div>`;
 }
 
 const modBy = (D, key) => D.modules.find(m => m.key === key);
