@@ -1341,6 +1341,11 @@ single-file Claude artifact for St. George, moved to a real app: Postgres-backed
   from the live script (keeps LOGO/FAV/AVX/FXW/PORTAL), compare sha256 with the local worker.js, PUT with keep_bindings secret_text, delete
   the namespace. Gotcha: a \u00b7 escape typed into a tool call arrives as the character; long runs of "A" in base64 are where copying slips
   (send them as "A".repeat(n)). Rollback = upload main's previous worker.js.
-- Next (P2, not started): registry + module/industry pages; P3: analytics (Cloudflare Web Analytics suggested), Search Console/Bing TXT,
-  demo form, privacy/terms after attorney review.
+- P2 LIVE 11/28/2026 (Michael approved): 40 more pages rendered by the Worker itself. `website/site/content.mjs` (slugs, notes, 7 industry
+  pages, security/integrations/hosting/avexon facts; wording approved by Michael), `site/render.mjs` (shell, module/industry/fact pages,
+  siteRoutes/renderRoute; no imports) and `site/site.css`. build.mjs fills the region between `// ---- generated site start/end` in
+  worker.js with SITE, CSS, SITEMAP and render.mjs (without `export`), and checks one h1, unique titles/descriptions 50-170 chars, BANNED
+  words and that every internal link resolves. Routes: /modules, /modules/<slug>, /solutions/<slug>, /security, /integrations, /hosting,
+  /partners/avexon; trailing slash -> 301; unknown -> 404. Deployed sha 27e6ae02...
+- Next (P3, not started): analytics (Cloudflare Web Analytics suggested), Search Console/Bing TXT, demo form, privacy/terms after attorney review.
 
