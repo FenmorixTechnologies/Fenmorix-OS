@@ -6,7 +6,7 @@ const SECTORS = {
   biz: { label: "Business", noun: "your company", people: "staff", in: "In a business" },
   edu: { label: "Education", noun: "your school", people: "faculty and students", in: "In a school" },
 };
-const GROUPS = ["Communication", "People & time", "Money & workflow", "Training & reporting", "Public safety & emergencies"];
+const GROUPS = ["Communication", "Education", "People & time", "Money & workflow", "Training & reporting", "Public safety & emergencies"];
 const MODULES = [
   // ---- Communication
   { key: "messaging", label: "Messaging & chat", group: "Communication",
@@ -151,7 +151,7 @@ const MODULES = [
     use: { ps: "Calls, response times, training and rating for the fire board.", gov: "Department activity for the council or commission.",
       biz: "A one-page monthly picture for the owners.", edu: "Attendance, staffing and purchasing summaries for the school board." },
     w: { t: "Reports", l: ["<b>November report</b> ready", "Board meeting Dec 9"] } },
-  { key: "gradebook", label: "Gradebook", group: "Training & reporting", sectors: ["edu"],
+  { key: "gradebook", label: "Gradebook", group: "Education", sectors: ["edu"],
     desc: "Grades, assignments and comments that teachers, students and parents can all see.",
     feats: ["Weighted categories and your school's letter scale", "Graded work and comments on any grade", "Students and parents sign in to their own grades", "Reports by grade, subject and class"],
     use: { edu: "Teachers keep grades and attach the graded work; students see them with comments; reports such as \"4th grade social studies\" go to administration and the board." },
