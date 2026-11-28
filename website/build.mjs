@@ -1,7 +1,7 @@
 // Builds the website. Edit shell.html and parts/*, then run: node website/build.mjs
 //  - index.html = shell.html with each <!--part:NAME--> replaced by parts/NAME and <!--schema--> by the JSON-LD below
 //  - worker.js  = the deployed Cloudflare Worker; the inlined constants (HTML, NOTFOUND, OG) are rewritten in place,
-//                 the routing code above/below them is edited by hand.
+//                 and the region between "generated site start/end" holds the other pages (site/*). Routing code is hand-edited.
 // Checks: every part placeholder filled, page has one <h1>, canonical, description and og:image; claims that the
 // product doesn't support (see the SEO plan, section 3) fail the build.
 import fs from "node:fs";
@@ -46,7 +46,32 @@ const BANNED = ["permission slip", "parent conference", "parent-teacher", "built
   "students are out", "one family", "class schedules for students", "sports physicals"];
 for (const [name, text] of [["index.html", html], ["404.html", notFound]])
   for (const b of BANNED) if (text.toLowerCase().includes(b)) problems.push(`${name} says "${b}", which the product doesn't support`);
+// ---- Pages beyond the home page (site/content.mjs words + parts/modules.js catalog, drawn by site/render.mjs)
+const C = await import(path.join(dir, "site/content.mjs"));
+const { renderRoute, siteRoutes } = await import(path.join(dir, "site/render.mjs"));
+const cat = new Function(rd("parts/modules.js") + "\nreturn { SECTORS, GROUPS, MODULES, PRESETS };")();
+const D = {
+  site: C.SITE_URL, demo: C.DEMO, groups: cat.GROUPS, sectors: Object.fromEntries(Object.entries(cat.SECTORS).map(([k, v]) => [k, { label: v.label, in: v.in }])),
+  presets: cat.PRESETS, notes: C.MODULE_NOTES, industries: C.INDUSTRIES, pages: C.PAGES,
+  modules: cat.MODULES.filter(m => !C.HIDDEN.includes(m.key)).map(m => {
+    if (!C.SLUGS[m.key]) problems.push(`module ${m.key} has no page address in site/content.mjs SLUGS`);
+    return { key: m.key, slug: C.SLUGS[m.key], label: m.label, group: m.group, desc: m.desc, feats: m.feats, use: m.use || {}, sectors: m.sectors || null };
+  }),
+};
+const routes = ["/", ...siteRoutes(D)];
+const seen = { title: new Map(), desc: new Map() };
+for (const r of routes.slice(1)) {
+  const page = renderRoute(r, D);
+  if (!page) { problems.push(`${r} renders nothing`); continue; }
+  const title = (page.match(/<title>(.*?)<\/title>/) || [])[1], desc = (page.match(/name="description" content="(.*?)"/) || [])[1] || "";
+  if ((page.match(/<h1[\s>]/g) || []).length !== 1) problems.push(`${r} needs exactly one <h1>`);
+  if (desc.length < 50 || desc.length > 170) problems.push(`${r} description is ${desc.length} characters (50-170)`);
+  for (const [k, v] of [["title", title], ["desc", desc]]) { if (seen[k].has(v)) problems.push(`${r} repeats the ${k} of ${seen[k].get(v)}`); seen[k].set(v, r); }
+  for (const b of BANNED) if (page.toLowerCase().includes(b)) problems.push(`${r} says "${b}", which the product doesn't support`);
+  for (const [, href] of page.matchAll(/href="(\/[^"#?]*)/g)) if (!routes.includes(href) && !href.startsWith("/assets/")) problems.push(`${r} links to ${href}, which doesn't exist`);
+}
 if (problems.length) { console.error("Build stopped:\n - " + problems.join("\n - ")); process.exit(1); }
+console.log(`${routes.length} pages`);
 
 fs.writeFileSync(path.join(dir, "index.html"), html);
 
@@ -61,5 +86,17 @@ setConst("HTML", html);
 setConst("NOTFOUND", notFound);
 setConst("LASTMOD", new Date().toISOString().slice(0, 10));
 setConst("OG", fs.readFileSync(path.join(dir, "assets/og.jpg")).toString("base64"));
+const sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+  routes.map(r => `<url><loc>${C.SITE_URL}${r}</loc><lastmod>' + LASTMOD + '</lastmod></url>`).join("") + "</urlset>";
+const renderCode = rd("site/render.mjs").replace(/^export /gm, "");
+const region = `// ---- generated site start (website/build.mjs; edit site/*.mjs, site/site.css, parts/modules.js)
+const SITE = ${JSON.stringify(D)};
+const CSS = ${JSON.stringify(rd("site/site.css"))};
+const SITEMAP = '${sitemap}';
+${renderCode}
+// ---- generated site end`;
+const R = /\/\/ ---- generated site start[\s\S]*?\/\/ ---- generated site end/;
+if (!R.test(worker)) { console.error("worker.js has no generated site region"); process.exit(1); }
+worker = worker.replace(R, () => region);
 fs.writeFileSync(path.join(dir, "worker.js"), worker);
 console.log(`index.html ${html.length} bytes, worker.js ${worker.length} bytes`);
